@@ -6,6 +6,11 @@
     "moduleResolution": "node",
     "noEmit": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "allowJs": true , 
+    "locale": "ko",
+    "noImplicitAny": false, 
+    "charset": "utf8", 
+    "exclude": ["node_modules"]
   }
 }
