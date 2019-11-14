@@ -10,7 +10,7 @@
     "allowJs": true , 
     "locale": "ko",
     "noImplicitAny": false, 
-    "charset": "utf8", 
-    "exclude": ["node_modules"]
-  }
+    "charset": "utf8"
+  },
+  "exclude": ["node_modules"]
 }
