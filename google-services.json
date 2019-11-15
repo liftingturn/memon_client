@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "209216463831",
+    "firebase_url": "https://memon-0625.firebaseio.com",
+    "project_id": "memon-0625",
+    "storage_bucket": "memon-0625.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:209216463831:android:090b98c22aca455de7a192",
+        "android_client_info": {
+          "package_name": "com.memon.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "209216463831-1qmfqfjm3jn14is4usehord6pgpst91k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5M9WYS-iff4cEVcp-4qQp9ySVulZoFtU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "209216463831-1qmfqfjm3jn14is4usehord6pgpst91k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
