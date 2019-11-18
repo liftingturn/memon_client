@@ -5,11 +5,14 @@ import firebase from 'firebase';
 
 class LodingScreen extends React.Component {
   componentDidMount() {
+    console.log('loading componentDidMount');
     this.checkIfLoggedIn();
   }
 
   checkIfLoggedIn = () => {
     firebase.auth().onAuthStateChanged(user => {
+      console.log('user:');
+      console.log(user);
       this.props.navigation.navigate(user ? 'DashboardScreen' : 'LoginScreen');
     });
   };
