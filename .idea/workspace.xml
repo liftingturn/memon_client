@@ -5,6 +5,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/memon-client.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/memon-client.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/screens/LodingScreen.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/LodingScreen.tsx" afterDir="false" />
+
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -12,22 +13,26 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="DefaultGradleProjectSettings">
+    <option name="testRunner" value="GRADLE" />
+    <option name="delegatedBuild" value="true" />
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectFrameBounds">
+
     <option name="x" value="-1686" />
     <option name="y" value="-592" />
     <option name="width" value="1440" />
     <option name="height" value="877" />
+
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
-      <pane id="ProjectPane" />
       <pane id="Scope" />
       <pane id="AndroidView" />
     </panes>
@@ -63,6 +68,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
+
     <frame x="-1686" y="-592" width="1440" height="877" extended-state="0" />
     <layout>
       <window_info id="Build Variants" side_tool="true" />
@@ -76,6 +82,7 @@
       <window_info id="Favorites" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Android Profiler" show_stripe_button="false" />
       <window_info anchor="bottom" id="Logcat" />
+
       <window_info anchor="bottom" id="Version Control" order="0" />
       <window_info anchor="bottom" id="TODO" order="1" />
       <window_info anchor="bottom" id="Terminal" order="2" />
