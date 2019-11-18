@@ -5,7 +5,8 @@ import firebase from 'firebase';
 
 class LodingScreen extends React.Component {
   componentDidMount() {
-    console.log('loding screen componentdidmount');
+    console.log('loading componentDidMount');
+
     this.checkIfLoggedIn();
   }
 
@@ -13,6 +14,7 @@ class LodingScreen extends React.Component {
     firebase.auth().onAuthStateChanged(user => {
       console.log('loading checkif user:', user);
       // Firebase에 유저 로그인 기록 존재 BOOLEAN. 기록 없으면 loginScreen으로.
+
       this.props.navigation.navigate(user ? 'DashboardScreen' : 'LoginScreen');
     });
   };

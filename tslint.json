@@ -1,5 +1,7 @@
 {
-"rulesDirectory": ["node_modules/tslint-microsoft-contrib"],
-"rules" : {},
-"extends": ["tslint-microsoft-contrib/recommended"]
+  "rulesDirectory": ["node_modules/tslint-microsoft-contrib"],
+  "rules": {
+    "no-http-string": false
+  },
+  "extends": ["tslint-microsoft-contrib/recommended"]
 }
