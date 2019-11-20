@@ -11,7 +11,15 @@ import * as Google from 'expo-google-app-auth';
 import firebase from 'firebase';
 import config from './../../config';
 
-class LoginScreen extends React.Component {
+interface State {
+  whileAsync: boolean;
+}
+
+class LoginScreen extends React.Component<State> {
+  state: State = {
+    whileAsync: false
+  };
+
   isUserEqual = (googleUser, firebaseUser) => {
     if (firebaseUser) {
       var providerData = firebaseUser.providerData;
@@ -69,6 +77,7 @@ class LoginScreen extends React.Component {
   };
   signInWithGoogleAsync = async () => {
     console.log('google login clicked');
+    this.setState({ whileAsync: true });
     try {
       const result = await Google.logInAsync({
         //google id 관련 object날라옴/
@@ -78,16 +87,18 @@ class LoginScreen extends React.Component {
       });
 
       if (result.type === 'success') {
-        console.log('result:');
-        console.log(result);
+        console.log('result:', result);
         this.onSignIn(result);
         console.log('login screen onsignin end');
+
         return result.accessToken; //call the onSignIn method
       } else {
+        this.setState({ whileAsync: false });
         console.log('google.loginAsync 실패, result:', result);
         return { cancelled: true };
       }
     } catch (e) {
+      this.setState({ whileAsync: false });
       console.log('in catch err', e);
       return { error: true };
     }
@@ -96,10 +107,18 @@ class LoginScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Button
+        {this.state.whileAsync === false ? (
+          <Button
+            title="Sign In With Google"
+            onPress={this.signInWithGoogleAsync}
+          />
+        ) : (
+          <ActivityIndicator size="large" />
+        )}
+        {/* <Button
           title="Sign In With Google"
           onPress={this.signInWithGoogleAsync}
-        />
+        /> */}
       </View>
     );
   }
