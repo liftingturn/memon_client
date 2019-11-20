@@ -15,7 +15,7 @@ class LodingScreen extends React.Component {
       console.log('loading checkif user:', user);
       // Firebase에 유저 로그인 기록 존재 BOOLEAN. 기록 없으면 loginScreen으로.
 
-      this.props.navigation.navigate(user ? 'DashboardScreen' : 'LoginScreen');
+      this.props.navigation.navigate(user ? 'DrawerNav' : 'LoginScreen');
     });
   };
   render() {
