@@ -58,6 +58,11 @@ class LoginScreen extends React.Component<State> {
             .signInWithCredential(credential) // 방금
             .then(() => {
               console.log('user signed in'); //firebase에 방금 처음 로그인한 구글 유저정보 등록완료!!
+              ////////////////
+              // PhoneInputScreen 으로 분기
+              // user 정보가 우리 서버에 있는지 확인 (핸드폰 번호가 있는지 확인)
+              //  - 있다면,
+              this.props.navigation.navigate('PhoneInputScreen');
             })
             .catch(error => {
               // Handle Errors here.
@@ -88,10 +93,10 @@ class LoginScreen extends React.Component<State> {
 
       if (result.type === 'success') {
         console.log('result:', result);
-        this.onSignIn(result);
+        this.onSignIn(result); //call the onSignIn method
         console.log('login screen onsignin end');
 
-        return result.accessToken; //call the onSignIn method
+        return result.accessToken; //who receive the result??
       } else {
         this.setState({ whileAsync: false });
         console.log('google.loginAsync 실패, result:', result);
@@ -103,6 +108,8 @@ class LoginScreen extends React.Component<State> {
       return { error: true };
     }
   };
+
+  check = () => {};
 
   render() {
     return (
