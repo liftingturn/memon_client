@@ -7,9 +7,9 @@
     "noEmit": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "allowJs": true , 
+    "allowJs": true,
     "locale": "ko",
-    "noImplicitAny": false, 
+    "noImplicitAny": false,
     "charset": "utf8"
   },
   "exclude": ["node_modules"]
