@@ -14,7 +14,7 @@ export default class DashboardScreen extends Component<Props, State> {
     MoneyToGet: 0,
     fontLoaded: false
   };
-  net = `받을 돈 : ${this.state.MoneyToGet}\n 줄 돈 : ${this.state.MoneyToPay}`;
+  net = `받을 돈 : ${this.state.MoneyToGet}\n줄 돈 : ${this.state.MoneyToPay}`;
   render() {
     return (
       <View style={this.styles.container}>
