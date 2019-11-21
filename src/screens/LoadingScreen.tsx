@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Component } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import firebase from 'firebase';
 import LoginScreen from './LoginScreen';
@@ -34,16 +35,7 @@ class LoadingScreen extends React.Component<Props> {
     return responseJson.result;
   };
 
-  /* 
-  1. 기기 로그인 정보 && firebase 접속 기록이 있나?
-      - no : LoginScreen
-      - yes : 
-        2. 우리 서버에 등록된 유저인가? 
-          - no : 추가 가입 정보 요구 ; PhoneInput
-          - yes : 메인화면 ; DrawerNav
-  */
   checkIfLoggedIn = async () => {
-    //check if logined in firebase
     firebase.auth().onAuthStateChanged(async user => {
       console.log('loading checkif user:', user);
       // Firebase에 유저 로그인 기록 존재 BOOLEAN. 기록 없으면 loginScreen으로.

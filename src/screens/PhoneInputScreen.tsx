@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Component } from 'react';
 import { Container, Header, Content, Item, Input, Icon } from 'native-base';
 import config from './../../config';
 import firebase from 'firebase';
