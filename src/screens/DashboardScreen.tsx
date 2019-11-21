@@ -1,40 +1,40 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import CardComponent from './../components/CardComponent';
+import config from './../../config';
 
 interface Props {}
 interface State {
   moneyToPay: number;
   moneyToGet: number;
-  fontLoaded: boolean;
 }
 export default class DashboardScreen extends Component<Props, State> {
   state: State = {
     moneyToPay: 0,
-    moneyToGet: 0,
-    fontLoaded: false
+    moneyToGet: 0
   };
 
-  // componentDidMount() {
-  //   fetch('http://12f56b64.ngrok.io/main', {
-  //     method: 'GET',
-  //     headers: {
-  //       Accept: 'application/json',
-  //       'Content-Type': 'application/json'
-  //     }
-  //   })
-  //     .then(response => response.json())
-  //     .then(data => {
-  //       //여기서 데이터갖고 STATE갈아주면 된다.
-  //       this.setState({
-  //         moneyToPay: data.moneyToPay,
-  //         moneyToGet: data.moneyToGet
-  //       });
-  //     })
-  //     .catch(error => {
-  //       console.error(error);
-  //     });
-  // }
+  componentDidMount() {
+    const fetchAdd = config.serverAddress + '/main';
+    fetch(fetchAdd, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        //여기서 데이터갖고 STATE갈아주면 된다.
+        this.setState({
+          moneyToPay: data.moneyToPay,
+          moneyToGet: data.moneyToGet
+        });
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
 
   render() {
     return (

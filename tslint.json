@@ -1,7 +1,8 @@
 {
   "rulesDirectory": ["node_modules/tslint-microsoft-contrib"],
   "rules": {
-    "no-http-string": false
+    "no-http-string": false,
+    "no-relative-imports": [false] // ?
   },
   "extends": ["tslint-microsoft-contrib/recommended"]
 }
