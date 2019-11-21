@@ -47,19 +47,19 @@ class LoginScreen extends React.Component<State> {
         if (!this.isUserEqual(googleUser, firebaseUser)) {
           //현재 로그인하려는 구글 유저와, 파이어베이스에 등록된 유저가 같지 않다? -> 해당 앱에 처음 로그인한 유저
           // Build Firebase credential with the Google ID token.
+          // 파이어베이스에 등록할 구글 유저정보 기반 credential 정보 생성.
           var credential = firebase.auth.GoogleAuthProvider.credential(
             //googleUser.getAuthResponse().id_token
             googleUser.idToken,
             googleUser.accessToken
-          ); // 파이어베이스에 등록할 구글 유저정보 기반 credential 정보 생성.
+          );
           // Sign in with credential from the Google user.
           firebase
             .auth()
-            .signInWithCredential(credential) // 방금
+            .signInWithCredential(credential) //           // Build Firebase credential with the Google ID token.
+
             .then(() => {
-              console.log('user signed in'); //firebase에 방금 처음 로그인한 구글 유저정보 등록완료!!
-              ////////////////
-              // PhoneInputScreen 으로 분기
+              console.log('user signed in');
               // user 정보가 우리 서버에 있는지 확인 (핸드폰 번호가 있는지 확인)
               //  - 있다면,
               this.props.navigation.navigate('PhoneInputScreen');
