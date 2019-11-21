@@ -8,7 +8,8 @@ const config = {
   appId: '1:209216463831:web:655e38670e9e54c6e7a192',
   measurementId: 'G-3BF7J6G9NZ',
   androidClientId:
-    '209216463831-htvf7vv2lhmo4farouqkpg0ie46lc633.apps.googleusercontent.com'
+    '209216463831-htvf7vv2lhmo4farouqkpg0ie46lc633.apps.googleusercontent.com',
+  serverAddress: 'http://7ea0c9b2.ngrok.io'
 };
 
 export default config;

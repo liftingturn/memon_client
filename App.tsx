@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 
-import LoadingScreen from './src/screens/LodingScreen';
+import LoadingScreen from './src/screens/LoadingScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import DrawerNav from './src/navigation/DrawerNav';
 import PhoneInputScreen from './src/screens/PhoneInputScreen';
