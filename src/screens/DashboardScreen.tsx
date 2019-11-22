@@ -2,41 +2,49 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import CardComponent from './../components/CardComponent';
 import config from './../../config';
+import firebase from 'firebase';
 
 interface Props {}
 interface State {
-  moneyToPay: number;
-  moneyToGet: number;
+  moneyToPay: string;
+  moneyToGet: string;
+  uri: string;
 }
 export default class DashboardScreen extends Component<Props, State> {
   state: State = {
-    moneyToPay: 0,
-    moneyToGet: 0
+    moneyToPay: '',
+    moneyToGet: '',
+    uri: ''
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const fetchAdd = config.serverAddress + '/main';
-    fetch(fetchAdd, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => response.json())
-      .then(data => {
-        //여기서 데이터갖고 STATE갈아주면 된다.
-        this.setState({
-          moneyToPay: data.moneyToPay,
-          moneyToGet: data.moneyToGet
-        });
-      })
-      .catch(error => {
-        console.error(error);
+
+    try {
+      const user = await firebase.auth().currentUser;
+
+      const fetchData = await fetch(fetchAdd, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: user.email
+        })
       });
+      const parsedMoneyData = await fetchData.json();
+      this.setState({
+        moneyToPay: parsedMoneyData.moneyToPay,
+        moneyToGet: parsedMoneyData.moneyToGet
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   render() {
+    console.log('================enter dashboard');
     return (
       <View style={this.styles.container}>
         <View style={this.styles.topCon} />
