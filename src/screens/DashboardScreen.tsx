@@ -3,8 +3,11 @@ import { View, Text, StyleSheet } from 'react-native';
 import CardComponent from './../components/CardComponent';
 import config from './../../config';
 import firebase from 'firebase';
+import { Container, Header, Content, Button, Icon } from 'native-base';
 
-interface Props {}
+interface Props {
+  navigation: any;
+}
 interface State {
   moneyToPay: string;
   moneyToGet: string;
@@ -16,7 +19,9 @@ export default class DashboardScreen extends Component<Props, State> {
     moneyToGet: '',
     uri: ''
   };
-
+  moveToNewPayment = () => {
+    this.props.navigation.navigate('NewPayment');
+  };
   async componentDidMount() {
     const fetchAdd = config.serverAddress + '/main';
 
@@ -54,6 +59,11 @@ export default class DashboardScreen extends Component<Props, State> {
             body={`받을 돈 : ${this.state.moneyToGet}\n줄 돈 : ${this.state.moneyToPay}`}
           />
         </View>
+        <View style={this.styles.button}>
+          <Button full onPress={this.moveToNewPayment}>
+            <Text>새 글 생성</Text>
+          </Button>
+        </View>
       </View>
     );
   }
@@ -69,7 +79,11 @@ export default class DashboardScreen extends Component<Props, State> {
       flex: 1
     },
     bottomCon: {
-      flex: 2
+      flex: 4
+    },
+    button: {
+      flex: 1,
+      justifyContent: 'flex-end'
     }
   });
 }
