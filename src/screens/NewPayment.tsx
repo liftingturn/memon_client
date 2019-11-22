@@ -5,6 +5,7 @@ import { DatePicker, Form, Label, Input, Button, Item } from 'native-base';
 export interface Props {}
 
 export interface State {
+  title: string;
   totalPay: string;
   chosenDate: Date;
   peopleCnt: number;
@@ -20,9 +21,11 @@ export interface State {
   //어드밴스드 1 : 보스의 추가 부담 내용 푸시 알림에 포함
   //어드밴스드 2 : 차액 부담자 유저가 선택
 }
+//InfoToServer
+//totalPay, peopleCnt, subject, date
 
 export default class NewPayment extends React.Component<Props, State> {
-  state = { totalPay: '', chosenDate: new Date(), peopleCnt: 1 };
+  state = { title: '', totalPay: '', chosenDate: new Date(), peopleCnt: 1 };
 
   setDate(newDate: Date): any {
     this.setState({ totalPay: '', chosenDate: newDate });
@@ -30,6 +33,10 @@ export default class NewPayment extends React.Component<Props, State> {
   onChangeTotalPay = e => {
     console.log('onchange do', e.nativeEvent.text);
     this.setState({ totalPay: e.nativeEvent.text });
+  };
+
+  onChangeTitle = e => {
+    this.setState({ title: e.nativeEvent.text });
   };
 
   calcN = () => {
@@ -47,7 +54,8 @@ export default class NewPayment extends React.Component<Props, State> {
         <Form style={{ width: 300 }}>
           <Item fixedLabel>
             <Label>제목</Label>
-            <Input />
+            <Input onChange={this.onChangeTitle} />
+            <Text>{this.state.title}</Text>
           </Item>
           <DatePicker
             defaultDate={new Date()}
