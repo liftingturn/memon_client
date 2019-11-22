@@ -7,8 +7,7 @@ import {
   CardItem,
   Text,
   Body,
-  Col,
-  View
+  Col
 } from 'native-base';
 interface Props {
   header?: string;
@@ -18,21 +17,33 @@ interface Props {
 export default class CardComponent extends Component<Props> {
   render() {
     return (
-      <View>
-        <Card style={{ margin: 10 }}>
-          <CardItem header>
-            <Text>{this.props.header ? this.props.header : ''}</Text>
-          </CardItem>
-          <CardItem>
-            <Body>
-              <Text>{this.props.body ? this.props.body : ''}</Text>
-            </Body>
-          </CardItem>
-          <CardItem footer>
-            <Text>{this.props.footer ? this.props.footer : ''}</Text>
-          </CardItem>
-        </Card>
-      </View>
+      <Container>
+        <Grid>
+          <Col
+            style={{
+              backgroundColor: '#fff',
+              height: 200,
+              paddingHorizontal: 30
+            }}
+          >
+            <Content>
+              <Card style={{ margin: 10 }}>
+                <CardItem header>
+                  <Text>{this.props.header ? this.props.header : ''}</Text>
+                </CardItem>
+                <CardItem>
+                  <Body>
+                    <Text>{this.props.body ? this.props.body : ''}</Text>
+                  </Body>
+                </CardItem>
+                <CardItem footer>
+                  <Text>{this.props.footer ? this.props.footer : ''}</Text>
+                </CardItem>
+              </Card>
+            </Content>
+          </Col>
+        </Grid>
+      </Container>
     );
   }
 }
