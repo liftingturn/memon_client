@@ -70,8 +70,8 @@ export default class PhoneInputScreen extends React.Component<Props, State> {
     let name, email, photoUrl, uid, emailVerified;
     if (user != null) {
       name = user.displayName;
-      email = email;
-      // email = user.emaㅇㅋil;
+      // email = email;
+      email = user.email;
       photoUrl = user.photoURL;
       emailVerified = user.emailVerified;
       uid = user.uid;
