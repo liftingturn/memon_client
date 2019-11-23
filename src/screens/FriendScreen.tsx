@@ -15,17 +15,23 @@ import {
 } from 'native-base';
 
 import FriendList from '../components/FriendList';
-export interface Props {}
+export interface Props {
+  navigation: any;
+}
 
 export interface State {}
 
 export default class FriendScreen extends React.Component<Props, State> {
+  toggleDrawer = () => {
+    this.props.navigation.toggleDrawer();
+  };
+
   render() {
     return (
       <Container style={this.styles.container}>
         <Header>
           <Left>
-            <Button transparent>
+            <Button transparent onPress={this.toggleDrawer}>
               <Icon name="menu" />
             </Button>
           </Left>

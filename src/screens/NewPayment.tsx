@@ -1,6 +1,22 @@
 import React from 'react';
-import { View, Text, StyleSheet, Modal, Button } from 'react-native';
-import { DatePicker, Form, Label, Input, Item } from 'native-base';
+import { View, Text, StyleSheet, Modal } from 'react-native';
+import {
+  Header,
+  DatePicker,
+  Form,
+  Label,
+  Input,
+  Item,
+  Container,
+  Left,
+  Right,
+  Footer,
+  FooterTab,
+  Button,
+  Content,
+  Icon,
+  Body
+} from 'native-base';
 import FriendList from '../components/FriendList';
 export interface Props {}
 
@@ -23,7 +39,9 @@ export interface State {
 }
 //InfoToServer
 //totalPay, peopleCnt, subject, date
-
+export interface Props {
+  navigation: any;
+}
 export default class NewPayment extends React.Component<Props, State> {
   state = {
     title: '',
@@ -44,7 +62,9 @@ export default class NewPayment extends React.Component<Props, State> {
   onChangeTitle = e => {
     this.setState({ ...this.state, title: e.nativeEvent.text });
   };
-
+  toggleDrawer = () => {
+    this.props.navigation.toggleDrawer();
+  };
   calcN = () => {
     console.log('state pay', this.state.totalPay);
     if (!this.state.totalPay) {
@@ -56,91 +76,106 @@ export default class NewPayment extends React.Component<Props, State> {
 
   render() {
     return (
-      <View style={this.styles.container}>
-        <Text>새 결제 생성</Text>
-        <Form style={{ width: 300 }}>
-          <Item fixedLabel>
-            <Label>제목</Label>
-            <Input onChange={this.onChangeTitle} />
-            <Text>{this.state.title}</Text>
-          </Item>
+      <Container style={this.styles.container}>
+        <Header>
+          <Left>
+            <Button transparent onPress={this.toggleDrawer}>
+              <Icon name="menu" />
+            </Button>
+          </Left>
+          <Body>
+            <Text>Header</Text>
+          </Body>
+          <Right />
+        </Header>
+        <Content>
+          <Text>새 결제 생성</Text>
+          <Form style={{ width: 300 }}>
+            <Item fixedLabel>
+              <Label>제목</Label>
+              <Input onChange={this.onChangeTitle} />
+              <Text>{this.state.title}</Text>
+            </Item>
 
-          <DatePicker
-            defaultDate={new Date()}
-            minimumDate={new Date(2018, 1, 1)}
-            // maximumDate={new Date()}
-            locale="ko"
-            timeZoneOffsetInMinutes={undefined}
-            modalTransparent={false}
-            animationType="fade"
-            androidMode="default"
-            placeHolderText="날짜를 선택해주세요."
-            textStyle={{ color: 'green' }}
-            placeHolderTextStyle={{ color: '#d3d3d3' }}
-            onDateChange={this.setDate.bind(this)}
-            disabled={false}
-          />
-          <Text>Date: {this.state.chosenDate.toString().substr(4, 12)}</Text>
-          <Item fixedLabel>
-            <Label>총 결제 금액</Label>
-            <Input onChange={this.onChangeTotalPay} keyboardType="numeric" />
-            <Text>{this.state.totalPay}what</Text>
-          </Item>
-          <Item fixedLabel>
-            <Label>참여자 선택하기</Label>
-            <Input />
-            <Label>{this.state.peopleCnt} 명</Label>
-          </Item>
-          <Item fixedLabel>
-            <Label>1인당 금액</Label>
-            <Input placeholder={this.calcN()} disabled />
-          </Item>
-        </Form>
-        <Modal
-          animationType={'slide'}
-          transparent={false}
-          visible={this.state.isVisible}
-          onRequestClose={() => {
-            console.log('Modal has been closed.');
-          }}
-        >
-          {/*All views of Modal*/}
-          {/*Animation can be slide, slide, none*/}
-          <View style={this.styles.modal}>
-            <Text style={this.styles.text}>Modal is open!</Text>
-            <FriendList />
-            <Button
-              title="Click To Close Modal"
-              onPress={() => {
-                this.setState({ isVisible: !this.state.isVisible });
-              }}
+            <DatePicker
+              defaultDate={new Date()}
+              minimumDate={new Date(2018, 1, 1)}
+              // maximumDate={new Date()}
+              locale="ko"
+              timeZoneOffsetInMinutes={undefined}
+              modalTransparent={false}
+              animationType="fade"
+              androidMode="default"
+              placeHolderText="날짜를 선택해주세요."
+              textStyle={{ color: 'green' }}
+              placeHolderTextStyle={{ color: '#d3d3d3' }}
+              onDateChange={this.setDate.bind(this)}
+              disabled={false}
             />
-          </View>
-        </Modal>
-        {/*Button will change state to true and view will re-render*/}
-        <Button
-          title="Click To Open Modal"
-          onPress={() => {
-            this.setState({ isVisible: true });
-          }}
-        />
-        <Button
-          title="submitPayment"
-          onPress={() => {
-            console.log('결제등록');
-          }}
-        >
-          <Text>결제 등록</Text>
-        </Button>
-      </View>
+            <Text>Date: {this.state.chosenDate.toString().substr(4, 12)}</Text>
+            <Item fixedLabel>
+              <Label>총 결제 금액</Label>
+              <Input onChange={this.onChangeTotalPay} keyboardType="numeric" />
+              <Text>{this.state.totalPay}what</Text>
+            </Item>
+            <Item fixedLabel>
+              <Label>참여자 선택하기</Label>
+              <Input />
+              <Label>{this.state.peopleCnt} 명</Label>
+            </Item>
+            <Item fixedLabel>
+              <Label>1인당 금액</Label>
+              <Input placeholder={this.calcN()} disabled />
+            </Item>
+          </Form>
+          <Modal
+            animationType={'slide'}
+            transparent={false}
+            visible={this.state.isVisible}
+            onRequestClose={() => {
+              console.log('Modal has been closed.');
+            }}
+          >
+            {/*All views of Modal*/}
+            {/*Animation can be slide, slide, none*/}
+            <View style={this.styles.modal}>
+              <Text style={this.styles.text}>Modal is open!</Text>
+              <FriendList />
+              <Button
+                onPress={() => {
+                  this.setState({ isVisible: !this.state.isVisible });
+                }}
+              />
+            </View>
+          </Modal>
+          {/*Button will change state to true and view will re-render*/}
+          <Button
+            onPress={() => {
+              this.setState({ isVisible: true });
+            }}
+          />
+        </Content>
+        <Footer>
+          <FooterTab>
+            <Button
+              onPress={() => {
+                console.log('결제등록');
+              }}
+            >
+              <Text>결제 등록</Text>
+            </Button>
+          </FooterTab>
+        </Footer>
+      </Container>
     );
   }
   styles = StyleSheet.create({
     container: {
+      marginTop: 24,
       flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center'
+      backgroundColor: '#fff'
+      // alignItems: 'center',
+      // justifyContent: 'center'
     },
     modal: {
       flex: 1,
