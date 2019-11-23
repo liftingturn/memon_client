@@ -3,13 +3,13 @@ import { Platform, Dimensions } from 'react-native';
 import { createDrawerNavigator } from 'react-navigation-drawer';
 import DashboardScreen from '../screens/DashboardScreen';
 import NewPayment from '../screens/NewPayment';
-import Screen2 from '../screens/Screen2';
+import PaymentList from '../screens/PaymentList';
 import Screen3 from '../screens/Screen3';
 
 const DrawerNav = createDrawerNavigator({
   Home: { screen: DashboardScreen },
   NewPayment: { screen: NewPayment },
-  Screen2: { screen: Screen2 },
+  PaymentList: { screen: PaymentList },
   Screen3: { screen: Screen3 }
 });
 

@@ -5,12 +5,12 @@ export interface Props {}
 
 export interface State {}
 
-class Screen2 extends React.Component<Props, State> {
+export default class PaymentList extends React.Component<Props, State> {
   state = { key: 'value' };
   render() {
     return (
       <View style={this.styles.container}>
-        <Text>screen2</Text>
+        <Text>PAYMENTLIST</Text>
       </View>
     );
   }
@@ -23,5 +23,3 @@ class Screen2 extends React.Component<Props, State> {
     }
   });
 }
-
-export default Screen2;
