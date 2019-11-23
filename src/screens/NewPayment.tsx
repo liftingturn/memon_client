@@ -17,7 +17,9 @@ import {
   Icon,
   Body
 } from 'native-base';
-import FriendList from '../components/FriendList';
+import * as FileSystem from 'expo-file-system';
+
+// import FriendList from '../components/FriendList';
 export interface Props {}
 
 export interface State {
