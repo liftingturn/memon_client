@@ -28,18 +28,19 @@ export default class NewPayment extends React.Component<Props, State> {
   state = { title: '', totalPay: '', chosenDate: new Date(), peopleCnt: 1 };
 
   setDate(newDate: Date): any {
-    this.setState({ totalPay: '', chosenDate: newDate });
+    this.setState({ ...this.state, chosenDate: newDate });
   }
   onChangeTotalPay = e => {
     console.log('onchange do', e.nativeEvent.text);
-    this.setState({ totalPay: e.nativeEvent.text });
+    this.setState({ ...this.state, totalPay: e.nativeEvent.text });
   };
 
   onChangeTitle = e => {
-    this.setState({ title: e.nativeEvent.text });
+    this.setState({ ...this.state, title: e.nativeEvent.text });
   };
 
   calcN = () => {
+    console.log('state pay', this.state.totalPay);
     if (!this.state.totalPay) {
       return 'total 금액 입력해주세요!';
     } else {
@@ -76,7 +77,7 @@ export default class NewPayment extends React.Component<Props, State> {
           <Item fixedLabel>
             <Label>총 결제 금액</Label>
             <Input onChange={this.onChangeTotalPay} keyboardType="numeric" />
-            <Text>{this.state.totalPay}</Text>
+            <Text>{this.state.totalPay}what</Text>
           </Item>
           <Item fixedLabel>
             <Label>참여자 선택하기</Label>
