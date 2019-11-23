@@ -17,9 +17,9 @@ import {
   Icon,
   Body
 } from 'native-base';
-import * as FileSystem from 'expo-file-system';
 
-// import FriendList from '../components/FriendList';
+import FriendList from '../components/FriendList';
+import PicPicker from '../components/PicPicker';
 export interface Props {}
 
 export interface State {
@@ -114,11 +114,10 @@ export default class NewPayment extends React.Component<Props, State> {
               onDateChange={this.setDate.bind(this)}
               disabled={false}
             />
-            <Text>Date: {this.state.chosenDate.toString().substr(4, 12)}</Text>
+            {/* <Text>Date: {this.state.chosenDate.toString().substr(4, 12)}</Text> */}
             <Item fixedLabel>
               <Label>총 결제 금액</Label>
               <Input onChange={this.onChangeTotalPay} keyboardType="numeric" />
-              <Text>{this.state.totalPay}what</Text>
             </Item>
             <Item fixedLabel>
               <Label>참여자 선택하기</Label>
@@ -147,7 +146,9 @@ export default class NewPayment extends React.Component<Props, State> {
                 onPress={() => {
                   this.setState({ isVisible: !this.state.isVisible });
                 }}
-              />
+              >
+                <Text>확인</Text>
+              </Button>
             </View>
           </Modal>
           {/*Button will change state to true and view will re-render*/}
@@ -155,7 +156,10 @@ export default class NewPayment extends React.Component<Props, State> {
             onPress={() => {
               this.setState({ isVisible: true });
             }}
-          />
+          >
+            <Text>Click To Open Modal</Text>
+          </Button>
+          <PicPicker />
         </Content>
         <Footer>
           <FooterTab>

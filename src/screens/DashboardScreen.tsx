@@ -84,18 +84,22 @@ export default class DashboardScreen extends Component<Props, State> {
             body={`받을 돈 : ${this.state.moneyToGet}\n줄 돈 : ${this.state.moneyToPay}`}
           />
         </Content>
-        <Footer>
-          <FooterTab>
-            <Button full>
-              <Text>Footer</Text>
-              <View style={this.styles.button}>
-                <Button full onPress={this.moveToNewPayment}>
-                  <Text>새 글 생성</Text>
-                </Button>
-              </View>
-            </Button>
-          </FooterTab>
-        </Footer>
+        {/* <Footer>
+          <FooterTab> */}
+        {/* <Button> */}
+        {/* <Text>Footer</Text> */}
+        {/* <View style={this.styles.button}> */}
+        <Button
+          rounded
+          style={this.styles.botbut}
+          onPress={this.moveToNewPayment}
+        >
+          <Text>결제 생성</Text>
+        </Button>
+        {/* </View> */}
+        {/* </Button> */}
+        {/* </FooterTab>
+        </Footer> */}
       </Container>
     );
   }
@@ -117,6 +121,12 @@ export default class DashboardScreen extends Component<Props, State> {
     button: {
       flex: 1,
       justifyContent: 'flex-end'
+    },
+    botbut: {
+      marginLeft: 150,
+      width: 100,
+      textAlign: 'center',
+      marginBottom: 10
     }
   });
 }

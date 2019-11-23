@@ -1,17 +1,53 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-
-export interface Props {}
-
+import {
+  Container,
+  Header,
+  Title,
+  Content,
+  Footer,
+  FooterTab,
+  Button,
+  Left,
+  Right,
+  Body,
+  Icon
+} from 'native-base';
+export interface Props {
+  navigation: any;
+}
 export interface State {}
 
 export default class PaymentList extends React.Component<Props, State> {
   state = { key: 'value' };
+  toggleDrawer = () => {
+    this.props.navigation.toggleDrawer();
+  };
   render() {
     return (
-      <View style={this.styles.container}>
-        <Text>PAYMENTLIST</Text>
-      </View>
+      <Container style={this.styles.container}>
+        <Header>
+          <Left>
+            <Button transparent onPress={this.toggleDrawer}>
+              <Icon name="menu" />
+            </Button>
+          </Left>
+          <Body>
+            <Text>Header</Text>
+          </Body>
+          <Right />
+        </Header>
+        <Content>
+          <Text>This is Content Profile page</Text>
+        </Content>
+        <Footer>
+          <FooterTab>
+            <Button full>
+              <Text>Footer</Text>
+            </Button>
+          </FooterTab>
+        </Footer>
+      </Container>
     );
   }
   styles = StyleSheet.create({

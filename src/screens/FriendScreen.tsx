@@ -52,10 +52,6 @@ export default class FriendScreen extends React.Component<Props, State> {
           </FooterTab>
         </Footer>
       </Container>
-      //   <View style={this.styles.container}>
-      //     <Text>FriendScreen</Text>
-      //     <FriendList></FriendList>
-      //   </View>
     );
   }
   styles = StyleSheet.create({
