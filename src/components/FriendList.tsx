@@ -22,7 +22,7 @@ interface Props {}
 
 export default class FriendList extends Component<Props> {
   state = { friendList: [] };
-
+  //{name: , phone:, checked:true}
   componentDidMount = async () => {
     //주소록 가져와서, state에 주소록 넣어준다.
     const { status } = await Permissions.askAsync(Permissions.CONTACTS);
