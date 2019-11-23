@@ -13,16 +13,19 @@ import {
   Body,
   Icon
 } from 'native-base';
+
+import FriendList from '../components/FriendList';
 export interface Props {
   navigation: any;
 }
+
 export interface State {}
 
-export default class PaymentList extends React.Component<Props, State> {
-  state = { key: 'value' };
+export default class FriendScreen extends React.Component<Props, State> {
   toggleDrawer = () => {
     this.props.navigation.toggleDrawer();
   };
+
   render() {
     return (
       <Container style={this.styles.container}>
@@ -38,7 +41,8 @@ export default class PaymentList extends React.Component<Props, State> {
           <Right />
         </Header>
         <Content>
-          <Text>This is Content Profile page</Text>
+          <Text>This is Content Section</Text>
+          <FriendList></FriendList>
         </Content>
         <Footer>
           <FooterTab>
@@ -52,9 +56,10 @@ export default class PaymentList extends React.Component<Props, State> {
   }
   styles = StyleSheet.create({
     container: {
+      marginTop: 24,
       flex: 1,
       backgroundColor: '#fff',
-      alignItems: 'center',
+      //   alignItems: 'center',
       justifyContent: 'center'
     }
   });

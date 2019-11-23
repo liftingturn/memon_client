@@ -6,12 +6,14 @@ import NewPayment from '../screens/NewPayment';
 import PaymentList from '../screens/PaymentList';
 import Profile from '../screens/Profile';
 import { Button } from 'native-base';
+import FriendScreen from '../screens/FriendScreen';
 
 const DrawerNav = createDrawerNavigator({
   Home: { screen: DashboardScreen },
   NewPayment: { screen: NewPayment },
   PaymentList: { screen: PaymentList },
-  Profile: { screen: Profile }
+  내프로필: { screen: Profile },
+  친구목록: { screen: FriendScreen }
   // Logout : <Button></Button>
 });
 
