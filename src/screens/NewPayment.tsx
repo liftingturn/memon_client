@@ -146,7 +146,7 @@ export default class NewPayment extends React.Component<Props, State> {
       flex: 1,
       // alignItems: 'center',
       backgroundColor: '#00ff00',
-      padding: 100
+      padding: 50
     },
     text: {
       color: '#3f2949',
