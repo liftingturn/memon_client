@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { DatePicker, Form, Label, Input, Button, Item } from 'native-base';
-
+import { View, Text, StyleSheet, Modal, Button } from 'react-native';
+import { DatePicker, Form, Label, Input, Item } from 'native-base';
+import FriendList from '../components/FriendList';
 export interface Props {}
 
 export interface State {
@@ -9,7 +9,7 @@ export interface State {
   totalPay: string;
   chosenDate: Date;
   peopleCnt: number;
-
+  isVisible: boolean;
   // 주소록에서 목록을 가져와서 [이름/번호]
   // 서버로 전송하면 번호 기반으로 가입자만 가려서 리턴 req[이름/전화번호] //res [이름/전화번호/userId]
   // 받은 리턴 목록 스크린에 출력(베이스 리스트 가능하면 페이지 전환없이? 모달이라든가..)
@@ -25,7 +25,13 @@ export interface State {
 //totalPay, peopleCnt, subject, date
 
 export default class NewPayment extends React.Component<Props, State> {
-  state = { title: '', totalPay: '', chosenDate: new Date(), peopleCnt: 1 };
+  state = {
+    title: '',
+    totalPay: '',
+    chosenDate: new Date(),
+    peopleCnt: 1,
+    isVisible: false
+  };
 
   setDate(newDate: Date): any {
     this.setState({ ...this.state, chosenDate: newDate });
@@ -58,6 +64,7 @@ export default class NewPayment extends React.Component<Props, State> {
             <Input onChange={this.onChangeTitle} />
             <Text>{this.state.title}</Text>
           </Item>
+
           <DatePicker
             defaultDate={new Date()}
             minimumDate={new Date(2018, 1, 1)}
@@ -89,9 +96,36 @@ export default class NewPayment extends React.Component<Props, State> {
             <Input placeholder={this.calcN()} disabled />
           </Item>
         </Form>
-        <Text></Text>
+        <Modal
+          animationType={'slide'}
+          transparent={false}
+          visible={this.state.isVisible}
+          onRequestClose={() => {
+            console.log('Modal has been closed.');
+          }}
+        >
+          {/*All views of Modal*/}
+          {/*Animation can be slide, slide, none*/}
+          <View style={this.styles.modal}>
+            <Text style={this.styles.text}>Modal is open!</Text>
+            <FriendList />
+            <Button
+              title="Click To Close Modal"
+              onPress={() => {
+                this.setState({ isVisible: !this.state.isVisible });
+              }}
+            />
+          </View>
+        </Modal>
+        {/*Button will change state to true and view will re-render*/}
         <Button
-          full
+          title="Click To Open Modal"
+          onPress={() => {
+            this.setState({ isVisible: true });
+          }}
+        />
+        <Button
+          title="submitPayment"
           onPress={() => {
             console.log('결제등록');
           }}
@@ -107,6 +141,16 @@ export default class NewPayment extends React.Component<Props, State> {
       backgroundColor: '#fff',
       alignItems: 'center',
       justifyContent: 'center'
+    },
+    modal: {
+      flex: 1,
+      // alignItems: 'center',
+      backgroundColor: '#00ff00',
+      padding: 100
+    },
+    text: {
+      color: '#3f2949',
+      marginTop: 10
     }
   });
 }

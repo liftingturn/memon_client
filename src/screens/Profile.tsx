@@ -5,12 +5,12 @@ export interface Props {}
 
 export interface State {}
 
-class Screen3 extends React.Component<Props, State> {
+export default class Profile extends React.Component<Props, State> {
   state = { key: 'value' };
   render() {
     return (
       <View style={this.styles.container}>
-        <Text>screen3</Text>
+        <Text>Profile</Text>
       </View>
     );
   }
@@ -23,5 +23,3 @@ class Screen3 extends React.Component<Props, State> {
     }
   });
 }
-
-export default Screen3;
