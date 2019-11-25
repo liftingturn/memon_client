@@ -28,6 +28,8 @@ export interface State {
   chosenDate: Date;
   peopleCnt: number;
   isVisible: boolean;
+  disabled: boolean;
+  modifyButtonText: string;
   // 주소록에서 목록을 가져와서 [이름/번호]
   // 서버로 전송하면 번호 기반으로 가입자만 가려서 리턴 req[이름/전화번호] //res [이름/전화번호/userId]
   // 받은 리턴 목록 스크린에 출력(베이스 리스트 가능하면 페이지 전환없이? 모달이라든가..)
@@ -50,7 +52,9 @@ export default class NewPayment extends React.Component<Props, State> {
     totalPay: '',
     chosenDate: new Date(),
     peopleCnt: 1,
-    isVisible: false
+    isVisible: false,
+    disabled: false,
+    modifyButtonText: '등록'
   };
 
   setDate(newDate: Date): any {
@@ -75,8 +79,26 @@ export default class NewPayment extends React.Component<Props, State> {
       return String(parseInt(this.state.totalPay) / this.state.peopleCnt);
     }
   };
-
+  toModifyMode = () => {
+    console.log('toggle');
+    if (this.state.disabled) {
+      alert('수정을 시작합니다.\n완료 후 저장을 꼭 눌러주세요!');
+    } else {
+      if (this.state.modifyButtonText === '등록') {
+        alert('새 결제를 등록하였습니다.');
+      } else {
+        alert('변경사항을 저장하였습니다.');
+      }
+    }
+    this.setState({
+      ...this.state,
+      disabled: !this.state.disabled,
+      modifyButtonText:
+        this.state.modifyButtonText === '수정' ? '변경사항저장' : '수정'
+    });
+  };
   render() {
+    let { disabled } = this.state;
     return (
       <Container style={this.styles.container}>
         <Header>
@@ -86,7 +108,7 @@ export default class NewPayment extends React.Component<Props, State> {
             </Button>
           </Left>
           <Body>
-            <Text>Header</Text>
+            <Text>해당 결제 정보{disabled.toString()}</Text>
           </Body>
           <Right />
         </Header>
@@ -95,7 +117,7 @@ export default class NewPayment extends React.Component<Props, State> {
           <Form style={{ width: 300 }}>
             <Item fixedLabel>
               <Label>제목</Label>
-              <Input onChange={this.onChangeTitle} />
+              <Input onChange={this.onChangeTitle} disabled={disabled} />
               <Text>{this.state.title}</Text>
             </Item>
 
@@ -110,65 +132,76 @@ export default class NewPayment extends React.Component<Props, State> {
               androidMode="default"
               placeHolderText="날짜를 선택해주세요."
               textStyle={{ color: 'green' }}
-              placeHolderTextStyle={{ color: '#d3d3d3' }}
+              placeHolderTextStyle={{
+                color: '#FFFFFF',
+                backgroundColor: '#339EFF'
+              }}
               onDateChange={this.setDate.bind(this)}
-              disabled={false}
+              disabled={disabled}
             />
             {/* <Text>Date: {this.state.chosenDate.toString().substr(4, 12)}</Text> */}
             <Item fixedLabel>
               <Label>총 결제 금액</Label>
-              <Input onChange={this.onChangeTotalPay} keyboardType="numeric" />
+              <Input
+                onChange={this.onChangeTotalPay}
+                keyboardType="numeric"
+                disabled={disabled}
+              />
             </Item>
             <Item fixedLabel>
               <Label>참여자 선택하기</Label>
-              <Input />
-              <Label>{this.state.peopleCnt} 명</Label>
+              <Modal
+                animationType={'slide'}
+                transparent={false}
+                visible={this.state.isVisible}
+                onRequestClose={() => {
+                  console.log('Modal has been closed.');
+                }}
+              >
+                {/*All views of Modal*/}
+                {/*Animation can be slide, slide, none*/}
+                <View style={this.styles.modal}>
+                  <Text style={this.styles.text}>Modal is open!</Text>
+                  <FriendList />
+                  <Button
+                    onPress={() => {
+                      this.setState({ isVisible: !this.state.isVisible });
+                    }}
+                  >
+                    <Text>확인</Text>
+                  </Button>
+                </View>
+              </Modal>
+              {/*Button will change state to true and view will re-render*/}
+              <Button
+                disabled={disabled}
+                onPress={() => {
+                  this.setState({ isVisible: true });
+                }}
+              >
+                <Text>결제 참여자 등록</Text>
+              </Button>
+              <Label>총 {this.state.peopleCnt} 명</Label>
             </Item>
             <Item fixedLabel>
               <Label>1인당 금액</Label>
-              <Input placeholder={this.calcN()} disabled />
+              <Input placeholder={this.calcN()} disabled={disabled} />
             </Item>
           </Form>
-          <Modal
-            animationType={'slide'}
-            transparent={false}
-            visible={this.state.isVisible}
-            onRequestClose={() => {
-              console.log('Modal has been closed.');
-            }}
-          >
-            {/*All views of Modal*/}
-            {/*Animation can be slide, slide, none*/}
-            <View style={this.styles.modal}>
-              <Text style={this.styles.text}>Modal is open!</Text>
-              <FriendList />
-              <Button
-                onPress={() => {
-                  this.setState({ isVisible: !this.state.isVisible });
-                }}
-              >
-                <Text>확인</Text>
-              </Button>
-            </View>
-          </Modal>
-          {/*Button will change state to true and view will re-render*/}
-          <Button
-            onPress={() => {
-              this.setState({ isVisible: true });
-            }}
-          >
-            <Text>Click To Open Modal</Text>
-          </Button>
-          <PicPicker />
+
+          <PicPicker disabled={disabled} />
         </Content>
         <Footer>
           <FooterTab>
             <Button
               onPress={() => {
-                console.log('결제등록');
+                console.log('돌아가기');
               }}
             >
-              <Text>결제 등록</Text>
+              <Text>돌아가기</Text>
+            </Button>
+            <Button onPress={this.toModifyMode}>
+              <Text>{this.state.modifyButtonText}</Text>
             </Button>
           </FooterTab>
         </Footer>

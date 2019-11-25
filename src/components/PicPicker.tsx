@@ -1,17 +1,21 @@
 import * as React from 'react';
-import { Button, Image, View } from 'react-native';
+import { Button, Image, View, Text } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 
 export interface State {
   image: any;
+  disabled: boolean;
 }
-export interface Props {}
+export interface Props {
+  disabled: boolean;
+}
 
 export default class PicPicker extends React.Component<Props, State> {
   state = {
-    image: null
+    image: null,
+    disabled: false
   };
 
   render() {
@@ -20,19 +24,26 @@ export default class PicPicker extends React.Component<Props, State> {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Button
-          title="Pick an image from camera roll"
+          title="첨부할 사진 선택"
           onPress={this._pickImage}
+          disabled={this.state.disabled}
         />
         {image && (
           <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
         )}
+        <Text>{this.state.disabled}</Text>
       </View>
     );
   }
 
   componentDidMount() {
+    console.log('픽피커 받아온 disable', this.props.disabled);
+    // this.setState({ ...this.state, disabled: this.props.disabled });
     this.getPermissionAsync();
-    console.log('hi');
+  }
+  componentWillReceiveProps() {
+    console.log('픽피커 받아온update disable', this.props.disabled);
+    this.setState({ ...this.state, disabled: !this.props.disabled });
   }
 
   getPermissionAsync = async () => {

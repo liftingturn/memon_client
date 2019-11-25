@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Modal } from 'react-native';
+import { View, Text, StyleSheet, Modal, Image } from 'react-native';
 import {
   Header,
   DatePicker,
@@ -28,6 +28,7 @@ export interface State {
   chosenDate: Date;
   peopleCnt: number;
   isVisible: boolean;
+  image: any;
 }
 //InfoToServer
 //totalPay, peopleCnt, subject, date
@@ -43,7 +44,8 @@ export default class SingleViewPart extends React.Component<Props, State> {
     totalPay: '',
     chosenDate: new Date(),
     peopleCnt: 1,
-    isVisible: false
+    isVisible: false,
+    image: null
   };
 
   setDate(newDate: Date): any {
@@ -70,6 +72,7 @@ export default class SingleViewPart extends React.Component<Props, State> {
   };
 
   render() {
+    let { image } = this.state;
     return (
       <Container style={this.styles.container}>
         <Header>
@@ -139,6 +142,20 @@ export default class SingleViewPart extends React.Component<Props, State> {
                 {parseInt(this.state.totalPay) / this.state.peopleCnt} 원
               </Text>
             </Item>
+            <View
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              {image && (
+                <Image
+                  source={{ uri: image }}
+                  style={{ width: 200, height: 200 }}
+                />
+              )}
+            </View>
           </Form>
 
           <PicPicker />
