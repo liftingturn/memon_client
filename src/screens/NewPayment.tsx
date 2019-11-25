@@ -20,6 +20,7 @@ import {
 
 import FriendList from '../components/FriendList';
 import PicPicker from '../components/PicPicker';
+import CustomDatePicker from '../components/CustomDatePicker';
 export interface Props {}
 
 export interface State {
@@ -60,6 +61,7 @@ export default class NewPayment extends React.Component<Props, State> {
   setDate(newDate: Date): any {
     this.setState({ ...this.state, chosenDate: newDate });
   }
+
   onChangeTotalPay = e => {
     console.log('onchange do', e.nativeEvent.text);
     this.setState({ ...this.state, totalPay: e.nativeEvent.text });
@@ -108,7 +110,7 @@ export default class NewPayment extends React.Component<Props, State> {
             </Button>
           </Left>
           <Body>
-            <Text>해당 결제 정보{disabled.toString()}</Text>
+            <Text>해당 결제 정보</Text>
           </Body>
           <Right />
         </Header>
@@ -120,24 +122,9 @@ export default class NewPayment extends React.Component<Props, State> {
               <Input onChange={this.onChangeTitle} disabled={disabled} />
               <Text>{this.state.title}</Text>
             </Item>
-
-            <DatePicker
-              defaultDate={new Date()}
-              minimumDate={new Date(2018, 1, 1)}
-              // maximumDate={new Date()}
-              locale="ko"
-              timeZoneOffsetInMinutes={undefined}
-              modalTransparent={false}
-              animationType="fade"
-              androidMode="default"
-              placeHolderText="날짜를 선택해주세요."
-              textStyle={{ color: 'green' }}
-              placeHolderTextStyle={{
-                color: '#FFFFFF',
-                backgroundColor: '#339EFF'
-              }}
-              onDateChange={this.setDate.bind(this)}
+            <CustomDatePicker
               disabled={disabled}
+              setDate={this.setDate.bind(this)}
             />
             {/* <Text>Date: {this.state.chosenDate.toString().substr(4, 12)}</Text> */}
             <Item fixedLabel>
@@ -165,7 +152,10 @@ export default class NewPayment extends React.Component<Props, State> {
                   <FriendList />
                   <Button
                     onPress={() => {
-                      this.setState({ isVisible: !this.state.isVisible });
+                      this.setState({
+                        ...this.state,
+                        isVisible: !this.state.isVisible
+                      });
                     }}
                   >
                     <Text>확인</Text>
@@ -176,7 +166,7 @@ export default class NewPayment extends React.Component<Props, State> {
               <Button
                 disabled={disabled}
                 onPress={() => {
-                  this.setState({ isVisible: true });
+                  this.setState({ ...this.state, isVisible: true });
                 }}
               >
                 <Text>결제 참여자 등록</Text>
