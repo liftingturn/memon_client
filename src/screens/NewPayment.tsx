@@ -20,10 +20,12 @@ import {
   Row
 } from 'native-base';
 
-import FriendList from '../components/FriendList';
-import PicPicker from '../components/PicPicker';
-import CustomDatePicker from '../components/CustomDatePicker';
-import InputItem from '../components/InputItem';
+import {
+  PicPicker,
+  CustomDatePicker,
+  InputItem,
+  FriendListModal
+} from '../components';
 
 export interface Props {}
 
@@ -35,6 +37,7 @@ export interface State {
   printModal: boolean;
   disabled: boolean;
   modifyButtonText: string;
+  chosenParty?: object[];
   // 주소록에서 목록을 가져와서 [이름/번호]
   // 서버로 전송하면 번호 기반으로 가입자만 가려서 리턴 req[이름/전화번호] //res [이름/전화번호/userId]
   // 받은 리턴 목록 스크린에 출력(베이스 리스트 가능하면 페이지 전환없이? 모달이라든가..)
@@ -59,7 +62,8 @@ export default class NewPayment extends React.Component<Props, State> {
     peopleCnt: 1,
     printModal: false,
     disabled: false,
-    modifyButtonText: '등록'
+    modifyButtonText: '등록',
+    chosenParty: []
   };
 
   setDate(newDate: Date): any {
@@ -74,9 +78,11 @@ export default class NewPayment extends React.Component<Props, State> {
   onChangeTitle = e => {
     this.setState({ ...this.state, title: e.nativeEvent.text });
   };
+
   toggleDrawer = () => {
     this.props.navigation.toggleDrawer();
   };
+
   calcN = () => {
     console.log('state pay', this.state.totalPay);
     if (!this.state.totalPay) {
@@ -84,6 +90,14 @@ export default class NewPayment extends React.Component<Props, State> {
     } else {
       return String(parseInt(this.state.totalPay) / this.state.peopleCnt);
     }
+  };
+
+  handleChosenParty = chosen => {
+    this.setState({
+      ...this.state,
+      chosenParty: chosen,
+      peopleCnt: chosen.length
+    });
   };
   toModifyMode = () => {
     console.log('toggle');
@@ -104,8 +118,6 @@ export default class NewPayment extends React.Component<Props, State> {
     });
   };
 
-  handleParty = () => {};
-
   modalSwitch = () => {
     this.setState({
       ...this.state,
@@ -114,6 +126,7 @@ export default class NewPayment extends React.Component<Props, State> {
   };
 
   render() {
+    console.log('disabled', this.state.disabled);
     let { disabled } = this.state;
     return (
       <Container style={this.styles.container}>
@@ -155,61 +168,44 @@ export default class NewPayment extends React.Component<Props, State> {
                     onChange={this.onChangeTotalPay}
                     keyT="numeric"
                   />
-                  {/* <Item fixedLabel>
-                    <Label>총 결제 금액</Label>
-                    <Input
-                      onChange={this.onChangeTotalPay}
-                      keyboardType="numeric"
-                      disabled={disabled}
-                    /> */}
-                  {/* </Item> */}
                   <Item fixedLabel>
                     <Label>참여한 사람</Label>
-                    <Modal
-                      animationType={'slide'}
-                      transparent={true}
-                      visible={this.state.printModal}
-                      onRequestClose={() => {
-                        console.log('Modal has been closed.');
-                      }}
-                    >
-                      {/*Animation can be slide, slide, none*/}
-                      <View style={this.styles.modal}>
-                        <FriendList />
-                        <Button onPress={this.modalSwitch}>
-                          <Text>확인</Text>
-                        </Button>
-                      </View>
-                    </Modal>
-                    {/*Button will change state to true and view will re-render*/}
-                    <Button
-                      light
-                      disabled={disabled}
-                      onPress={this.modalSwitch}
-                    >
-                      <Text>선택하기</Text>
-                    </Button>
+                    <FriendListModal
+                      printModal={this.state.printModal}
+                      modalSwitch={this.modalSwitch}
+                      handleChosen={this.handleChosenParty}
+                      chosen={this.state.chosenParty}
+                    />
+                    <Label> 총 {this.state.peopleCnt + 1} 명</Label>
                     <Right>
-                      <Label>총 {this.state.peopleCnt} 명</Label>
+                      <Button
+                        light
+                        disabled={disabled}
+                        onPress={this.modalSwitch}
+                      >
+                        <Text>선택하기</Text>
+                      </Button>
                     </Right>
                   </Item>
                   <Item fixedLabel>
                     <Label>1인당 금액</Label>
-                    <Input placeholder={this.calcN()} disabled={disabled} />
+                    <Input placeholder={`${this.calcN()} 원`} disabled={true} />
                   </Item>
                 </Form>
               </View>
             </Content>
           </Row>
-          <Row size={1}>
+          <Row size={2}>
             <Content>
-              <PicPicker disabled={disabled} />
+              <View style={{ justifyContent: 'flex-start' }}>
+                <PicPicker disabled={disabled} />
+              </View>
             </Content>
           </Row>
         </Grid>
 
         <Footer>
-          <FooterTab>
+          <FooterTab style={{ backgroundColor: '#FFF' }}>
             <Button
               onPress={() => {
                 console.log('돌아가기');
