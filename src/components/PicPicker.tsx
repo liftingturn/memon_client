@@ -6,7 +6,6 @@ import * as Permissions from 'expo-permissions';
 
 export interface State {
   image: any;
-  disabled: boolean;
 }
 export interface Props {
   disabled: boolean;
@@ -14,8 +13,7 @@ export interface Props {
 
 export default class PicPicker extends React.Component<Props, State> {
   state = {
-    image: null,
-    disabled: false
+    image: null
   };
 
   render() {
@@ -26,24 +24,18 @@ export default class PicPicker extends React.Component<Props, State> {
         <Button
           title="첨부할 사진 선택"
           onPress={this._pickImage}
-          disabled={this.state.disabled}
+          disabled={this.props.disabled}
         />
         {image && (
           <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
         )}
-        <Text>{this.state.disabled}</Text>
+        <Text>{this.props.disabled}</Text>
       </View>
     );
   }
 
   componentDidMount() {
-    console.log('픽피커 받아온 disable', this.props.disabled);
-    // this.setState({ ...this.state, disabled: this.props.disabled });
     this.getPermissionAsync();
-  }
-  componentWillReceiveProps() {
-    console.log('픽피커 받아온update disable', this.props.disabled);
-    this.setState({ ...this.state, disabled: !this.props.disabled });
   }
 
   getPermissionAsync = async () => {
