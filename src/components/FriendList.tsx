@@ -39,12 +39,15 @@ export default class FriendList extends Component {
       if (data.length > 0) {
         let newList = [];
         for (let i = 1; i < data.length; i++) {
-          let contact: Contact = {
-            name: data[i].name,
-            phone: data[i].phoneNumbers[0].number,
-            clicked: false
-          };
-          newList.push(contact);
+          console.log('data[i].name', data[i].name);
+          if (data[i].phoneNumbers) {
+            let contact: Contact = {
+              name: data[i].name,
+              phone: data[i].phoneNumbers[0].number,
+              clicked: false
+            };
+            newList.push(contact);
+          }
         }
         this.setState({ friendList: newList });
         // console.log(data[1].name, data[1].phoneNumbers[0].number); //0번은 제외하고 array map 해야함. 0은 번호정보없는 자기자신
