@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, StyleSheet, Modal } from 'react-native';
 import {
   Header,
-  DatePicker,
   Form,
   Label,
   Input,
@@ -15,12 +14,17 @@ import {
   Button,
   Content,
   Icon,
-  Body
+  Body,
+  Grid,
+  Col,
+  Row
 } from 'native-base';
 
 import FriendList from '../components/FriendList';
 import PicPicker from '../components/PicPicker';
 import CustomDatePicker from '../components/CustomDatePicker';
+import InputItem from '../components/InputItem';
+
 export interface Props {}
 
 export interface State {
@@ -28,7 +32,7 @@ export interface State {
   totalPay: string;
   chosenDate: Date;
   peopleCnt: number;
-  isVisible: boolean;
+  printModal: boolean;
   disabled: boolean;
   modifyButtonText: string;
   // 주소록에서 목록을 가져와서 [이름/번호]
@@ -53,7 +57,7 @@ export default class NewPayment extends React.Component<Props, State> {
     totalPay: '',
     chosenDate: new Date(),
     peopleCnt: 1,
-    isVisible: false,
+    printModal: false,
     disabled: false,
     modifyButtonText: '등록'
   };
@@ -99,6 +103,16 @@ export default class NewPayment extends React.Component<Props, State> {
         this.state.modifyButtonText === '수정' ? '변경사항저장' : '수정'
     });
   };
+
+  handleParty = () => {};
+
+  modalSwitch = () => {
+    this.setState({
+      ...this.state,
+      printModal: !this.state.printModal
+    });
+  };
+
   render() {
     let { disabled } = this.state;
     return (
@@ -110,77 +124,90 @@ export default class NewPayment extends React.Component<Props, State> {
             </Button>
           </Left>
           <Body>
-            <Text>해당 결제 정보</Text>
+            <Text style={{ alignSelf: 'auto' }}>해당 결제 정보</Text>
           </Body>
-          <Right />
         </Header>
-        <Content>
-          <Text>새 결제 생성</Text>
-          <Form style={{ width: 300 }}>
-            <Item fixedLabel>
-              <Label>제목</Label>
-              <Input onChange={this.onChangeTitle} disabled={disabled} />
-              <Text>{this.state.title}</Text>
-            </Item>
-            <CustomDatePicker
-              disabled={disabled}
-              setDate={this.setDate.bind(this)}
-            />
-            {/* <Text>Date: {this.state.chosenDate.toString().substr(4, 12)}</Text> */}
-            <Item fixedLabel>
-              <Label>총 결제 금액</Label>
-              <Input
-                onChange={this.onChangeTotalPay}
-                keyboardType="numeric"
-                disabled={disabled}
-              />
-            </Item>
-            <Item fixedLabel>
-              <Label>참여자 선택하기</Label>
-              <Modal
-                animationType={'slide'}
-                transparent={false}
-                visible={this.state.isVisible}
-                onRequestClose={() => {
-                  console.log('Modal has been closed.');
-                }}
-              >
-                {/*All views of Modal*/}
-                {/*Animation can be slide, slide, none*/}
-                <View style={this.styles.modal}>
-                  <Text style={this.styles.text}>Modal is open!</Text>
-                  <FriendList />
-                  <Button
-                    onPress={() => {
-                      this.setState({
-                        ...this.state,
-                        isVisible: !this.state.isVisible
-                      });
-                    }}
-                  >
-                    <Text>확인</Text>
-                  </Button>
-                </View>
-              </Modal>
-              {/*Button will change state to true and view will re-render*/}
-              <Button
-                disabled={disabled}
-                onPress={() => {
-                  this.setState({ ...this.state, isVisible: true });
-                }}
-              >
-                <Text>결제 참여자 등록</Text>
-              </Button>
-              <Label>총 {this.state.peopleCnt} 명</Label>
-            </Item>
-            <Item fixedLabel>
-              <Label>1인당 금액</Label>
-              <Input placeholder={this.calcN()} disabled={disabled} />
-            </Item>
-          </Form>
 
-          <PicPicker disabled={disabled} />
-        </Content>
+        <Grid style={{ alignItems: 'center' }}>
+          <Row size={3}>
+            <Content
+              contentContainerStyle={{ flex: 1, justifyContent: 'center' }}
+            >
+              <View style={{ alignItems: 'center' }}>
+                <Form style={{ width: 300 }}>
+                  <InputItem
+                    label="제목"
+                    disabled={disabled}
+                    onChange={this.onChangeTitle}
+                  />
+
+                  <Item fixedLabel>
+                    <Label>날짜</Label>
+                    <CustomDatePicker
+                      disabled={disabled}
+                      setDate={this.setDate.bind(this)}
+                    />
+                  </Item>
+                  {/* <Text>Date: {this.state.chosenDate.toString().substr(4, 12)}</Text> */}
+                  <InputItem
+                    label="총 금액"
+                    disabled={disabled}
+                    onChange={this.onChangeTotalPay}
+                    keyT="numeric"
+                  />
+                  {/* <Item fixedLabel>
+                    <Label>총 결제 금액</Label>
+                    <Input
+                      onChange={this.onChangeTotalPay}
+                      keyboardType="numeric"
+                      disabled={disabled}
+                    /> */}
+                  {/* </Item> */}
+                  <Item fixedLabel>
+                    <Label>참여한 사람</Label>
+                    <Modal
+                      animationType={'slide'}
+                      transparent={true}
+                      visible={this.state.printModal}
+                      onRequestClose={() => {
+                        console.log('Modal has been closed.');
+                      }}
+                    >
+                      {/*Animation can be slide, slide, none*/}
+                      <View style={this.styles.modal}>
+                        <FriendList />
+                        <Button onPress={this.modalSwitch}>
+                          <Text>확인</Text>
+                        </Button>
+                      </View>
+                    </Modal>
+                    {/*Button will change state to true and view will re-render*/}
+                    <Button
+                      light
+                      disabled={disabled}
+                      onPress={this.modalSwitch}
+                    >
+                      <Text>선택하기</Text>
+                    </Button>
+                    <Right>
+                      <Label>총 {this.state.peopleCnt} 명</Label>
+                    </Right>
+                  </Item>
+                  <Item fixedLabel>
+                    <Label>1인당 금액</Label>
+                    <Input placeholder={this.calcN()} disabled={disabled} />
+                  </Item>
+                </Form>
+              </View>
+            </Content>
+          </Row>
+          <Row size={1}>
+            <Content>
+              <PicPicker disabled={disabled} />
+            </Content>
+          </Row>
+        </Grid>
+
         <Footer>
           <FooterTab>
             <Button
@@ -203,13 +230,13 @@ export default class NewPayment extends React.Component<Props, State> {
       marginTop: 24,
       flex: 1,
       backgroundColor: '#fff'
-      // alignItems: 'center',
+      // alignItems: 'center'
       // justifyContent: 'center'
     },
     modal: {
       flex: 1,
+      backgroundColor: 'rgba(52, 52, 52, 0.8)',
       // alignItems: 'center',
-      backgroundColor: '#00ff00',
       padding: 50
     },
     text: {
