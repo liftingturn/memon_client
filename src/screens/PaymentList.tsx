@@ -52,9 +52,10 @@ export default class PaymentList extends React.Component<Props, State> {
   }
   styles = StyleSheet.create({
     container: {
+      marginTop: 24,
       flex: 1,
       backgroundColor: '#fff',
-      alignItems: 'center',
+      // alignItems: 'center',
       justifyContent: 'center'
     }
   });
