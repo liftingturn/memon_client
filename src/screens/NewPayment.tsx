@@ -88,7 +88,7 @@ export default class NewPayment extends React.Component<Props, State> {
     if (!this.state.totalPay) {
       return 'total 금액 입력해주세요!';
     } else {
-      return String(parseInt(this.state.totalPay) / this.state.peopleCnt);
+      return String(parseInt(this.state.totalPay) / (this.state.peopleCnt + 1));
     }
   };
 
@@ -176,7 +176,7 @@ export default class NewPayment extends React.Component<Props, State> {
                       handleChosen={this.handleChosenParty}
                       chosen={this.state.chosenParty}
                     />
-                    <Label> 총 {this.state.peopleCnt + 1} 명</Label>
+                    <Label> 총 {this.state.peopleCnt} 명</Label>
                     <Right>
                       <Button
                         light
