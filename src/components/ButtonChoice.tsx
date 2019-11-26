@@ -3,17 +3,18 @@ import { Text } from 'react-native';
 import { Button } from 'native-base';
 
 interface Props {
-  clicked: string;
-  unClicked: string;
-  handleEvent: Function;
+  clickedLabel: string;
+  unClickedLabel: string;
+  handleChoose: Function;
   arg: any;
+  clicked: boolean;
 }
 
 export default class ButtonChoice extends React.Component<Props> {
-  state = { clicked: false };
+  state = { clicked: this.props.clicked };
 
-  handleClick = () => {
-    this.props.handleEvent(this.props.arg);
+  handlePress = () => {
+    this.props.handleChoose(this.props.arg);
     this.setState({ clicked: !this.state.clicked });
   };
 
@@ -24,17 +25,17 @@ export default class ButtonChoice extends React.Component<Props> {
       <Button
         warning
         style={{ marginRight: 15, padding: 5 }}
-        onPress={this.handleClick}
+        onPress={this.handlePress}
       >
-        <Text>{this.props.clicked}</Text>
+        <Text>{this.props.clickedLabel}</Text>
       </Button>
     ) : (
       <Button
         light
         style={{ marginRight: 15, padding: 5 }}
-        onPress={this.handleClick}
+        onPress={this.handlePress}
       >
-        <Text>{this.props.unClicked}</Text>
+        <Text>{this.props.unClickedLabel}</Text>
       </Button>
     );
   }

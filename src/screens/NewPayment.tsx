@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, StyleSheet, Modal } from 'react-native';
 import {
   Header,
-  DatePicker,
   Form,
   Label,
   Input,
@@ -15,12 +14,19 @@ import {
   Button,
   Content,
   Icon,
-  Body
+  Body,
+  Grid,
+  Col,
+  Row
 } from 'native-base';
 
-import FriendList from '../components/FriendList';
-import PicPicker from '../components/PicPicker';
-import CustomDatePicker from '../components/CustomDatePicker';
+import {
+  PicPicker,
+  CustomDatePicker,
+  InputItem,
+  FriendListModal
+} from '../components';
+
 export interface Props {}
 
 export interface State {
@@ -28,9 +34,10 @@ export interface State {
   totalPay: string;
   chosenDate: Date;
   peopleCnt: number;
-  isVisible: boolean;
+  printModal: boolean;
   disabled: boolean;
   modifyButtonText: string;
+  chosenParty?: object[];
   // 주소록에서 목록을 가져와서 [이름/번호]
   // 서버로 전송하면 번호 기반으로 가입자만 가려서 리턴 req[이름/전화번호] //res [이름/전화번호/userId]
   // 받은 리턴 목록 스크린에 출력(베이스 리스트 가능하면 페이지 전환없이? 모달이라든가..)
@@ -53,9 +60,10 @@ export default class NewPayment extends React.Component<Props, State> {
     totalPay: '',
     chosenDate: new Date(),
     peopleCnt: 1,
-    isVisible: false,
+    printModal: false,
     disabled: false,
-    modifyButtonText: '등록'
+    modifyButtonText: '등록',
+    chosenParty: []
   };
 
   setDate(newDate: Date): any {
@@ -70,16 +78,26 @@ export default class NewPayment extends React.Component<Props, State> {
   onChangeTitle = e => {
     this.setState({ ...this.state, title: e.nativeEvent.text });
   };
+
   toggleDrawer = () => {
     this.props.navigation.toggleDrawer();
   };
+
   calcN = () => {
     console.log('state pay', this.state.totalPay);
     if (!this.state.totalPay) {
       return 'total 금액 입력해주세요!';
     } else {
-      return String(parseInt(this.state.totalPay) / this.state.peopleCnt);
+      return String(parseInt(this.state.totalPay) / (this.state.peopleCnt + 1));
     }
+  };
+
+  handleChosenParty = chosen => {
+    this.setState({
+      ...this.state,
+      chosenParty: chosen,
+      peopleCnt: chosen.length
+    });
   };
   toModifyMode = () => {
     console.log('toggle');
@@ -99,7 +117,16 @@ export default class NewPayment extends React.Component<Props, State> {
         this.state.modifyButtonText === '수정' ? '변경사항저장' : '수정'
     });
   };
+
+  modalSwitch = () => {
+    this.setState({
+      ...this.state,
+      printModal: !this.state.printModal
+    });
+  };
+
   render() {
+    console.log('disabled', this.state.disabled);
     let { disabled } = this.state;
     return (
       <Container style={this.styles.container}>
@@ -110,79 +137,75 @@ export default class NewPayment extends React.Component<Props, State> {
             </Button>
           </Left>
           <Body>
-            <Text>해당 결제 정보</Text>
+            <Text style={{ alignSelf: 'auto' }}>해당 결제 정보</Text>
           </Body>
-          <Right />
         </Header>
-        <Content>
-          <Text>새 결제 생성</Text>
-          <Form style={{ width: 300 }}>
-            <Item fixedLabel>
-              <Label>제목</Label>
-              <Input onChange={this.onChangeTitle} disabled={disabled} />
-              <Text>{this.state.title}</Text>
-            </Item>
-            <CustomDatePicker
-              disabled={disabled}
-              setDate={this.setDate.bind(this)}
-            />
-            {/* <Text>Date: {this.state.chosenDate.toString().substr(4, 12)}</Text> */}
-            <Item fixedLabel>
-              <Label>총 결제 금액</Label>
-              <Input
-                onChange={this.onChangeTotalPay}
-                keyboardType="numeric"
-                disabled={disabled}
-              />
-            </Item>
-            <Item fixedLabel>
-              <Label>참여자 선택하기</Label>
-              <Modal
-                animationType={'slide'}
-                transparent={false}
-                visible={this.state.isVisible}
-                onRequestClose={() => {
-                  console.log('Modal has been closed.');
-                }}
-              >
-                {/*All views of Modal*/}
-                {/*Animation can be slide, slide, none*/}
-                <View style={this.styles.modal}>
-                  <Text style={this.styles.text}>Modal is open!</Text>
-                  <FriendList />
-                  <Button
-                    onPress={() => {
-                      this.setState({
-                        ...this.state,
-                        isVisible: !this.state.isVisible
-                      });
-                    }}
-                  >
-                    <Text>확인</Text>
-                  </Button>
-                </View>
-              </Modal>
-              {/*Button will change state to true and view will re-render*/}
-              <Button
-                disabled={disabled}
-                onPress={() => {
-                  this.setState({ ...this.state, isVisible: true });
-                }}
-              >
-                <Text>결제 참여자 등록</Text>
-              </Button>
-              <Label>총 {this.state.peopleCnt} 명</Label>
-            </Item>
-            <Item fixedLabel>
-              <Label>1인당 금액</Label>
-              <Input placeholder={this.calcN()} disabled={disabled} />
-            </Item>
-          </Form>
 
-          <PicPicker disabled={disabled} />
-        </Content>
+        <Grid style={{ alignItems: 'center' }}>
+          <Row size={3}>
+            <Content
+              contentContainerStyle={{ flex: 1, justifyContent: 'center' }}
+            >
+              <View style={{ alignItems: 'center' }}>
+                <Form style={{ width: 300 }}>
+                  <InputItem
+                    label="제목"
+                    disabled={disabled}
+                    onChange={this.onChangeTitle}
+                  />
+
+                  <Item fixedLabel>
+                    <Label>날짜</Label>
+                    <CustomDatePicker
+                      disabled={disabled}
+                      setDate={this.setDate.bind(this)}
+                    />
+                  </Item>
+                  {/* <Text>Date: {this.state.chosenDate.toString().substr(4, 12)}</Text> */}
+                  <InputItem
+                    label="총 금액"
+                    disabled={disabled}
+                    onChange={this.onChangeTotalPay}
+                    keyT="numeric"
+                  />
+                  <Item fixedLabel>
+                    <Label>참여한 사람</Label>
+                    <FriendListModal
+                      printModal={this.state.printModal}
+                      modalSwitch={this.modalSwitch}
+                      handleChosen={this.handleChosenParty}
+                      chosen={this.state.chosenParty}
+                    />
+                    <Label> 총 {this.state.peopleCnt} 명</Label>
+                    <Right>
+                      <Button
+                        light
+                        disabled={disabled}
+                        onPress={this.modalSwitch}
+                      >
+                        <Text>선택하기</Text>
+                      </Button>
+                    </Right>
+                  </Item>
+                  <Item fixedLabel>
+                    <Label>1인당 금액</Label>
+                    <Input placeholder={`${this.calcN()} 원`} disabled={true} />
+                  </Item>
+                </Form>
+              </View>
+            </Content>
+          </Row>
+          <Row size={2}>
+            <Content>
+              <View style={{ justifyContent: 'flex-start' }}>
+                <PicPicker disabled={disabled} />
+              </View>
+            </Content>
+          </Row>
+        </Grid>
+
         <Footer>
-          <FooterTab>
+          <FooterTab style={{ backgroundColor: '#FFF' }}>
             <Button
               onPress={() => {
                 console.log('돌아가기');
@@ -203,13 +226,13 @@ export default class NewPayment extends React.Component<Props, State> {
       marginTop: 24,
       flex: 1,
       backgroundColor: '#fff'
-      // alignItems: 'center',
+      // alignItems: 'center'
       // justifyContent: 'center'
     },
     modal: {
       flex: 1,
+      backgroundColor: 'rgba(52, 52, 52, 0.8)',
       // alignItems: 'center',
-      backgroundColor: '#00ff00',
       padding: 50
     },
     text: {

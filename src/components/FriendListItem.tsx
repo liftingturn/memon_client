@@ -6,7 +6,8 @@ import ButtonChoice from './ButtonChoice';
 interface Props {
   name: string;
   phone: string;
-  handleEvent: Function;
+  handleChoose: Function;
+  clicked: boolean;
 }
 class FriendListItem extends React.Component<Props> {
   ///테스트용 랜덤 아바타
@@ -21,11 +22,6 @@ class FriendListItem extends React.Component<Props> {
       marginVertical: 3
     }
   });
-
-  testChosen = [];
-  handleEvent = phone => {
-    this.props.handleEvent(phone);
-  };
 
   render() {
     return (
@@ -49,10 +45,11 @@ class FriendListItem extends React.Component<Props> {
         </Body>
         <Right>
           <ButtonChoice
-            clicked="수금"
-            unClicked="선택"
-            handleEvent={this.handleEvent.bind(this)}
+            clickedLabel="수금"
+            unClickedLabel="선택"
+            handleChoose={this.props.handleChoose}
             arg={this.props.phone}
+            clicked={this.props.clicked}
           />
         </Right>
       </ListItem>
