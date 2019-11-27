@@ -47,7 +47,7 @@ export default class NewPayment extends React.Component<Props> {
     printModal: false,
     disabled: this.props.fromListView === undefined ? false : true,
     // --->> disabled: this.props.fromListView ? true : false ???
-    modifyButtonText: this.props.fromListView === null ? '등록' : '수정',
+    modifyButtonText: this.props.fromListView === undefined ? '등록' : '수정',
     chosenParty: [],
     email: '',
     pricebookId: ''
