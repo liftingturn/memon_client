@@ -26,6 +26,7 @@ import {
   InputItem,
   FriendListModal
 } from '../components';
+import config from '../../config';
 
 export interface Props {}
 
@@ -38,6 +39,8 @@ export interface State {
   disabled: boolean;
   modifyButtonText: string;
   chosenParty?: object[];
+  email: string;
+  pricebookId: string;
   // 주소록에서 목록을 가져와서 [이름/번호]
   // 서버로 전송하면 번호 기반으로 가입자만 가려서 리턴 req[이름/전화번호] //res [이름/전화번호/userId]
   // 받은 리턴 목록 스크린에 출력(베이스 리스트 가능하면 페이지 전환없이? 모달이라든가..)
@@ -53,6 +56,7 @@ export interface State {
 //totalPay, peopleCnt, subject, date
 export interface Props {
   navigation: any;
+  fromListView: boolean;
 }
 export default class NewPayment extends React.Component<Props, State> {
   state = {
@@ -61,9 +65,11 @@ export default class NewPayment extends React.Component<Props, State> {
     chosenDate: new Date(),
     peopleCnt: 1,
     printModal: false,
-    disabled: false,
-    modifyButtonText: '등록',
-    chosenParty: []
+    disabled: this.props.fromListView === null ? false : true,
+    modifyButtonText: this.props.fromListView === null ? '등록' : '수정',
+    chosenParty: [],
+    email: '',
+    pricebookId: ''
   };
 
   setDate(newDate: Date): any {
@@ -125,6 +131,56 @@ export default class NewPayment extends React.Component<Props, State> {
     });
   };
 
+  doFetch = async () => {
+    let emailObj = {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        boss: this.props.navigation.state.params.fromListView,
+        email: this.props.navigation.state.params.email,
+        pricebookId: this.props.navigation.state.params.pricebookId
+      })
+    };
+    let response = await fetch(config.serverAddress + '/pricebook', emailObj);
+
+    let responseJson = await response.json();
+    console.log(
+      responseJson.pricebook.title,
+      responseJson.pricebook.partyDate,
+      responseJson.pricebook.totalPrice
+    );
+    await this.setState({
+      ...this.state,
+      title: responseJson.pricebook.title,
+      totalPay: responseJson.pricebook.totalPrice,
+      peopleCnt: responseJson.pricebook.count,
+      chosenDate: responseJson.pricebook.partyDate
+    });
+  };
+  componentDidMount = async () => {
+    const { navigation } = this.props;
+    console.log('this.props.navigation', navigation.state.params);
+
+    if (navigation.state.params === undefined) {
+      console.log('새 글 등록');
+    } else {
+      console.log('=========글 보기 페이지');
+      const { fromListView, email, pricebookId } = navigation.state.params;
+      if (fromListView) {
+        await this.setState({
+          ...this.state,
+          disabled: true,
+          email: email,
+          pricebookId: pricebookId
+        });
+        await this.doFetch();
+      }
+    }
+  };
+
   render() {
     console.log('disabled', this.state.disabled);
     let { disabled } = this.state;
@@ -149,21 +205,24 @@ export default class NewPayment extends React.Component<Props, State> {
               <View style={{ alignItems: 'center' }}>
                 <Form style={{ width: 300 }}>
                   <InputItem
-                    label="제목"
+                    label={'제목:' + this.state.title}
                     disabled={disabled}
                     onChange={this.onChangeTitle}
                   />
 
                   <Item fixedLabel>
                     <Label>날짜</Label>
+                    <Text>
+                      Date: {this.state.chosenDate.toString().substr(0, 10)}
+                    </Text>
                     <CustomDatePicker
                       disabled={disabled}
                       setDate={this.setDate.bind(this)}
                     />
                   </Item>
-                  {/* <Text>Date: {this.state.chosenDate.toString().substr(4, 12)}</Text> */}
+
                   <InputItem
-                    label="총 금액"
+                    label={'총 금액 : ' + this.state.totalPay}
                     disabled={disabled}
                     onChange={this.onChangeTotalPay}
                     keyT="numeric"
