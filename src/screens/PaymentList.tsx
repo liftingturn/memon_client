@@ -11,18 +11,69 @@ import {
   Left,
   Right,
   Body,
-  Icon
+  Icon,
+  List,
+  ListItem
 } from 'native-base';
+import config from '../../config';
+import firebase from 'firebase';
 export interface Props {
   navigation: any;
 }
-export interface State {}
+export interface State {
+  email: string;
+  paymentList: Object[];
+}
 
 export default class PaymentList extends React.Component<Props, State> {
-  state = { key: 'value' };
+  state = {
+    email: '',
+    paymentList: []
+  };
   toggleDrawer = () => {
     this.props.navigation.toggleDrawer();
   };
+  pressEvent = (isBoss, pricebookId) => {
+    console.log(this, 'click!');
+    if (isBoss) {
+      console.log('go boss!');
+      this.props.navigation.navigate('NewPayment', {
+        fromListView: true,
+        email: this.state.email,
+        pricebookId: pricebookId
+      });
+    } else {
+      console.log('go pay');
+      this.props.navigation.navigate('참여자개별결제페이지', {
+        boss: false,
+        email: this.state.email,
+        pricebookId: pricebookId
+      });
+    }
+  };
+  componentDidMount() {
+    this.getOwnPayments();
+  }
+
+  async getOwnPayments() {
+    const user = await firebase.auth().currentUser;
+    console.log('==============user:', user.email);
+    let emailObj = {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: user.email
+      })
+    };
+    let response = await fetch(config.serverAddress + '/payment/all', emailObj);
+    console.log('response', response);
+    let responseJson = await response.json();
+    this.setState({ email: user.email, paymentList: responseJson });
+  }
+
   render() {
     return (
       <Container style={this.styles.container}>
@@ -33,20 +84,51 @@ export default class PaymentList extends React.Component<Props, State> {
             </Button>
           </Left>
           <Body>
-            <Text>Header</Text>
+            <Text>결제목록 리스트</Text>
           </Body>
           <Right />
         </Header>
         <Content>
-          <Text>This is Content Profile page</Text>
+          <Text>보라색:수금필요 노란색:입금필요</Text>
+          <List>
+            {this.state.paymentList.map(payment => {
+              return (
+                //결제 종류별로 색 구분할거임. 그리고 key나 기타로 바로 개별view들어갈 때 해당 키 날릴거.
+                <ListItem
+                  style={
+                    payment.boss ? this.styles.bossItem : this.styles.partItem
+                  }
+                  key={payment.pricebookId}
+                >
+                  <Left>
+                    <Text>{payment.title}</Text>
+                    <Text>{payment.price}</Text>
+                  </Left>
+                  <Right>
+                    <Button
+                      rounded
+                      primary
+                      //danger
+                      style={this.styles.button}
+                      onPress={() => {
+                        this.pressEvent(payment.boss, payment.pricebookId);
+                      }}
+                    >
+                      <Icon name="arrow-forward" />
+                    </Button>
+                  </Right>
+                </ListItem>
+              );
+            })}
+          </List>
         </Content>
-        <Footer>
+        {/* <Footer>
           <FooterTab>
             <Button full>
               <Text>Footer</Text>
             </Button>
           </FooterTab>
-        </Footer>
+        </Footer> */}
       </Container>
     );
   }
@@ -57,6 +139,12 @@ export default class PaymentList extends React.Component<Props, State> {
       backgroundColor: '#fff',
       // alignItems: 'center',
       justifyContent: 'center'
-    }
+    },
+    button: {
+      width: 100,
+      justifyContent: 'center'
+    },
+    bossItem: { backgroundColor: '#9c88ff' },
+    partItem: { backgroundColor: '#fbc531' }
   });
 }

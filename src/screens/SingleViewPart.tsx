@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, Modal, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, BackHandler } from 'react-native';
 import {
   Header,
-  DatePicker,
   Form,
   Label,
   Input,
@@ -15,11 +14,12 @@ import {
   Button,
   Content,
   Icon,
-  Body
+  Body,
+  List
 } from 'native-base';
 
-import FriendList from '../components/FriendList';
 import PicPicker from '../components/PicPicker';
+import config from '../../config';
 export interface Props {}
 
 export interface State {
@@ -34,6 +34,9 @@ export interface State {
 //totalPay, peopleCnt, subject, date
 export interface Props {
   navigation: any;
+  boss: boolean;
+  email: string;
+  pricebookId: string;
 }
 
 //prop이나 request를 통해서 해당 거래 정보 접근해야 하고,
@@ -70,8 +73,35 @@ export default class SingleViewPart extends React.Component<Props, State> {
       return String(parseInt(this.state.totalPay) / this.state.peopleCnt);
     }
   };
+  // handleBackPress = () => {};
+  async componentDidMount() {
+    // BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+    let emailObj = {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        boss: this.props.navigation.state.params.boss,
+        email: this.props.navigation.state.params.email,
+        pricebookId: this.props.navigation.state.params.pricebookId
+      })
+    };
+    let response = await fetch(config.serverAddress + '/pricebook', emailObj);
 
+    let responseJson = await response.json();
+    console.log(responseJson);
+    this.setState({
+      ...this.state,
+      title: responseJson.pricebook.title,
+      totalPay: responseJson.pricebook.totalPrice,
+      peopleCnt: responseJson.pricebook.count,
+      chosenDate: responseJson.pricebook.partyDate
+    });
+  }
   render() {
+    let fromList = !this.props.boss;
     let { image } = this.state;
     return (
       <Container style={this.styles.container}>
@@ -91,49 +121,22 @@ export default class SingleViewPart extends React.Component<Props, State> {
           <Form style={{ width: 300 }}>
             <Item fixedLabel>
               <Label>제목</Label>
-              <Input onChange={this.onChangeTitle} />
-              <Text>{this.state.title}</Text>
+              <Input onChange={this.onChangeTitle} disabled={fromList} />
+            </Item>
+            <Item fixedLabel>
+              <Label>결제생성일</Label>
+              <Text>
+                결제생성일 : {this.state.chosenDate.toString().substring(0, 10)}
+              </Text>
             </Item>
 
-            <Text>
-              결제생성일 : {this.state.chosenDate.toString().substr(4, 12)}
-            </Text>
             <Item fixedLabel>
               <Label>총 결제 금액</Label>
               <Text>{this.state.totalPay} 원</Text>
             </Item>
             <Item fixedLabel>
-              <Label>참여자 선택하기</Label>
-              <Modal
-                animationType={'slide'}
-                transparent={false}
-                visible={this.state.isVisible}
-                onRequestClose={() => {
-                  console.log('Modal has been closed.');
-                }}
-              >
-                {/*All views of Modal*/}
-                {/*Animation can be slide, slide, none*/}
-                <View style={this.styles.modal}>
-                  <Text style={this.styles.text}>Modal is open!</Text>
-                  <FriendList />
-                  <Button
-                    onPress={() => {
-                      this.setState({ isVisible: !this.state.isVisible });
-                    }}
-                  >
-                    <Text>확인</Text>
-                  </Button>
-                </View>
-              </Modal>
-              {/*Button will change state to true and view will re-render*/}
-              <Button
-                onPress={() => {
-                  this.setState({ isVisible: true });
-                }}
-              >
-                <Text>해당결제참여자 목록</Text>
-              </Button>
+              <Label>참여자 목록</Label>
+              <List></List>
               <Label>총 {this.state.peopleCnt} 명</Label>
             </Item>
             <Item fixedLabel>
@@ -158,17 +161,10 @@ export default class SingleViewPart extends React.Component<Props, State> {
             </View>
           </Form>
 
-          <PicPicker />
+          <PicPicker disabled={fromList} />
         </Content>
         <Footer>
           <FooterTab>
-            <Button
-              onPress={() => {
-                console.log('돌아가기');
-              }}
-            >
-              <Text>돌아가기</Text>
-            </Button>
             <Button>
               <Text>결제 확인 요청</Text>
             </Button>

@@ -9,7 +9,7 @@ const config = {
   measurementId: 'G-3BF7J6G9NZ',
   androidClientId:
     '209216463831-htvf7vv2lhmo4farouqkpg0ie46lc633.apps.googleusercontent.com',
-  serverAddress: 'http://18.189.180.195:5000'
+  serverAddress: 'http://52.14.71.34:5000'
 };
 
 export default config;
