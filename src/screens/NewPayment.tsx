@@ -1,5 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Modal } from 'react-native';
+import * as Permissions from 'expo-permissions';
+import * as Contacts from 'expo-contacts';
 import {
   Header,
   Form,
@@ -28,38 +30,16 @@ import {
 } from '../components';
 import config from '../../config';
 
-export interface Props {}
-
-export interface State {
-  title: string;
-  totalPay: string;
-  chosenDate: Date;
-  peopleCnt: number;
-  printModal: boolean;
-  disabled: boolean;
-  modifyButtonText: string;
-  chosenParty?: object[];
-  email: string;
-  pricebookId: string;
-  // 주소록에서 목록을 가져와서 [이름/번호]
-  // 서버로 전송하면 번호 기반으로 가입자만 가려서 리턴 req[이름/전화번호] //res [이름/전화번호/userId]
-  // 받은 리턴 목록 스크린에 출력(베이스 리스트 가능하면 페이지 전환없이? 모달이라든가..)
-  // 참여자를 선택. 하고 완료(확인)하면 참여자수 자동 계산, 1/n금액 자동계산.
-  // 결제 등록 시 , 서버로 해당 정보들 보냄(참여자는 user.id로 보냄.).
-
-  //participant : [{username: 'hae',phone:'010',userId:'3'}, ...]
-  //베어미니멈 - 10원 단위 절사하고 차액은 보스 부담
-  //어드밴스드 1 : 보스의 추가 부담 내용 푸시 알림에 포함
-  //어드밴스드 2 : 차액 부담자 유저가 선택
-}
-//InfoToServer
-//totalPay, peopleCnt, subject, date
 export interface Props {
   navigation: any;
   fromListView: boolean;
 }
-export default class NewPayment extends React.Component<Props, State> {
+
+export default class NewPayment extends React.Component<Props> {
   state = {
+    friendList: [],
+    chosenList: [],
+    chosenNums: [],
     title: '',
     totalPay: '',
     chosenDate: new Date(),
@@ -72,6 +52,79 @@ export default class NewPayment extends React.Component<Props, State> {
     pricebookId: ''
   };
 
+  //get user filtered contact list
+  componentDidMount = async () => {
+    console.log('fromListView', this.props.fromListView);
+
+    //스크린 모드 식별
+    const { navigation } = this.props;
+    console.log('this.props.navigation', navigation.state.params);
+
+    if (navigation.state.params === undefined) {
+      console.log('새 글 등록');
+    } else {
+      console.log('=========글 보기 페이지');
+      const { fromListView, email, pricebookId } = navigation.state.params;
+      if (fromListView) {
+        await this.setState({
+          ...this.state,
+          disabled: true,
+          email: email,
+          pricebookId: pricebookId
+        });
+        await this.doFetch();
+      }
+    }
+
+    //친구 목록 로딩
+    const userCheckAPI = config.serverAddress + '/users/contacts';
+    // ask permission to get contact
+    const { status } = await Permissions.askAsync(Permissions.CONTACTS);
+    // get device contact list
+    if (status === 'granted') {
+      const { data } = await Contacts.getContactsAsync({
+        fields: [Contacts.PHONE_NUMBERS, Contacts.EMAILS]
+      });
+
+      if (data.length > 0) {
+        let newList = [];
+        for (let i = 1; i < data.length; i++) {
+          if (data[i].phoneNumbers) {
+            let contact = {
+              name: data[i].name,
+              phone: data[i].phoneNumbers[0].number.replace(/\D/g, ''),
+              clicked: this.state.chosenNums.includes(
+                data[i].phoneNumbers[0].number
+              )
+                ? true
+                : false
+            };
+            newList.push(contact);
+          }
+        }
+        const fetchRes = await fetch(userCheckAPI, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          },
+          /////////////test mode/////////////
+          body: JSON.stringify([{ name: '최방실', phone: '01041554686' }])
+          // JSON.stringify(newList)
+        });
+        const userFilterdList = await fetchRes.json();
+        userFilterdList.forEach(user => {
+          user.clicked = this.state.chosenNums.includes(user.phone)
+            ? true
+            : false;
+        });
+        await this.setState({ friendList: userFilterdList });
+        console.log('userFilterdList', this.state.friendList);
+      }
+    }
+  };
+
+  //form handler functions
   setDate(newDate: Date): any {
     this.setState({ ...this.state, chosenDate: newDate });
   }
@@ -109,6 +162,8 @@ export default class NewPayment extends React.Component<Props, State> {
       peopleCnt: chosen.length
     });
   };
+
+  //handle mode change
   toModifyMode = () => {
     console.log('toggle');
     if (this.state.disabled) {
@@ -128,11 +183,18 @@ export default class NewPayment extends React.Component<Props, State> {
     });
   };
 
+  //modal switch
   modalSwitch = () => {
     this.setState({
       ...this.state,
       printModal: !this.state.printModal
     });
+  };
+
+  //handle cancle modifying
+  handleCancle = () => {
+    //복사해 둔 최초 스테이트 값으로 셋스테이트 (리랜더링)
+    //버튼 '수정'
   };
 
   doFetch = async () => {
@@ -164,26 +226,6 @@ export default class NewPayment extends React.Component<Props, State> {
       chosenDate: responseJson.pricebook.partyDate
     });
   };
-  componentDidMount = async () => {
-    const { navigation } = this.props;
-    console.log('this.props.navigation', navigation.state.params);
-
-    if (navigation.state.params === undefined) {
-      console.log('새 글 등록');
-    } else {
-      console.log('=========글 보기 페이지');
-      const { fromListView, email, pricebookId } = navigation.state.params;
-      if (fromListView) {
-        await this.setState({
-          ...this.state,
-          disabled: true,
-          email: email,
-          pricebookId: pricebookId
-        });
-        await this.doFetch();
-      }
-    }
-  };
 
   render() {
     console.log('disabled', this.state.disabled);
@@ -209,7 +251,7 @@ export default class NewPayment extends React.Component<Props, State> {
               <View style={{ alignItems: 'center' }}>
                 <Form style={{ width: 300 }}>
                   <InputItem
-                    label={'제목:' + this.state.title}
+                    label={'제목'}
                     disabled={disabled}
                     onChange={this.onChangeTitle}
                   />
