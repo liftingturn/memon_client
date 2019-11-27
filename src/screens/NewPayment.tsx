@@ -94,7 +94,11 @@ export default class NewPayment extends React.Component<Props, State> {
     if (!this.state.totalPay) {
       return 'total 금액 입력해주세요!';
     } else {
-      return String(parseInt(this.state.totalPay) / (this.state.peopleCnt + 1));
+      const smallest = 100;
+      const MoneyForOne =
+        parseInt(this.state.totalPay) / (this.state.peopleCnt + 1);
+      const change = Math.floor(MoneyForOne / smallest) * smallest;
+      return JSON.stringify(change);
     }
   };
 
