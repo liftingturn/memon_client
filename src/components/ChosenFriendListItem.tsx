@@ -9,7 +9,7 @@ const ChosenFriendListItem = props => {
     status !== 'done' ? (status === 'suggest' ? 'red' : 'yellow ') : 'green';
   const styles = StyleSheet.create({
     btn: {
-      backgroundColor: '#b582e8',
+      backgroundColor: '#e7e6eb',
       height: 28,
       marginVertical: 3,
       marginRight: 10,
@@ -18,7 +18,7 @@ const ChosenFriendListItem = props => {
       justifyContent: 'center'
     },
     txt: {
-      color: '#fff',
+      color: '#1d1733',
       fontWeight: '400',
       fontSize: 15,
       marginLeft: 20

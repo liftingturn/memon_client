@@ -6,18 +6,27 @@ interface Props {
   onChange: any;
   disabled: boolean;
   keyT?: string;
+  placeholer?: string;
 }
 
-const InputItem: React.FC<Props> = ({ label, onChange, disabled, keyT }) => {
+const InputItem: React.FC<Props> = ({
+  label,
+  onChange,
+  disabled,
+  keyT,
+  placeholder
+}) => {
   const KeyType = keyT ? keyT : 'default';
   return (
     <Item fixedLabel>
       <Label style={{ color: 'grey' }}>{label}</Label>
       <Input
-        style={{ paddingLeft: 20 }}
+        style={{ paddingLeft: 15, fontSize: 16 }}
         onChange={onChange}
         disabled={disabled}
         keyboardType={KeyType}
+        placeholder={placeholder}
+        placeholderTextColor="#907ee0"
       />
     </Item>
   );

@@ -25,6 +25,19 @@ class FriendListItem extends React.Component<Props> {
     const color = this.props.clicked ? '#e2d3f5' : '#f7f7f7';
     const iconColor = this.props.clicked ? '#5745a1' : '#e2d3f5';
     const iconName = this.props.clicked ? 'check' : 'circle';
+    const Phone = this.props.phone;
+    const printPhone =
+      Phone.length === 11
+        ? Phone.substring(0, 3) +
+          '-' +
+          Phone.substring(3, 7) +
+          '-' +
+          Phone.substring(7)
+        : Phone.substring(0, 3) +
+          '-' +
+          Phone.substring(3, 6) +
+          '-' +
+          Phone.substring(6);
     return (
       <ListItem
         onPress={this.handlePress}
@@ -53,7 +66,7 @@ class FriendListItem extends React.Component<Props> {
           >
             {this.props.name}
           </Text>
-          <Text style={{ marginBottom: 0 }}>{this.props.phone}</Text>
+          <Text style={{ marginBottom: 0 }}>{printPhone}</Text>
         </Body>
       </ListItem>
     );

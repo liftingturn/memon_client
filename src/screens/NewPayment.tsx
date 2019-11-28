@@ -170,15 +170,17 @@ export default class NewPayment extends React.Component<Props> {
     this.props.navigation.toggleDrawer();
   };
 
+  remainder = 0;
   calcN = () => {
     console.log('state pay', this.state.totalPay);
     if (!this.state.totalPay) {
-      return 'total 금액 입력해주세요!';
+      return '총금액을 입력해주세요';
     } else {
       const smallest = 100;
       const MoneyForOne =
         parseInt(this.state.totalPay) / (this.state.peopleCnt + 1);
       const change = Math.floor(MoneyForOne / smallest) * smallest;
+      this.remainder = Math.round(MoneyForOne - change);
       return `${change} 원`;
     }
   };
@@ -300,6 +302,7 @@ export default class NewPayment extends React.Component<Props> {
                   label="제목"
                   disabled={disabled}
                   onChange={this.onChangeTitle}
+                  placeholder="어떤 모임이었나요?"
                 />
 
                 <Item fixedLabel>
@@ -314,6 +317,7 @@ export default class NewPayment extends React.Component<Props> {
                   disabled={disabled}
                   onChange={this.onChangeTotalPay}
                   keyT="numeric"
+                  placeholder="총 금액을 입력해주세요"
                 />
                 <Item fixedLabel>
                   <Label style={{ color: 'grey' }}>참여자</Label>
@@ -323,7 +327,7 @@ export default class NewPayment extends React.Component<Props> {
                     handleSelect={this.handleSelectParty}
                     friendList={this.state.friendList}
                   />
-                  <Label style={{ paddingLeft: 20 }}>
+                  <Label style={{ paddingLeft: 15 }}>
                     {this.state.peopleCnt
                       ? `총 ${this.state.peopleCnt} 명`
                       : ''}
@@ -348,15 +352,32 @@ export default class NewPayment extends React.Component<Props> {
                     })}
                   </View>
                 ) : null}
+
                 <Item fixedLabel>
                   <Label style={{ color: 'grey', fontWeight: '600' }}>
                     1/n
                   </Label>
                   <Input
-                    style={{ paddingLeft: 20 }}
+                    style={{ paddingLeft: 15, fontSize: 16 }}
                     placeholder={this.calcN()}
+                    placeholderTextColor="#907ee0"
                     disabled={true}
                   />
+                  {this.remainder ? (
+                    <Right>
+                      <Button
+                        style={{
+                          height: 30,
+                          backgroundColor: '#907be0',
+                          paddingHorizontal: 10
+                        }}
+                      >
+                        <Text style={{ color: '#fff' }}>
+                          - {this.remainder} 원
+                        </Text>
+                      </Button>
+                    </Right>
+                  ) : null}
                 </Item>
               </Form>
             </View>
