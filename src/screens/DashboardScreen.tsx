@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import CardComponent from './../components/CardComponent';
 import { LinearGradient } from 'expo-linear-gradient';
-import { DrawerHeader } from '../components';
+import { NetCard, DrawerHeader } from '../components';
 import config from './../../config';
 import firebase from 'firebase';
 import screenStyles from '../screenStyles';
@@ -62,17 +61,16 @@ export default class DashboardScreen extends Component<Props, State> {
         <Container style={screenStyles.container}>
           <DrawerHeader title="Dashboard" toggleDrawer={this.toggleDrawer} />
 
-          <Content>
-            <CardComponent
+          <Content
+            style={{ backgroundColor: 'transparent' }}
+            scrollEnabled={false}
+          >
+            <NetCard
               header={'net'}
               body={`받을 돈 : ${this.state.moneyToGet}\n줄 돈 : ${this.state.moneyToPay}`}
             />
           </Content>
-          {/* <Footer>
-          <FooterTab> */}
-          {/* <Button> */}
-          {/* <Text>Footer</Text> */}
-          {/* <View style={this.styles.button}> */}
+
           <Button
             rounded
             style={this.styles.botbut}
@@ -80,10 +78,6 @@ export default class DashboardScreen extends Component<Props, State> {
           >
             <Text>결제 생성</Text>
           </Button>
-          {/* </View> */}
-          {/* </Button> */}
-          {/* </FooterTab>
-        </Footer> */}
         </Container>
       </LinearGradient>
     );
