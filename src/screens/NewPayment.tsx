@@ -29,7 +29,8 @@ import {
   CustomDatePicker,
   InputItem,
   FriendListModal,
-  DrawerHeader
+  DrawerHeader,
+  NewPayFooter
 } from '../components';
 import config from '../../config';
 
@@ -91,6 +92,7 @@ export default class NewPayment extends React.Component<Props> {
       //**************************//
       //서버에서 개별결제 페이지 리스폰스 보낼때 참여자 전화번호 같이 보내줘야함
       //참여자 전화번호 추출해서 state.chosenNums=[ 'phone', 'phone', 'phone' ]
+      // ---------> 비활성화 클릭하면, 등록된 결제건은 참여자 수정이 불가능합니다.
       if (fromListView) {
         await this.setState({
           ...this.state,
@@ -141,7 +143,7 @@ export default class NewPayment extends React.Component<Props> {
             ? true
             : false;
         });
-        await this.setState({ friendList: userFilterdList });
+        await this.setState({ ...this.state, friendList: userFilterdList });
         console.log('userFilterdList', this.state.friendList);
       }
     }
@@ -239,6 +241,7 @@ export default class NewPayment extends React.Component<Props> {
   handleCancle = () => {
     //복사해 둔 최초 스테이트 값으로 셋스테이트 (리랜더링)
     //버튼 '수정'
+    //서버 안보냄.
   };
 
   doFetch = async () => {
@@ -279,56 +282,57 @@ export default class NewPayment extends React.Component<Props> {
         <Container style={screenStyles.container}>
           <DrawerHeader title="새결제" toggleDrawer={this.toggleDrawer} />
           <Grid style={{ alignItems: 'center' }}>
-            <Row size={3}>
+            <Row size={1}>
               <Content
                 contentContainerStyle={{ flex: 1, justifyContent: 'center' }}
               >
                 <View style={{ alignItems: 'center' }}>
-                  <Form style={{ width: 300 }}>
+                  <Form style={this.styles.form}>
                     <InputItem
-                      label={'제목'}
+                      label="제목"
                       disabled={disabled}
                       onChange={this.onChangeTitle}
                     />
 
                     <Item fixedLabel>
-                      <Label>날짜</Label>
-                      <Text>
-                        Date: {this.state.chosenDate.toString().substr(0, 10)}
-                      </Text>
+                      <Label style={{ color: 'grey' }}>날짜</Label>
                       <CustomDatePicker
                         disabled={disabled}
-                        setDate={this.setDate.bind(this)}
+                        setDate={this.setDate}
                       />
                     </Item>
-
                     <InputItem
-                      label={'총 금액'}
+                      label="총 금액"
                       disabled={disabled}
                       onChange={this.onChangeTotalPay}
                       keyT="numeric"
                     />
                     <Item fixedLabel>
-                      <Label>참여한 사람</Label>
+                      <Label style={{ color: 'grey' }}>참여한 사람</Label>
                       <FriendListModal
                         printModal={this.state.printModal}
                         modalSwitch={this.modalSwitch}
                         handleSelect={this.handleSelectParty}
                         friendList={this.state.friendList}
                       />
-                      <Label> 총 {this.state.peopleCnt} 명</Label>
+                      <Label>
+                        {' '}
+                        {this.state.peopleCnt
+                          ? `총 ${this.state.peopleCnt} 명`
+                          : ''}
+                      </Label>
                       <Right>
                         <Button
-                          light
                           disabled={disabled}
                           onPress={this.modalSwitch}
+                          style={screenStyles.iconBtn}
                         >
-                          <Text>선택하기</Text>
+                          <Icon name="search" style={{ color: '#6A1F9F' }} />
                         </Button>
                       </Right>
                     </Item>
                     <Item fixedLabel>
-                      <Label>1인당 금액</Label>
+                      <Label style={{ color: 'grey' }}>1/n</Label>
                       <Input
                         placeholder={`${this.calcN()} 원`}
                         disabled={true}
@@ -338,7 +342,7 @@ export default class NewPayment extends React.Component<Props> {
                 </View>
               </Content>
             </Row>
-            <Row size={2}>
+            <Row size={1}>
               <Content>
                 <View style={{ justifyContent: 'flex-start' }}>
                   <PicPicker disabled={disabled} />
@@ -346,21 +350,11 @@ export default class NewPayment extends React.Component<Props> {
               </Content>
             </Row>
           </Grid>
-
-          <Footer>
-            <FooterTab style={{ backgroundColor: '#FFF' }}>
-              <Button
-                onPress={() => {
-                  console.log('돌아가기');
-                }}
-              >
-                <Text>돌아가기</Text>
-              </Button>
-              <Button onPress={this.toModifyMode}>
-                <Text>{this.state.modifyButtonText}</Text>
-              </Button>
-            </FooterTab>
-          </Footer>
+          <NewPayFooter
+            label={this.state.modifyButtonText}
+            onPress={this.toModifyMode}
+            goBack={this.handleCancle}
+          />
         </Container>
       </LinearGradient>
     );
@@ -369,14 +363,18 @@ export default class NewPayment extends React.Component<Props> {
     container: {
       marginTop: 24,
       flex: 1,
-      backgroundColor: '#fff'
-      // alignItems: 'center'
-      // justifyContent: 'center'
+      backgroundColor: 'transparent'
+    },
+    form: {
+      width: 350,
+      backgroundColor: '#fff',
+      borderRadius: 10,
+      paddingLeft: 10,
+      paddingRight: 20
     },
     modal: {
       flex: 1,
       backgroundColor: 'rgba(52, 52, 52, 0.8)',
-      // alignItems: 'center',
       padding: 50
     },
     text: {

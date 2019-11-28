@@ -1,9 +1,4 @@
-import React from 'react';
-import {
-  Text,
-  WebViewIOSLoadRequestEvent,
-  ShadowPropTypesIOS
-} from 'react-native';
+import * as React from 'react';
 import { Item, Label, Input } from 'native-base';
 
 interface Props {
