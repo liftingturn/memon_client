@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Item, Label, Input } from 'native-base';
-
+import screenStyle from '../screenStyles';
 interface Props {
   label: string;
   onChange: any;
@@ -19,14 +19,14 @@ const InputItem: React.FC<Props> = ({
   const KeyType = keyT ? keyT : 'default';
   return (
     <Item fixedLabel>
-      <Label style={{ color: 'grey' }}>{label}</Label>
+      <Label style={screenStyle.inputLabel}>{label}</Label>
       <Input
         style={{ paddingLeft: 15, fontSize: 16 }}
         onChange={onChange}
         disabled={disabled}
         keyboardType={KeyType}
         placeholder={placeholder}
-        placeholderTextColor="#907ee0"
+        placeholderTextColor="grey"
       />
     </Item>
   );

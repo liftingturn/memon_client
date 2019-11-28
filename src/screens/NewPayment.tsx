@@ -31,7 +31,8 @@ import {
   FriendListModal,
   DrawerHeader,
   NewPayFooter,
-  ChosenFriendListItem
+  ChosenFriendListItem,
+  SplitPayment
 } from '../components';
 import config from '../../config';
 
@@ -174,13 +175,14 @@ export default class NewPayment extends React.Component<Props> {
   calcN = () => {
     console.log('state pay', this.state.totalPay);
     if (!this.state.totalPay) {
-      return '총금액을 입력해주세요';
+      return '1/N';
     } else {
       const smallest = 100;
       const MoneyForOne =
         parseInt(this.state.totalPay) / (this.state.peopleCnt + 1);
       const change = Math.floor(MoneyForOne / smallest) * smallest;
       this.remainder = Math.round(MoneyForOne - change);
+      console.log(this.remainder);
       return `${change} 원`;
     }
   };
@@ -306,7 +308,7 @@ export default class NewPayment extends React.Component<Props> {
                 />
 
                 <Item fixedLabel>
-                  <Label style={{ color: 'grey' }}>날짜</Label>
+                  <Label style={screenStyles.inputLabel}>날짜</Label>
                   <CustomDatePicker
                     disabled={disabled}
                     setDate={this.setDate}
@@ -320,7 +322,7 @@ export default class NewPayment extends React.Component<Props> {
                   placeholder="총 금액을 입력해주세요"
                 />
                 <Item fixedLabel>
-                  <Label style={{ color: 'grey' }}>참여자</Label>
+                  <Label style={screenStyles.inputLabel}>참여자</Label>
                   <FriendListModal
                     printModal={this.state.printModal}
                     modalSwitch={this.modalSwitch}
@@ -342,7 +344,6 @@ export default class NewPayment extends React.Component<Props> {
                     </Button>
                   </Right>
                 </Item>
-
                 {this.state.chosenList.length ? (
                   <View style={{ flexDirection: 'column', marginVertical: 10 }}>
                     {this.state.chosenList.map((person, i) => {
@@ -352,33 +353,10 @@ export default class NewPayment extends React.Component<Props> {
                     })}
                   </View>
                 ) : null}
-
-                <Item fixedLabel>
-                  <Label style={{ color: 'grey', fontWeight: '600' }}>
-                    1/n
-                  </Label>
-                  <Input
-                    style={{ paddingLeft: 15, fontSize: 16 }}
-                    placeholder={this.calcN()}
-                    placeholderTextColor="#907ee0"
-                    disabled={true}
-                  />
-                  {this.remainder ? (
-                    <Right>
-                      <Button
-                        style={{
-                          height: 30,
-                          backgroundColor: '#907be0',
-                          paddingHorizontal: 10
-                        }}
-                      >
-                        <Text style={{ color: '#fff' }}>
-                          - {this.remainder} 원
-                        </Text>
-                      </Button>
-                    </Right>
-                  ) : null}
-                </Item>
+                <SplitPayment
+                  splitPayment={this.calcN()}
+                  remainder={this.remainder}
+                />
               </Form>
             </View>
             <PicPicker disabled={disabled} />
@@ -400,11 +378,12 @@ export default class NewPayment extends React.Component<Props> {
     },
     form: {
       width: 350,
-      backgroundColor: '#fff',
+      backgroundColor: '#f5effb',
       borderRadius: 5,
       paddingLeft: 10,
       paddingRight: 20,
-      marginBottom: 30
+      marginBottom: 30,
+      elevation: 5
     },
     modal: {
       flex: 1,
@@ -414,6 +393,8 @@ export default class NewPayment extends React.Component<Props> {
     text: {
       color: '#3f2949',
       marginTop: 10
-    }
+    },
+    inputLabel: {},
+    inputBody: {}
   });
 }
