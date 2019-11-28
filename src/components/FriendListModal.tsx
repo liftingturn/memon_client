@@ -6,16 +6,10 @@ import FriendList from './FriendList';
 interface Props {
   printModal: boolean;
   modalSwitch: () => void;
-  handleChosen: Function;
-  chosen: object[];
+  handleSelect: Function;
+  friendList: object[];
 }
 export default class FriendListModal extends React.Component<Props> {
-  state = { chosen: [] };
-
-  addChosen = chosenP => {
-    this.props.handleChosen(chosenP);
-    console.log(chosenP);
-  };
   requestClose = () => {
     console.log('Modal has been closed.');
   };
@@ -30,7 +24,10 @@ export default class FriendListModal extends React.Component<Props> {
       >
         {/*Animation can be slide, slide, none*/}
         <View style={this.styles.modal}>
-          <FriendList addChosen={this.addChosen} chosen={this.props.chosen} />
+          <FriendList
+            handleSelect={this.props.handleSelect}
+            friendList={this.props.friendList}
+          />
           <Button
             info
             style={{

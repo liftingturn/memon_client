@@ -15,67 +15,12 @@ import * as Permissions from 'expo-permissions';
 import FriendListItem from './FriendListItem';
 
 interface Props {
-  addChosen: Function;
-  chosen: object[];
+  handleSelect: Function;
+  friendList: any;
 }
-interface Contact {
-  name: string;
-  phone: string;
-  clicked: boolean;
-}
+
 export default class FriendList extends Component<Props> {
-  state = { friendList: [], chosen: this.props.chosen };
-  //{name: , phone:, checked:true}
-  chosenNumbers = this.state.chosen.length
-    ? this.state.chosen.map(chosen => {
-        return chosen.phone;
-      })
-    : [];
-
-  componentDidMount = async () => {
-    console.log(this.chosenNumbers);
-    //주소록 가져와서, state에 주소록 넣어준다.
-    const { status } = await Permissions.askAsync(Permissions.CONTACTS);
-    if (status === 'granted') {
-      const { data } = await Contacts.getContactsAsync({
-        fields: [Contacts.PHONE_NUMBERS, Contacts.EMAILS]
-      });
-
-      if (data.length > 0) {
-        let newList = [];
-        for (let i = 1; i < data.length; i++) {
-          if (data[i].phoneNumbers) {
-            let contact: Contact = {
-              name: data[i].name,
-              phone: data[i].phoneNumbers[0].number,
-              clicked: this.chosenNumbers.includes(
-                data[i].phoneNumbers[0].number
-              )
-                ? true
-                : false
-            };
-            newList.push(contact);
-          }
-        }
-        this.setState({ friendList: newList });
-        // console.log(data[1].name, data[1].phoneNumbers[0].number); //0번은 제외하고 array map 해야함. 0은 번호정보없는 자기자신
-      }
-    }
-  };
-
-  handleChoose = phone => {
-    for (let i = 0; i < this.state.friendList.length; i++) {
-      const chosen = this.state.friendList[i];
-      if (chosen.phone === phone) {
-        chosen.clicked = !chosen.clicked;
-      }
-    }
-    const chosen: object[] = this.state.friendList.filter(person => {
-      return person.clicked === true;
-    });
-
-    this.props.addChosen(chosen);
-  };
+  state = { friendList: this.props.friendList };
 
   render() {
     return (
@@ -85,15 +30,15 @@ export default class FriendList extends Component<Props> {
         </Text>
         <Content>
           <List>
-            {this.state ? (
-              this.state.friendList.map((contact, i) => {
+            {this.state.friendList ? (
+              this.state.friendList.map((person, i) => {
                 return (
                   <FriendListItem
                     key={i}
-                    name={contact.name}
-                    phone={contact.phone}
-                    handleChoose={this.handleChoose}
-                    clicked={contact.clicked}
+                    name={person.name}
+                    phone={person.phone}
+                    handleSelect={this.props.handleSelect}
+                    clicked={person.clicked}
                   />
                 );
               })

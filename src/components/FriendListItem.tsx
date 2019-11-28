@@ -6,7 +6,7 @@ import ButtonChoice from './ButtonChoice';
 interface Props {
   name: string;
   phone: string;
-  handleChoose: Function;
+  handleSelect: Function;
   clicked: boolean;
 }
 class FriendListItem extends React.Component<Props> {
@@ -47,8 +47,8 @@ class FriendListItem extends React.Component<Props> {
           <ButtonChoice
             clickedLabel="수금"
             unClickedLabel="선택"
-            handleChoose={this.props.handleChoose}
-            arg={this.props.phone}
+            handleSelect={this.props.handleSelect}
+            phone={this.props.phone}
             clicked={this.props.clicked}
           />
         </Right>

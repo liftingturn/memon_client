@@ -35,10 +35,29 @@ export interface Props {
   fromListView: boolean;
 }
 
+export interface Person {
+  name: string;
+  phone: string;
+  id?: string;
+  clicked: boolean;
+}
+export interface State {
+  friendList: Person[];
+  chosenNums: string[];
+  title: string;
+  totalPay: string;
+  chosenDate: Date;
+  peopleCnt: number;
+  printModal: boolean;
+  disabled: boolean;
+  modifyButtonText: string;
+  email: string;
+  pricebookId: string;
+}
+
 export default class NewPayment extends React.Component<Props> {
   state = {
     friendList: [],
-    chosenList: [],
     chosenNums: [],
     title: '',
     totalPay: '',
@@ -49,7 +68,6 @@ export default class NewPayment extends React.Component<Props> {
     // --->> this.props.fromListView ? true : false ???
     modifyButtonText: this.props.fromListView === undefined ? '등록' : '수정',
     // --->> this.props.fromListView ? '등록' : '수정' ???
-    chosenParty: [],
     email: '',
     pricebookId: ''
   };
@@ -67,6 +85,9 @@ export default class NewPayment extends React.Component<Props> {
     } else {
       console.log('=========글 보기 페이지');
       const { fromListView, email, pricebookId } = navigation.state.params;
+      //**************************//
+      //서버에서 개별결제 페이지 리스폰스 보낼때 참여자 전화번호 같이 보내줘야함
+      //참여자 전화번호 추출해서 state.chosenNums=[ 'phone', 'phone', 'phone' ]
       if (fromListView) {
         await this.setState({
           ...this.state,
@@ -92,18 +113,15 @@ export default class NewPayment extends React.Component<Props> {
         let newList = [];
         for (let i = 1; i < data.length; i++) {
           if (data[i].phoneNumbers) {
-            let contact = {
+            let contact: Person = {
               name: data[i].name,
               phone: data[i].phoneNumbers[0].number.replace(/\D/g, ''),
-              clicked: this.state.chosenNums.includes(
-                data[i].phoneNumbers[0].number
-              )
-                ? true
-                : false
+              clicked: false
             };
             newList.push(contact);
           }
         }
+        // request server for checking app user
         const fetchRes = await fetch(userCheckAPI, {
           method: 'POST',
           headers: {
@@ -111,8 +129,8 @@ export default class NewPayment extends React.Component<Props> {
             'Content-Type': 'application/json'
           },
           /////////////test mode/////////////
-          body: JSON.stringify([{ name: '최방실', phone: '01041554686' }])
           // JSON.stringify(newList)
+          body: JSON.stringify([{ name: '최방실', phone: '01041554686' }])
         });
         const userFilterdList = await fetchRes.json();
         userFilterdList.forEach(user => {
@@ -157,14 +175,6 @@ export default class NewPayment extends React.Component<Props> {
     }
   };
 
-  handleChosenParty = chosen => {
-    this.setState({
-      ...this.state,
-      chosenParty: chosen,
-      peopleCnt: chosen.length
-    });
-  };
-
   //handle mode change
   toModifyMode = () => {
     console.log('toggle');
@@ -185,12 +195,41 @@ export default class NewPayment extends React.Component<Props> {
     });
   };
 
-  //modal switch
+  //modal contacts switch
   modalSwitch = () => {
     this.setState({
       ...this.state,
       printModal: !this.state.printModal
     });
+  };
+
+  //handle select party
+  handleSelectParty = async phone => {
+    //newList = [...friendList] loop to find person, clicked = ! clicked
+    //setState {...this.state, friendList:newList}
+    let cnt = 0;
+    console.log('handleSelectParty');
+    console.log('phone', phone);
+    const newList = [...this.state.friendList];
+    newList.forEach(person => {
+      if (person.phone === phone) {
+        person.clicked = !person.clicked;
+        cnt++;
+      }
+    });
+    const chosen = newList.map(person => {
+      if (person.clicked) {
+        return person.phone;
+      }
+    });
+    await this.setState({
+      ...this.state,
+      friendList: newList,
+      peopleCnt: cnt,
+      chosenNums: chosen
+    });
+    console.log('friendList', this.state.friendList);
+    console.log('chosenNums', this.state.chosenNums);
   };
 
   //handle cancle modifying
@@ -270,7 +309,7 @@ export default class NewPayment extends React.Component<Props> {
                   </Item>
 
                   <InputItem
-                    label={'총 금액 : ' + this.state.totalPay}
+                    label={'총 금액'}
                     disabled={disabled}
                     onChange={this.onChangeTotalPay}
                     keyT="numeric"
@@ -280,8 +319,8 @@ export default class NewPayment extends React.Component<Props> {
                     <FriendListModal
                       printModal={this.state.printModal}
                       modalSwitch={this.modalSwitch}
-                      handleChosen={this.handleChosenParty}
-                      chosen={this.state.chosenParty}
+                      handleSelect={this.handleSelectParty}
+                      friendList={this.state.friendList}
                     />
                     <Label> 총 {this.state.peopleCnt} 명</Label>
                     <Right>
