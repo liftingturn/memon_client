@@ -5,6 +5,7 @@ import FriendListItem from './FriendListItem';
 import FriendListModal from './FriendListModal';
 import InputItem from './InputItem';
 import PicPicker from './PicPicker';
+import DrawerHeader from './DrawerHeader';
 
 export {
   ButtonChoice,
@@ -13,5 +14,6 @@ export {
   FriendListItem,
   FriendListModal,
   InputItem,
-  PicPicker
+  PicPicker,
+  DrawerHeader
 };

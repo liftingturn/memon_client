@@ -1,20 +1,13 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import CardComponent from './../components/CardComponent';
+import { LinearGradient } from 'expo-linear-gradient';
+import { DrawerHeader } from '../components';
 import config from './../../config';
 import firebase from 'firebase';
-import {
-  Container,
-  Header,
-  Content,
-  Button,
-  Icon,
-  Left,
-  Body,
-  Right,
-  Footer,
-  FooterTab
-} from 'native-base';
+import screenStyles from '../screenStyles';
+
+import { Container, Content, Button } from 'native-base';
 
 interface Props {
   navigation: any;
@@ -65,42 +58,34 @@ export default class DashboardScreen extends Component<Props, State> {
   render() {
     console.log('================enter dashboard');
     return (
-      <Container style={this.styles.container}>
-        <Header>
-          <Left>
-            <Button transparent onPress={this.toggleDrawer}>
-              <Icon name="menu" />
-            </Button>
-          </Left>
-          <Body>
-            <Text>Header</Text>
-          </Body>
-          <Right />
-        </Header>
-        <Content>
-          <Text>This is Content Section</Text>
-          <CardComponent
-            header={'net'}
-            body={`받을 돈 : ${this.state.moneyToGet}\n줄 돈 : ${this.state.moneyToPay}`}
-          />
-        </Content>
-        {/* <Footer>
+      <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
+        <Container style={screenStyles.container}>
+          <DrawerHeader title="Dashboard" toggleDrawer={this.toggleDrawer} />
+
+          <Content>
+            <CardComponent
+              header={'net'}
+              body={`받을 돈 : ${this.state.moneyToGet}\n줄 돈 : ${this.state.moneyToPay}`}
+            />
+          </Content>
+          {/* <Footer>
           <FooterTab> */}
-        {/* <Button> */}
-        {/* <Text>Footer</Text> */}
-        {/* <View style={this.styles.button}> */}
-        <Button
-          rounded
-          style={this.styles.botbut}
-          onPress={this.moveToNewPayment}
-        >
-          <Text>결제 생성</Text>
-        </Button>
-        {/* </View> */}
-        {/* </Button> */}
-        {/* </FooterTab>
+          {/* <Button> */}
+          {/* <Text>Footer</Text> */}
+          {/* <View style={this.styles.button}> */}
+          <Button
+            rounded
+            style={this.styles.botbut}
+            onPress={this.moveToNewPayment}
+          >
+            <Text>결제 생성</Text>
+          </Button>
+          {/* </View> */}
+          {/* </Button> */}
+          {/* </FooterTab>
         </Footer> */}
-      </Container>
+        </Container>
+      </LinearGradient>
     );
   }
 

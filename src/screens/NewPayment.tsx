@@ -1,7 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, Modal } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
+import screenStyles from '../screenStyles';
 import {
   Header,
   Form,
@@ -26,7 +28,8 @@ import {
   PicPicker,
   CustomDatePicker,
   InputItem,
-  FriendListModal
+  FriendListModal,
+  DrawerHeader
 } from '../components';
 import config from '../../config';
 
@@ -272,99 +275,94 @@ export default class NewPayment extends React.Component<Props> {
     console.log('disabled', this.state.disabled);
     let { disabled } = this.state;
     return (
-      <Container style={this.styles.container}>
-        <Header>
-          <Left>
-            <Button transparent onPress={this.toggleDrawer}>
-              <Icon name="menu" />
-            </Button>
-          </Left>
-          <Body>
-            <Text style={{ alignSelf: 'auto' }}>해당 결제 정보</Text>
-          </Body>
-        </Header>
-
-        <Grid style={{ alignItems: 'center' }}>
-          <Row size={3}>
-            <Content
-              contentContainerStyle={{ flex: 1, justifyContent: 'center' }}
-            >
-              <View style={{ alignItems: 'center' }}>
-                <Form style={{ width: 300 }}>
-                  <InputItem
-                    label={'제목'}
-                    disabled={disabled}
-                    onChange={this.onChangeTitle}
-                  />
-
-                  <Item fixedLabel>
-                    <Label>날짜</Label>
-                    <Text>
-                      Date: {this.state.chosenDate.toString().substr(0, 10)}
-                    </Text>
-                    <CustomDatePicker
+      <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
+        <Container style={screenStyles.container}>
+          <DrawerHeader title="새결제" toggleDrawer={this.toggleDrawer} />
+          <Grid style={{ alignItems: 'center' }}>
+            <Row size={3}>
+              <Content
+                contentContainerStyle={{ flex: 1, justifyContent: 'center' }}
+              >
+                <View style={{ alignItems: 'center' }}>
+                  <Form style={{ width: 300 }}>
+                    <InputItem
+                      label={'제목'}
                       disabled={disabled}
-                      setDate={this.setDate.bind(this)}
+                      onChange={this.onChangeTitle}
                     />
-                  </Item>
 
-                  <InputItem
-                    label={'총 금액'}
-                    disabled={disabled}
-                    onChange={this.onChangeTotalPay}
-                    keyT="numeric"
-                  />
-                  <Item fixedLabel>
-                    <Label>참여한 사람</Label>
-                    <FriendListModal
-                      printModal={this.state.printModal}
-                      modalSwitch={this.modalSwitch}
-                      handleSelect={this.handleSelectParty}
-                      friendList={this.state.friendList}
-                    />
-                    <Label> 총 {this.state.peopleCnt} 명</Label>
-                    <Right>
-                      <Button
-                        light
+                    <Item fixedLabel>
+                      <Label>날짜</Label>
+                      <Text>
+                        Date: {this.state.chosenDate.toString().substr(0, 10)}
+                      </Text>
+                      <CustomDatePicker
                         disabled={disabled}
-                        onPress={this.modalSwitch}
-                      >
-                        <Text>선택하기</Text>
-                      </Button>
-                    </Right>
-                  </Item>
-                  <Item fixedLabel>
-                    <Label>1인당 금액</Label>
-                    <Input placeholder={`${this.calcN()} 원`} disabled={true} />
-                  </Item>
-                </Form>
-              </View>
-            </Content>
-          </Row>
-          <Row size={2}>
-            <Content>
-              <View style={{ justifyContent: 'flex-start' }}>
-                <PicPicker disabled={disabled} />
-              </View>
-            </Content>
-          </Row>
-        </Grid>
+                        setDate={this.setDate.bind(this)}
+                      />
+                    </Item>
 
-        <Footer>
-          <FooterTab style={{ backgroundColor: '#FFF' }}>
-            <Button
-              onPress={() => {
-                console.log('돌아가기');
-              }}
-            >
-              <Text>돌아가기</Text>
-            </Button>
-            <Button onPress={this.toModifyMode}>
-              <Text>{this.state.modifyButtonText}</Text>
-            </Button>
-          </FooterTab>
-        </Footer>
-      </Container>
+                    <InputItem
+                      label={'총 금액'}
+                      disabled={disabled}
+                      onChange={this.onChangeTotalPay}
+                      keyT="numeric"
+                    />
+                    <Item fixedLabel>
+                      <Label>참여한 사람</Label>
+                      <FriendListModal
+                        printModal={this.state.printModal}
+                        modalSwitch={this.modalSwitch}
+                        handleSelect={this.handleSelectParty}
+                        friendList={this.state.friendList}
+                      />
+                      <Label> 총 {this.state.peopleCnt} 명</Label>
+                      <Right>
+                        <Button
+                          light
+                          disabled={disabled}
+                          onPress={this.modalSwitch}
+                        >
+                          <Text>선택하기</Text>
+                        </Button>
+                      </Right>
+                    </Item>
+                    <Item fixedLabel>
+                      <Label>1인당 금액</Label>
+                      <Input
+                        placeholder={`${this.calcN()} 원`}
+                        disabled={true}
+                      />
+                    </Item>
+                  </Form>
+                </View>
+              </Content>
+            </Row>
+            <Row size={2}>
+              <Content>
+                <View style={{ justifyContent: 'flex-start' }}>
+                  <PicPicker disabled={disabled} />
+                </View>
+              </Content>
+            </Row>
+          </Grid>
+
+          <Footer>
+            <FooterTab style={{ backgroundColor: '#FFF' }}>
+              <Button
+                onPress={() => {
+                  console.log('돌아가기');
+                }}
+              >
+                <Text>돌아가기</Text>
+              </Button>
+              <Button onPress={this.toModifyMode}>
+                <Text>{this.state.modifyButtonText}</Text>
+              </Button>
+            </FooterTab>
+          </Footer>
+        </Container>
+      </LinearGradient>
     );
   }
   styles = StyleSheet.create({

@@ -13,6 +13,7 @@ import {
   Body,
   Icon
 } from 'native-base';
+import { DrawerHeader } from '../components';
 
 import FriendList from '../components/FriendList';
 export interface Props {
