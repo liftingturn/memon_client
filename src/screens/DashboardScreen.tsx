@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { NetCard, DrawerHeader } from '../components';
+import { NetCard, DrawerHeader, ButtonBasic } from '../components';
 import config from './../../config';
 import firebase from 'firebase';
 import screenStyles from '../screenStyles';
@@ -70,14 +70,7 @@ export default class DashboardScreen extends Component<Props, State> {
               body={`받을 돈 : ${this.state.moneyToGet}\n줄 돈 : ${this.state.moneyToPay}`}
             />
           </Content>
-
-          <Button
-            rounded
-            style={this.styles.botbut}
-            onPress={this.moveToNewPayment}
-          >
-            <Text>결제 생성</Text>
-          </Button>
+          <ButtonBasic type="txt" label="+" onPress={this.moveToNewPayment} />
         </Container>
       </LinearGradient>
     );

@@ -7,8 +7,12 @@ import InputItem from './InputItem';
 import PicPicker from './PicPicker';
 import DrawerHeader from './DrawerHeader';
 import NetCard from './NetCard';
+import NewPayFooter from './NewPayFooter';
+import ButtonBasic from './ButtonBasic';
 
 export {
+  ButtonBasic,
+  NewPayFooter,
   ButtonChoice,
   CustomDatePicker,
   FriendList,
