@@ -62,7 +62,7 @@ export default class NewPayment extends React.Component<Props> {
     title: '',
     totalPay: '',
     chosenDate: new Date(),
-    peopleCnt: 1,
+    peopleCnt: 0,
     printModal: false,
     disabled: this.props.fromListView === undefined ? false : true,
     // --->> this.props.fromListView ? true : false ???

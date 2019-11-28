@@ -14,8 +14,6 @@ export default class ButtonChoice extends React.Component<Props> {
   state = { clicked: this.props.clicked };
 
   handlePress = () => {
-    console.log('select Phone: ', this.props);
-
     this.props.handleSelect(this.props.phone);
     this.setState({ clicked: !this.state.clicked });
   };
