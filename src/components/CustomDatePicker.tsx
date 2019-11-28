@@ -1,27 +1,28 @@
 import React from 'react';
-import { DatePicker, Item } from 'native-base';
+import { DatePicker, Item, Input } from 'native-base';
+import { View } from 'react-native';
 const CustomDatePicker = props => {
   return (
-    <Item style={{ paddingLeft: 0, marginLeft: 0 }}>
+    <View style={{ flex: 2.2 }}>
       <DatePicker
         defaultDate={new Date()}
         minimumDate={new Date(2018, 1, 1)}
         // maximumDate={new Date()}
         locale="ko"
         timeZoneOffsetInMinutes={undefined}
-        modalTransparent={false}
+        modalTransparent={true}
         animationType="fade"
         androidMode="default"
         placeHolderText="날짜를 선택해주세요."
         textStyle={{ color: 'green' }}
         placeHolderTextStyle={{
-          color: '#907ee0',
-          backgroundColor: '#fff'
+          color: 'grey',
+          backgroundColor: 'transparent'
         }}
         onDateChange={props.setDate}
         disabled={props.disabled}
       />
-    </Item>
+    </View>
   );
 };
 export default CustomDatePicker;

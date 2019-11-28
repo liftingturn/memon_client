@@ -58,6 +58,17 @@ class LoadingScreen extends React.Component<Props> {
           <Text
             style={{
               backgroundColor: 'transparent',
+              fontSize: 20,
+              fontStyle: 'italic',
+              fontWeight: '300',
+              color: '#fff'
+            }}
+          >
+            슬기로운 수금 생활
+          </Text>
+          <Text
+            style={{
+              backgroundColor: 'transparent',
               fontSize: 60,
               fontStyle: 'italic',
               fontWeight: '500',
