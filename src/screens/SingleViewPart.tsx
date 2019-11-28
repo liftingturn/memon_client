@@ -207,13 +207,13 @@ export default class SingleViewPart extends React.Component<Props, State> {
         </Content>
         <Footer>
           <FooterTab>
-            {this.state.pushing === false ? (
-              <Button onPress={this.pushRequest}>
+            <Button onPress={this.pushRequest}>
+              {this.state.pushing === false ? (
                 <Text>결제 확인 요청</Text>
-              </Button>
-            ) : (
-              <Spinner color="green" />
-            )}
+              ) : (
+                <Spinner color="yellow" />
+              )}
+            </Button>
           </FooterTab>
         </Footer>
       </Container>
