@@ -102,6 +102,10 @@ export default class SingleViewPart extends React.Component<Props, State> {
       chosenDate: responseJson.pricebook.partyDate
     });
   }
+  pushRequest = () => {
+    console.log('i want to push');
+  };
+
   render() {
     let fromList = !this.props.boss;
     let { image } = this.state;
@@ -167,7 +171,7 @@ export default class SingleViewPart extends React.Component<Props, State> {
         </Content>
         <Footer>
           <FooterTab>
-            <Button>
+            <Button onPress={this.pushRequest}>
               <Text>결제 확인 요청</Text>
             </Button>
           </FooterTab>
