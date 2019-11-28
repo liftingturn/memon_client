@@ -15,7 +15,7 @@ const screenStyles = StyleSheet.create({
   },
   headerBodyText: {
     fontSize: 20,
-    fontWeight: '400',
+    fontWeight: '600',
     color: '#f6f6f6'
   },
   iconBtn: {
