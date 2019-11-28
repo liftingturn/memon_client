@@ -31,7 +31,7 @@ export default class PicPicker extends React.Component<Props, State> {
         {image && (
           <Image
             source={{ uri: image }}
-            style={{ width: 300, height: 200, borderRadius: 5 }}
+            style={{ width: 100, height: 100, borderRadius: 5 }}
           />
         )}
         <Text>{this.props.disabled}</Text>

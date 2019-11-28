@@ -138,7 +138,7 @@ export default class NewPayment extends React.Component<Props> {
           },
           /////////////test mode/////////////
           // JSON.stringify(newList)
-          body: JSON.stringify([{ name: '최방실', phone: '01041554686' }])
+          body: JSON.stringify(newList)
         });
         const userFilterdList = await fetchRes.json();
         userFilterdList.forEach(user => {
@@ -288,82 +288,74 @@ export default class NewPayment extends React.Component<Props> {
       <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
         <Container style={screenStyles.container}>
           <DrawerHeader title="새결제" toggleDrawer={this.toggleDrawer} />
-          <Grid style={{ alignItems: 'center' }}>
-            <Row size={1}>
-              <Content
-                contentContainerStyle={{ flex: 1, justifyContent: 'center' }}
-              >
-                <View style={{ alignItems: 'center' }}>
-                  <Form style={this.styles.form}>
-                    <InputItem
-                      label="제목"
-                      disabled={disabled}
-                      onChange={this.onChangeTitle}
-                    />
+          <Content
+            contentContainerStyle={{
+              justifyContent: 'flex-start',
+              paddingTop: 35
+            }}
+          >
+            <View style={{ alignItems: 'center', marginBottom: 15 }}>
+              <Form style={this.styles.form}>
+                <InputItem
+                  label="제목"
+                  disabled={disabled}
+                  onChange={this.onChangeTitle}
+                />
 
-                    <Item fixedLabel>
-                      <Label style={{ color: 'grey' }}>날짜</Label>
-                      <CustomDatePicker
-                        disabled={disabled}
-                        setDate={this.setDate}
-                      />
-                    </Item>
-                    <InputItem
-                      label="총 금액"
+                <Item fixedLabel>
+                  <Label style={{ color: 'grey' }}>날짜</Label>
+                  <CustomDatePicker
+                    disabled={disabled}
+                    setDate={this.setDate}
+                  />
+                </Item>
+                <InputItem
+                  label="총 금액"
+                  disabled={disabled}
+                  onChange={this.onChangeTotalPay}
+                  keyT="numeric"
+                />
+                <Item fixedLabel>
+                  <Label style={{ color: 'grey' }}>참여한 사람</Label>
+                  <FriendListModal
+                    printModal={this.state.printModal}
+                    modalSwitch={this.modalSwitch}
+                    handleSelect={this.handleSelectParty}
+                    friendList={this.state.friendList}
+                  />
+                  <Label>
+                    {this.state.peopleCnt
+                      ? `총 ${this.state.peopleCnt} 명`
+                      : ''}
+                  </Label>
+                  <Right>
+                    <Button
                       disabled={disabled}
-                      onChange={this.onChangeTotalPay}
-                      keyT="numeric"
-                    />
-                    <Item fixedLabel>
-                      <Label style={{ color: 'grey' }}>참여한 사람</Label>
-                      <FriendListModal
-                        printModal={this.state.printModal}
-                        modalSwitch={this.modalSwitch}
-                        handleSelect={this.handleSelectParty}
-                        friendList={this.state.friendList}
-                      />
-                      <Label>
-                        {' '}
-                        {this.state.peopleCnt
-                          ? `총 ${this.state.peopleCnt} 명`
-                          : ''}
-                      </Label>
-                      <Right>
-                        <Button
-                          disabled={disabled}
-                          onPress={this.modalSwitch}
-                          style={screenStyles.iconBtn}
-                        >
-                          <Icon name="search" style={{ color: '#6A1F9F' }} />
-                        </Button>
-                      </Right>
-                    </Item>
+                      onPress={this.modalSwitch}
+                      style={screenStyles.iconBtn}
+                    >
+                      <Icon name="search" style={{ color: '#6A1F9F' }} />
+                    </Button>
+                  </Right>
+                </Item>
 
-                    {this.state.chosenList.length ? (
-                      <Item>
-                        {this.state.chosenList.map(person => {
-                          return <ChosenFriendListItem person={person.name} />;
-                        })}
-                      </Item>
-                    ) : (
-                      <Text />
-                    )}
-                    <Item fixedLabel>
-                      <Label style={{ color: 'grey' }}>1/n</Label>
-                      <Input placeholder={this.calcN()} disabled={true} />
-                    </Item>
-                  </Form>
-                </View>
-              </Content>
-            </Row>
-            <Row size={1}>
-              <Content>
-                <View style={{ justifyContent: 'flex-start' }}>
-                  <PicPicker disabled={disabled} />
-                </View>
-              </Content>
-            </Row>
-          </Grid>
+                {this.state.chosenList.length ? (
+                  <View style={{ flexDirection: 'column', marginVertical: 10 }}>
+                    {this.state.chosenList.map((person, i) => {
+                      return (
+                        <ChosenFriendListItem key={i} name={person.name} />
+                      );
+                    })}
+                  </View>
+                ) : null}
+                <Item fixedLabel>
+                  <Label style={{ color: 'grey' }}>1/n</Label>
+                  <Input placeholder={this.calcN()} disabled={true} />
+                </Item>
+              </Form>
+            </View>
+            <PicPicker disabled={disabled} />
+          </Content>
           <NewPayFooter
             label={this.state.modifyButtonText}
             onPress={this.toModifyMode}
@@ -382,9 +374,10 @@ export default class NewPayment extends React.Component<Props> {
     form: {
       width: 350,
       backgroundColor: '#fff',
-      borderRadius: 10,
+      borderRadius: 5,
       paddingLeft: 10,
-      paddingRight: 20
+      paddingRight: 20,
+      marginBottom: 30
     },
     modal: {
       flex: 1,
