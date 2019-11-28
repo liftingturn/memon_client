@@ -310,20 +310,20 @@ export default class NewPayment extends React.Component<Props> {
                   />
                 </Item>
                 <InputItem
-                  label="총 금액"
+                  label="금액"
                   disabled={disabled}
                   onChange={this.onChangeTotalPay}
                   keyT="numeric"
                 />
                 <Item fixedLabel>
-                  <Label style={{ color: 'grey' }}>참여한 사람</Label>
+                  <Label style={{ color: 'grey' }}>참여자</Label>
                   <FriendListModal
                     printModal={this.state.printModal}
                     modalSwitch={this.modalSwitch}
                     handleSelect={this.handleSelectParty}
                     friendList={this.state.friendList}
                   />
-                  <Label>
+                  <Label style={{ paddingLeft: 20 }}>
                     {this.state.peopleCnt
                       ? `총 ${this.state.peopleCnt} 명`
                       : ''}
@@ -349,8 +349,14 @@ export default class NewPayment extends React.Component<Props> {
                   </View>
                 ) : null}
                 <Item fixedLabel>
-                  <Label style={{ color: 'grey' }}>1/n</Label>
-                  <Input placeholder={this.calcN()} disabled={true} />
+                  <Label style={{ color: 'grey', fontWeight: '600' }}>
+                    1/n
+                  </Label>
+                  <Input
+                    style={{ paddingLeft: 20 }}
+                    placeholder={this.calcN()}
+                    disabled={true}
+                  />
                 </Item>
               </Form>
             </View>

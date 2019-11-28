@@ -17,15 +17,31 @@ class FriendListItem extends React.Component<Props> {
     }
   });
 
+  handlePress = () => {
+    this.props.handleSelect(this.props.phone);
+  };
+
   render() {
-    const color = this.props.clicked ? '#e2d3f5' : 'transparent';
+    const color = this.props.clicked ? '#e2d3f5' : '#f7f7f7';
+    const iconColor = this.props.clicked ? '#5745a1' : '#e2d3f5';
+    const iconName = this.props.clicked ? 'check' : 'circle';
     return (
-      <ListItem>
-        <Left style={{ backgroundColor: 'transparent', flex: 1 }}>
+      <ListItem
+        onPress={this.handlePress}
+        style={{
+          height: 60,
+          borderBottomWidth: 0,
+          backgroundColor: color,
+          marginLeft: 0
+        }}
+      >
+        <Left
+          style={{ marginLeft: 20, backgroundColor: 'transparent', flex: 1 }}
+        >
           <MaterialCommunityIcons
-            name="circle"
+            name={iconName}
             size={30}
-            style={{ color: '#e2d3f5', marginLeft: 15 }}
+            style={{ color: iconColor, marginLeft: 15 }}
           />
         </Left>
         <Body style={{ borderBottomWidth: 0, marginLeft: 20, flex: 3 }}>
@@ -39,15 +55,6 @@ class FriendListItem extends React.Component<Props> {
           </Text>
           <Text style={{ marginBottom: 0 }}>{this.props.phone}</Text>
         </Body>
-        <Right style={{ borderBottomWidth: 0, flex: 2 }}>
-          <ButtonChoice
-            clickedLabel="수금"
-            unClickedLabel="선택"
-            handleSelect={this.props.handleSelect}
-            phone={this.props.phone}
-            clicked={this.props.clicked}
-          />
-        </Right>
       </ListItem>
     );
   }

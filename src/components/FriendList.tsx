@@ -24,11 +24,11 @@ export default class FriendList extends Component<Props> {
 
   render() {
     return (
-      <Container style={{ marginBottom: 10 }}>
-        <Text style={{ fontSize: 20, marginTop: 10, alignSelf: 'center' }}>
+      <Container style={{ marginBottom: 10, borderRadius: 5 }}>
+        <Text style={{ fontSize: 20, marginVertical: 10, alignSelf: 'center' }}>
           Pick your Party
         </Text>
-        <Content>
+        <Content style={{ backgroundColor: '#f7f7f7' }}>
           <List>
             {this.state.friendList ? (
               this.state.friendList.map((person, i) => {
