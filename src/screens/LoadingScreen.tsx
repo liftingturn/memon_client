@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { Component } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Footer } from 'native-base';
 import firebase from 'firebase';
-import LoginScreen from './LoginScreen';
-import PhoneInputScreen from './PhoneInputScreen';
 import config from '../../config';
 
 interface Props {
@@ -49,11 +48,33 @@ class LoadingScreen extends React.Component<Props> {
       );
     });
   };
+
   render() {
     return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" />
-      </View>
+      <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <Text
+            style={{
+              backgroundColor: 'transparent',
+              fontSize: 60,
+              fontStyle: 'italic',
+              fontWeight: '500',
+              color: '#fff'
+            }}
+          >
+            Memon
+          </Text>
+        </View>
+        <Footer
+          style={{ justifyContent: 'center', backgroundColor: 'transParent' }}
+        >
+          <Text style={{ color: '#fff', fontSize: 17, fontWeight: '400' }}>
+            @ Don Juan 2019
+          </Text>
+        </Footer>
+      </LinearGradient>
     );
   }
 }

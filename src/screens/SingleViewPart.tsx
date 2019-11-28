@@ -1,5 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, BackHandler } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { DrawerHeader } from '../components';
 import {
   Header,
   Form,

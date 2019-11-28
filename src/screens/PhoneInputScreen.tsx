@@ -4,6 +4,8 @@ import { Component } from 'react';
 import { Container, Header, Content, Item, Input, Icon } from 'native-base';
 import config from './../../config';
 import firebase from 'firebase';
+import { LinearGradient } from 'expo-linear-gradient';
+import { DrawerHeader } from '../components';
 
 interface Props {
   navigation: any;

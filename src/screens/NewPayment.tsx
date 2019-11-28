@@ -1,5 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, Modal } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import * as Permissions from 'expo-permissions';
+import * as Contacts from 'expo-contacts';
+import screenStyles from '../screenStyles';
 import {
   Header,
   Form,
@@ -24,13 +28,28 @@ import {
   PicPicker,
   CustomDatePicker,
   InputItem,
-  FriendListModal
+  FriendListModal,
+  DrawerHeader,
+  NewPayFooter,
+  ChosenFriendListItem
 } from '../components';
 import config from '../../config';
 
-export interface Props {}
+export interface Props {
+  navigation: any;
+  fromListView: boolean;
+}
 
+export interface Person {
+  name: string;
+  phone: string;
+  id?: string;
+  clicked: boolean;
+}
 export interface State {
+  friendList: Person[];
+  chosenNums: string[];
+  chosenList: Person[];
   title: string;
   totalPay: string;
   chosenDate: Date;
@@ -38,43 +57,105 @@ export interface State {
   printModal: boolean;
   disabled: boolean;
   modifyButtonText: string;
-  chosenParty?: object[];
   email: string;
   pricebookId: string;
-  // 주소록에서 목록을 가져와서 [이름/번호]
-  // 서버로 전송하면 번호 기반으로 가입자만 가려서 리턴 req[이름/전화번호] //res [이름/전화번호/userId]
-  // 받은 리턴 목록 스크린에 출력(베이스 리스트 가능하면 페이지 전환없이? 모달이라든가..)
-  // 참여자를 선택. 하고 완료(확인)하면 참여자수 자동 계산, 1/n금액 자동계산.
-  // 결제 등록 시 , 서버로 해당 정보들 보냄(참여자는 user.id로 보냄.).
+}
 
-  //participant : [{username: 'hae',phone:'010',userId:'3'}, ...]
-  //베어미니멈 - 10원 단위 절사하고 차액은 보스 부담
-  //어드밴스드 1 : 보스의 추가 부담 내용 푸시 알림에 포함
-  //어드밴스드 2 : 차액 부담자 유저가 선택
-}
-//InfoToServer
-//totalPay, peopleCnt, subject, date
-export interface Props {
-  navigation: any;
-  fromListView: boolean;
-}
-export default class NewPayment extends React.Component<Props, State> {
+export default class NewPayment extends React.Component<Props> {
   state = {
+    friendList: [],
+    chosenNums: [],
+    chosenList: [],
     title: '',
     totalPay: '',
     chosenDate: new Date(),
-    peopleCnt: 1,
+    peopleCnt: 0,
     printModal: false,
-    disabled: this.props.fromListView === null ? false : true,
-    modifyButtonText: this.props.fromListView === null ? '등록' : '수정',
-    chosenParty: [],
+    disabled: this.props.fromListView === undefined ? false : true,
+    // --->> this.props.fromListView ? true : false ???
+    modifyButtonText: this.props.fromListView === undefined ? '등록' : '수정',
+    // --->> this.props.fromListView ? '등록' : '수정' ???
     email: '',
     pricebookId: ''
   };
 
-  setDate(newDate: Date): any {
+  //get user filtered contact list
+  componentDidMount = async () => {
+    console.log('fromListView', this.props.fromListView);
+
+    //스크린 모드 식별
+    const { navigation } = this.props;
+    console.log('this.props.navigation', navigation.state.params);
+
+    if (navigation.state.params === undefined) {
+      console.log('새 글 등록');
+    } else {
+      console.log('=========글 보기 페이지');
+      const { fromListView, email, pricebookId } = navigation.state.params;
+      //**************************//
+      //서버에서 개별결제 페이지 리스폰스 보낼때 참여자 전화번호 같이 보내줘야함
+      //참여자 전화번호 추출해서 state.chosenNums=[ 'phone', 'phone', 'phone' ]
+      // ---------> 비활성화 클릭하면, 등록된 결제건은 참여자 수정이 불가능합니다.
+      if (fromListView) {
+        await this.setState({
+          ...this.state,
+          disabled: true,
+          email: email,
+          pricebookId: pricebookId
+        });
+        await this.doFetch();
+      }
+    }
+
+    //친구 목록 로딩
+    const userCheckAPI = config.serverAddress + '/users/contacts';
+    // ask permission to get contact
+    const { status } = await Permissions.askAsync(Permissions.CONTACTS);
+    // get device contact list
+    if (status === 'granted') {
+      const { data } = await Contacts.getContactsAsync({
+        fields: [Contacts.PHONE_NUMBERS, Contacts.EMAILS]
+      });
+
+      if (data.length > 0) {
+        let newList = [];
+        for (let i = 1; i < data.length; i++) {
+          if (data[i].phoneNumbers) {
+            let contact: Person = {
+              name: data[i].name,
+              phone: data[i].phoneNumbers[0].number.replace(/\D/g, ''),
+              clicked: false
+            };
+            newList.push(contact);
+          }
+        }
+        // request server for checking app user
+        const fetchRes = await fetch(userCheckAPI, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          },
+          /////////////test mode/////////////
+          // JSON.stringify(newList)
+          body: JSON.stringify([{ name: '최방실', phone: '01041554686' }])
+        });
+        const userFilterdList = await fetchRes.json();
+        userFilterdList.forEach(user => {
+          user.clicked = this.state.chosenNums.includes(user.phone)
+            ? true
+            : false;
+        });
+        await this.setState({ ...this.state, friendList: userFilterdList });
+        console.log('userFilterdList', this.state.friendList);
+      }
+    }
+  };
+
+  //form handler functions
+  setDate = newDate => {
     this.setState({ ...this.state, chosenDate: newDate });
-  }
+  };
 
   onChangeTotalPay = e => {
     console.log('onchange do', e.nativeEvent.text);
@@ -94,17 +175,15 @@ export default class NewPayment extends React.Component<Props, State> {
     if (!this.state.totalPay) {
       return 'total 금액 입력해주세요!';
     } else {
-      return String(parseInt(this.state.totalPay) / (this.state.peopleCnt + 1));
+      const smallest = 100;
+      const MoneyForOne =
+        parseInt(this.state.totalPay) / (this.state.peopleCnt + 1);
+      const change = Math.floor(MoneyForOne / smallest) * smallest;
+      return `${change} 원`;
     }
   };
 
-  handleChosenParty = chosen => {
-    this.setState({
-      ...this.state,
-      chosenParty: chosen,
-      peopleCnt: chosen.length
-    });
-  };
+  //handle mode change
   toModifyMode = () => {
     console.log('toggle');
     if (this.state.disabled) {
@@ -124,11 +203,52 @@ export default class NewPayment extends React.Component<Props, State> {
     });
   };
 
+  //modal contacts switch
   modalSwitch = () => {
     this.setState({
       ...this.state,
       printModal: !this.state.printModal
     });
+  };
+
+  //handle select party
+  handleSelectParty = async phone => {
+    //newList = [...friendList] loop to find person, clicked = ! clicked
+    //setState {...this.state, friendList:newList}
+    let cnt = 0;
+    console.log('handleSelectParty');
+    console.log('phone', phone);
+    const newList = [...this.state.friendList];
+    newList.forEach(person => {
+      if (person.phone === phone) {
+        person.clicked = !person.clicked;
+      }
+    });
+    const chosen = [];
+    const chosenL = [];
+    newList.forEach(person => {
+      if (person.clicked) {
+        chosen.push(person.phone);
+        chosenL.push(person);
+        cnt++;
+      }
+    });
+    await this.setState({
+      ...this.state,
+      friendList: newList,
+      peopleCnt: cnt,
+      chosenNums: chosen,
+      chosenList: chosenL
+    });
+    console.log('friendList', this.state.friendList);
+    console.log('chosenNums', this.state.chosenNums);
+  };
+
+  //handle cancle modifying
+  handleCancle = () => {
+    //복사해 둔 최초 스테이트 값으로 셋스테이트 (리랜더링)
+    //버튼 '수정'
+    //서버 안보냄.
   };
 
   doFetch = async () => {
@@ -160,138 +280,115 @@ export default class NewPayment extends React.Component<Props, State> {
       chosenDate: responseJson.pricebook.partyDate
     });
   };
-  componentDidMount = async () => {
-    const { navigation } = this.props;
-    console.log('this.props.navigation', navigation.state.params);
-
-    if (navigation.state.params === undefined) {
-      console.log('새 글 등록');
-    } else {
-      console.log('=========글 보기 페이지');
-      const { fromListView, email, pricebookId } = navigation.state.params;
-      if (fromListView) {
-        await this.setState({
-          ...this.state,
-          disabled: true,
-          email: email,
-          pricebookId: pricebookId
-        });
-        await this.doFetch();
-      }
-    }
-  };
 
   render() {
     console.log('disabled', this.state.disabled);
     let { disabled } = this.state;
     return (
-      <Container style={this.styles.container}>
-        <Header>
-          <Left>
-            <Button transparent onPress={this.toggleDrawer}>
-              <Icon name="menu" />
-            </Button>
-          </Left>
-          <Body>
-            <Text style={{ alignSelf: 'auto' }}>해당 결제 정보</Text>
-          </Body>
-        </Header>
-
-        <Grid style={{ alignItems: 'center' }}>
-          <Row size={3}>
-            <Content
-              contentContainerStyle={{ flex: 1, justifyContent: 'center' }}
-            >
-              <View style={{ alignItems: 'center' }}>
-                <Form style={{ width: 300 }}>
-                  <InputItem
-                    label={'제목:' + this.state.title}
-                    disabled={disabled}
-                    onChange={this.onChangeTitle}
-                  />
-
-                  <Item fixedLabel>
-                    <Label>날짜</Label>
-                    <Text>
-                      Date: {this.state.chosenDate.toString().substr(0, 10)}
-                    </Text>
-                    <CustomDatePicker
+      <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
+        <Container style={screenStyles.container}>
+          <DrawerHeader title="새결제" toggleDrawer={this.toggleDrawer} />
+          <Grid style={{ alignItems: 'center' }}>
+            <Row size={1}>
+              <Content
+                contentContainerStyle={{ flex: 1, justifyContent: 'center' }}
+              >
+                <View style={{ alignItems: 'center' }}>
+                  <Form style={this.styles.form}>
+                    <InputItem
+                      label="제목"
                       disabled={disabled}
-                      setDate={this.setDate.bind(this)}
+                      onChange={this.onChangeTitle}
                     />
-                  </Item>
 
-                  <InputItem
-                    label={'총 금액 : ' + this.state.totalPay}
-                    disabled={disabled}
-                    onChange={this.onChangeTotalPay}
-                    keyT="numeric"
-                  />
-                  <Item fixedLabel>
-                    <Label>참여한 사람</Label>
-                    <FriendListModal
-                      printModal={this.state.printModal}
-                      modalSwitch={this.modalSwitch}
-                      handleChosen={this.handleChosenParty}
-                      chosen={this.state.chosenParty}
-                    />
-                    <Label> 총 {this.state.peopleCnt} 명</Label>
-                    <Right>
-                      <Button
-                        light
+                    <Item fixedLabel>
+                      <Label style={{ color: 'grey' }}>날짜</Label>
+                      <CustomDatePicker
                         disabled={disabled}
-                        onPress={this.modalSwitch}
-                      >
-                        <Text>선택하기</Text>
-                      </Button>
-                    </Right>
-                  </Item>
-                  <Item fixedLabel>
-                    <Label>1인당 금액</Label>
-                    <Input placeholder={`${this.calcN()} 원`} disabled={true} />
-                  </Item>
-                </Form>
-              </View>
-            </Content>
-          </Row>
-          <Row size={2}>
-            <Content>
-              <View style={{ justifyContent: 'flex-start' }}>
-                <PicPicker disabled={disabled} />
-              </View>
-            </Content>
-          </Row>
-        </Grid>
+                        setDate={this.setDate}
+                      />
+                    </Item>
+                    <InputItem
+                      label="총 금액"
+                      disabled={disabled}
+                      onChange={this.onChangeTotalPay}
+                      keyT="numeric"
+                    />
+                    <Item fixedLabel>
+                      <Label style={{ color: 'grey' }}>참여한 사람</Label>
+                      <FriendListModal
+                        printModal={this.state.printModal}
+                        modalSwitch={this.modalSwitch}
+                        handleSelect={this.handleSelectParty}
+                        friendList={this.state.friendList}
+                      />
+                      <Label>
+                        {' '}
+                        {this.state.peopleCnt
+                          ? `총 ${this.state.peopleCnt} 명`
+                          : ''}
+                      </Label>
+                      <Right>
+                        <Button
+                          disabled={disabled}
+                          onPress={this.modalSwitch}
+                          style={screenStyles.iconBtn}
+                        >
+                          <Icon name="search" style={{ color: '#6A1F9F' }} />
+                        </Button>
+                      </Right>
+                    </Item>
 
-        <Footer>
-          <FooterTab style={{ backgroundColor: '#FFF' }}>
-            <Button
-              onPress={() => {
-                console.log('돌아가기');
-              }}
-            >
-              <Text>돌아가기</Text>
-            </Button>
-            <Button onPress={this.toModifyMode}>
-              <Text>{this.state.modifyButtonText}</Text>
-            </Button>
-          </FooterTab>
-        </Footer>
-      </Container>
+                    {this.state.chosenList.length ? (
+                      <Item>
+                        {this.state.chosenList.map(person => {
+                          return <ChosenFriendListItem person={person.name} />;
+                        })}
+                      </Item>
+                    ) : (
+                      <Text />
+                    )}
+                    <Item fixedLabel>
+                      <Label style={{ color: 'grey' }}>1/n</Label>
+                      <Input placeholder={this.calcN()} disabled={true} />
+                    </Item>
+                  </Form>
+                </View>
+              </Content>
+            </Row>
+            <Row size={1}>
+              <Content>
+                <View style={{ justifyContent: 'flex-start' }}>
+                  <PicPicker disabled={disabled} />
+                </View>
+              </Content>
+            </Row>
+          </Grid>
+          <NewPayFooter
+            label={this.state.modifyButtonText}
+            onPress={this.toModifyMode}
+            goBack={this.handleCancle}
+          />
+        </Container>
+      </LinearGradient>
     );
   }
   styles = StyleSheet.create({
     container: {
       marginTop: 24,
       flex: 1,
-      backgroundColor: '#fff'
-      // alignItems: 'center'
-      // justifyContent: 'center'
+      backgroundColor: 'transparent'
+    },
+    form: {
+      width: 350,
+      backgroundColor: '#fff',
+      borderRadius: 10,
+      paddingLeft: 10,
+      paddingRight: 20
     },
     modal: {
       flex: 1,
       backgroundColor: 'rgba(52, 52, 52, 0.8)',
-      // alignItems: 'center',
       padding: 50
     },
     text: {

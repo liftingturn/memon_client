@@ -5,13 +5,23 @@ import FriendListItem from './FriendListItem';
 import FriendListModal from './FriendListModal';
 import InputItem from './InputItem';
 import PicPicker from './PicPicker';
+import DrawerHeader from './DrawerHeader';
+import NetCard from './NetCard';
+import NewPayFooter from './NewPayFooter';
+import ButtonBasic from './ButtonBasic';
+import ChosenFriendListItem from './ChosenFriendListItem';
 
 export {
+  ButtonBasic,
+  NewPayFooter,
   ButtonChoice,
   CustomDatePicker,
   FriendList,
   FriendListItem,
   FriendListModal,
   InputItem,
-  PicPicker
+  PicPicker,
+  DrawerHeader,
+  NetCard,
+  ChosenFriendListItem
 };

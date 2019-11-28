@@ -1,9 +1,4 @@
-import React from 'react';
-import {
-  Text,
-  WebViewIOSLoadRequestEvent,
-  ShadowPropTypesIOS
-} from 'react-native';
+import * as React from 'react';
 import { Item, Label, Input } from 'native-base';
 
 interface Props {
@@ -17,7 +12,7 @@ const InputItem: React.FC<Props> = ({ label, onChange, disabled, keyT }) => {
   const KeyType = keyT ? keyT : 'default';
   return (
     <Item fixedLabel>
-      <Label>{label}</Label>
+      <Label style={{ color: 'grey' }}>{label}</Label>
       <Input onChange={onChange} disabled={disabled} keyboardType={KeyType} />
     </Item>
   );

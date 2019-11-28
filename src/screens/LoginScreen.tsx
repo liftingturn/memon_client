@@ -1,12 +1,5 @@
 import * as React from 'react';
-import { Component } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  Button
-} from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Button } from 'react-native';
 import * as Google from 'expo-google-app-auth';
 import firebase from 'firebase';
 import config from './../../config';

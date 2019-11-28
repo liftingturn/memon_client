@@ -3,6 +3,7 @@ import { Button, Image, View, Text } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
+import ButtonBasic from './ButtonBasic';
 
 export interface State {
   image: any;
@@ -21,13 +22,17 @@ export default class PicPicker extends React.Component<Props, State> {
 
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Button
-          title="첨부할 사진 선택"
+        <ButtonBasic
+          label="photo-camera"
+          type="icon"
           onPress={this._pickImage}
           disabled={this.props.disabled}
         />
         {image && (
-          <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
+          <Image
+            source={{ uri: image }}
+            style={{ width: 300, height: 200, borderRadius: 5 }}
+          />
         )}
         <Text>{this.props.disabled}</Text>
       </View>
