@@ -12,7 +12,7 @@ const InputItem: React.FC<Props> = ({ label, onChange, disabled, keyT }) => {
   const KeyType = keyT ? keyT : 'default';
   return (
     <Item fixedLabel>
-      <Label>{label}</Label>
+      <Label style={{ color: 'grey' }}>{label}</Label>
       <Input onChange={onChange} disabled={disabled} keyboardType={KeyType} />
     </Item>
   );

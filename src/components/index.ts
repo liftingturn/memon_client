@@ -9,6 +9,7 @@ import DrawerHeader from './DrawerHeader';
 import NetCard from './NetCard';
 import NewPayFooter from './NewPayFooter';
 import ButtonBasic from './ButtonBasic';
+import ChosenFriendListItem from './ChosenFriendListItem';
 
 export {
   ButtonBasic,
@@ -21,5 +22,6 @@ export {
   InputItem,
   PicPicker,
   DrawerHeader,
-  NetCard
+  NetCard,
+  ChosenFriendListItem
 };

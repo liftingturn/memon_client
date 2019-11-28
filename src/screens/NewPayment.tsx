@@ -30,7 +30,8 @@ import {
   InputItem,
   FriendListModal,
   DrawerHeader,
-  NewPayFooter
+  NewPayFooter,
+  ChosenFriendListItem
 } from '../components';
 import config from '../../config';
 
@@ -48,6 +49,7 @@ export interface Person {
 export interface State {
   friendList: Person[];
   chosenNums: string[];
+  chosenList: Person[];
   title: string;
   totalPay: string;
   chosenDate: Date;
@@ -63,6 +65,7 @@ export default class NewPayment extends React.Component<Props> {
   state = {
     friendList: [],
     chosenNums: [],
+    chosenList: [],
     title: '',
     totalPay: '',
     chosenDate: new Date(),
@@ -150,9 +153,9 @@ export default class NewPayment extends React.Component<Props> {
   };
 
   //form handler functions
-  setDate(newDate: Date): any {
+  setDate = newDate => {
     this.setState({ ...this.state, chosenDate: newDate });
-  }
+  };
 
   onChangeTotalPay = e => {
     console.log('onchange do', e.nativeEvent.text);
@@ -176,7 +179,7 @@ export default class NewPayment extends React.Component<Props> {
       const MoneyForOne =
         parseInt(this.state.totalPay) / (this.state.peopleCnt + 1);
       const change = Math.floor(MoneyForOne / smallest) * smallest;
-      return JSON.stringify(change);
+      return `${change} 원`;
     }
   };
 
@@ -219,19 +222,23 @@ export default class NewPayment extends React.Component<Props> {
     newList.forEach(person => {
       if (person.phone === phone) {
         person.clicked = !person.clicked;
-        cnt++;
       }
     });
-    const chosen = newList.map(person => {
+    const chosen = [];
+    const chosenL = [];
+    newList.forEach(person => {
       if (person.clicked) {
-        return person.phone;
+        chosen.push(person.phone);
+        chosenL.push(person);
+        cnt++;
       }
     });
     await this.setState({
       ...this.state,
       friendList: newList,
       peopleCnt: cnt,
-      chosenNums: chosen
+      chosenNums: chosen,
+      chosenList: chosenL
     });
     console.log('friendList', this.state.friendList);
     console.log('chosenNums', this.state.chosenNums);
@@ -331,12 +338,19 @@ export default class NewPayment extends React.Component<Props> {
                         </Button>
                       </Right>
                     </Item>
+
+                    {this.state.chosenList.length ? (
+                      <Item>
+                        {this.state.chosenList.map(person => {
+                          return <ChosenFriendListItem person={person.name} />;
+                        })}
+                      </Item>
+                    ) : (
+                      <Text />
+                    )}
                     <Item fixedLabel>
                       <Label style={{ color: 'grey' }}>1/n</Label>
-                      <Input
-                        placeholder={`${this.calcN()} 원`}
-                        disabled={true}
-                      />
+                      <Input placeholder={this.calcN()} disabled={true} />
                     </Item>
                   </Form>
                 </View>
