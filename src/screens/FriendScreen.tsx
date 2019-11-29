@@ -26,7 +26,13 @@ export default class FriendScreen extends React.Component<Props, State> {
   toggleDrawer = () => {
     this.props.navigation.toggleDrawer();
   };
-
+  async componentDidMount() {
+    // BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+    if (this.props.navigation.state.params === undefined) {
+      alert(':wrench:해당 페이지는 아직 구현중입니다');
+      this.props.navigation.navigate('Home');
+    }
+  }
   render() {
     return (
       <Container style={this.styles.container}>
@@ -43,7 +49,6 @@ export default class FriendScreen extends React.Component<Props, State> {
         </Header>
         <Content>
           <Text>This is Content Section</Text>
-          <FriendList></FriendList>
         </Content>
         <Footer>
           <FooterTab>

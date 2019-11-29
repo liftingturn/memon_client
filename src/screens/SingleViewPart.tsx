@@ -79,7 +79,9 @@ export default class SingleViewPart extends React.Component<Props, State> {
     pricebookId: '',
     refreshing: false
   };
-
+  static navigationOptions = {
+    activeTintColor: '#e91e63'
+  };
   setDate(newDate: Date): any {
     this.setState({ ...this.state, chosenDate: newDate });
   }
@@ -108,30 +110,35 @@ export default class SingleViewPart extends React.Component<Props, State> {
   // handleBackPress = () => {};
   async componentDidMount() {
     // BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
-    let emailObj = {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        boss: this.props.navigation.state.params.boss,
-        email: this.props.navigation.state.params.email,
-        pricebookId: this.props.navigation.state.params.pricebookId
-      })
-    };
-    let response = await fetch(config.serverAddress + '/pricebook', emailObj);
+    if (this.props.navigation.state.params === undefined) {
+      alert('해당 페이지는 결제 리스트를 통한 접근만 사용합니다.');
+      this.props.navigation.navigate('Home');
+    } else {
+      let emailObj = {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          boss: this.props.navigation.state.params.boss,
+          email: this.props.navigation.state.params.email,
+          pricebookId: this.props.navigation.state.params.pricebookId
+        })
+      };
+      let response = await fetch(config.serverAddress + '/pricebook', emailObj);
 
-    let responseJson = await response.json();
-    console.log(responseJson);
-    this.setState({
-      ...this.state,
-      title: responseJson.pricebook.title,
-      totalPay: responseJson.pricebook.totalPrice,
-      peopleCnt: responseJson.pricebook.count,
-      chosenDate: responseJson.pricebook.partyDate,
-      pricebookId: responseJson.pricebook.id
-    });
+      let responseJson = await response.json();
+      console.log(responseJson);
+      this.setState({
+        ...this.state,
+        title: responseJson.pricebook.title,
+        totalPay: responseJson.pricebook.totalPrice,
+        peopleCnt: responseJson.pricebook.count,
+        chosenDate: responseJson.pricebook.partyDate,
+        pricebookId: responseJson.pricebook.id
+      });
+    }
   }
   pushRequest = async () => {
     console.log('i want to push');
