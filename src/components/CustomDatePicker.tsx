@@ -1,5 +1,5 @@
 import React from 'react';
-import { DatePicker, Item, Input } from 'native-base';
+import { DatePicker } from 'native-base';
 import { View } from 'react-native';
 const CustomDatePicker = props => {
   return (

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Text, StyleSheet } from 'react-native';
-import { ListItem, Left, Thumbnail, Body, Right, Button } from 'native-base';
-import ButtonChoice from './ButtonChoice';
+import { ListItem, Left, Body } from 'native-base';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface Props {

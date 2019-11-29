@@ -1,6 +1,5 @@
 import React from 'react';
 import { Footer, FooterTab, Button } from 'native-base';
-import { Text } from 'react-native';
 import ButtonModify from './ButtonModify';
 
 const NewPayFooter = props => {

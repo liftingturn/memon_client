@@ -33,4 +33,30 @@ const screenStyles = StyleSheet.create({
   }
 });
 
-export default screenStyles;
+const styles_newPayment = StyleSheet.create({
+  container: {
+    marginTop: 24,
+    flex: 1,
+    backgroundColor: 'transparent'
+  },
+  form: {
+    width: 350,
+    backgroundColor: '#f5effb',
+    borderRadius: 5,
+    paddingLeft: 10,
+    paddingRight: 20,
+    marginBottom: 30,
+    elevation: 5
+  },
+  modal: {
+    flex: 1,
+    backgroundColor: 'rgba(52, 52, 52, 0.8)',
+    padding: 50
+  },
+  text: {
+    color: '#3f2949',
+    marginTop: 10
+  }
+});
+
+export { screenStyles, styles_newPayment };

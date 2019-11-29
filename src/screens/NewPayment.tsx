@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Modal } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
-import screenStyles from '../screenStyles';
+import { screenStyles, styles_newPayment } from '../screenStyles';
 import firebase from 'firebase';
 import { Person, Payment } from '../types';
 import {
@@ -158,8 +158,7 @@ export default class NewPayment extends React.Component<Props> {
   };
 
   handlePicPicker = async uri => {
-    await this.setState({ ...this.state, billImgSrc: uri });
-    console.log('billImgSrc', this.state.billImgSrc);
+    this.setState({ ...this.state, billImgSrc: uri });
   };
 
   remainder = '';
@@ -345,7 +344,7 @@ export default class NewPayment extends React.Component<Props> {
             }}
           >
             <View style={{ alignItems: 'center', marginBottom: 15 }}>
-              <Form style={this.styles.form}>
+              <Form style={styles_newPayment.form}>
                 <InputItem
                   label="제목"
                   disabled={disabled}
@@ -425,29 +424,4 @@ export default class NewPayment extends React.Component<Props> {
       </LinearGradient>
     );
   }
-  styles = StyleSheet.create({
-    container: {
-      marginTop: 24,
-      flex: 1,
-      backgroundColor: 'transparent'
-    },
-    form: {
-      width: 350,
-      backgroundColor: '#f5effb',
-      borderRadius: 5,
-      paddingLeft: 10,
-      paddingRight: 20,
-      marginBottom: 30,
-      elevation: 5
-    },
-    modal: {
-      flex: 1,
-      backgroundColor: 'rgba(52, 52, 52, 0.8)',
-      padding: 50
-    },
-    text: {
-      color: '#3f2949',
-      marginTop: 10
-    }
-  });
 }

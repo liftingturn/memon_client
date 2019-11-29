@@ -1,17 +1,6 @@
 import React, { Component } from 'react';
-import {
-  Container,
-  Grid,
-  Content,
-  Card,
-  CardItem,
-  Body,
-  Col,
-  List
-} from 'native-base';
+import { Container, Content, List } from 'native-base';
 import { Text } from 'react-native';
-import * as Contacts from 'expo-contacts';
-import * as Permissions from 'expo-permissions';
 import FriendListItem from './FriendListItem';
 
 interface Props {

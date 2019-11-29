@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Item, Label, Input } from 'native-base';
-import screenStyles from '../screenStyles';
+import { screenStyles } from '../screenStyles';
 interface Props {
   label: string;
   onChange: any;

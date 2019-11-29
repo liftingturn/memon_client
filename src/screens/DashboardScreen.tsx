@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { NetCard, DrawerHeader, ButtonBasic } from '../components';
 import config from './../../config';
 import firebase from 'firebase';
-import screenStyles from '../screenStyles';
+import { screenStyles } from '../screenStyles';
 
 import { Container, Content, Button } from 'native-base';
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { Item, Label, Input, Right, Button } from 'native-base';
-import screenStyles from '../screenStyles';
+import { screenStyles } from '../screenStyles';
 
 const SplitPayment = props => {
   return (
