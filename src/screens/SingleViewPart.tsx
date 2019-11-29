@@ -67,7 +67,7 @@ export default class SingleViewPart extends React.Component<Props, State> {
     chosenDate: new Date(),
     peopleCnt: 1,
     isVisible: false,
-    billImgSrc: null
+    billImgSrc: null,
     pricebookId: ''
   };
 
