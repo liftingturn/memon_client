@@ -200,11 +200,9 @@ export default class SingleViewPart extends React.Component<Props, State> {
                 <Form style={styles_newPayment.form}>
                   <Item fixedLabel>
                     <Label style={screenStyles.inputLabel}>제목</Label>
-                    <Input
-                      style={screenStyles.inputTxt}
-                      onChange={this.onChangeTitle}
-                      disabled={fromList}
-                    />
+                    <Text style={screenStyles.inputTxt}>
+                      {this.state.title}
+                    </Text>
                   </Item>
                   <Item fixedLabel>
                     <Label style={screenStyles.inputLabel}>결제생성일</Label>
