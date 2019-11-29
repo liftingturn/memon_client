@@ -187,7 +187,7 @@ export default class SingleViewPart extends React.Component<Props, State> {
         <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
           <Container style={screenStyles.container}>
             <DrawerHeader
-              title="Participant view"
+              title="입금 확인을 요청하세요!"
               toggleDrawer={this.toggleDrawer}
             />
             <Content
