@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  RefreshControl
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NetCard, DrawerHeader, ButtonBasic } from '../components';
 import config from './../../config';

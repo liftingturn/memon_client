@@ -129,6 +129,7 @@ export default class NewPayment extends React.Component<Props> {
         });
         const userFilterdList = await fetchRes.json();
         userFilterdList.forEach(user => {
+          user.isIn = true;
           user.clicked = this.state.chosenNums.includes(user.phone)
             ? true
             : false;
