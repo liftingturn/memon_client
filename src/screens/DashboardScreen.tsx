@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  RefreshControl
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NetCard, DrawerHeader, ButtonBasic } from '../components';
 import config from './../../config';
@@ -15,12 +21,14 @@ interface State {
   moneyToPay: string;
   moneyToGet: string;
   uri: string;
+  refreshing: boolean;
 }
 export default class DashboardScreen extends Component<Props, State> {
   state: State = {
     moneyToPay: '',
     moneyToGet: '',
-    uri: ''
+    uri: '',
+    refreshing: false
   };
   moveToNewPayment = () => {
     this.props.navigation.navigate('NewPayment');
@@ -53,27 +61,40 @@ export default class DashboardScreen extends Component<Props, State> {
       console.error(error);
     }
   }
-
+  _onRefresh = async () => {
+    this.setState({ refreshing: true });
+    await this.componentDidMount();
+    this.setState({ refreshing: false });
+  };
   render() {
     console.log('================enter dashboard');
     return (
-      <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
-        <Container style={screenStyles.container}>
-          <DrawerHeader title="Dashboard" toggleDrawer={this.toggleDrawer} />
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this._onRefresh}
+          />
+        }
+      >
+        <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
+          <Container style={screenStyles.container}>
+            <DrawerHeader title="Dashboard" toggleDrawer={this.toggleDrawer} />
 
-          <Content
-            style={{ backgroundColor: 'transparent' }}
-            scrollEnabled={false}
-          >
-            <NetCard
-              header={'net'}
-              get={this.state.moneyToGet}
-              pay={this.state.moneyToPay}
-            />
-          </Content>
-          <ButtonBasic type="txt" label="+" onPress={this.moveToNewPayment} />
-        </Container>
-      </LinearGradient>
+            <Content
+              style={{ backgroundColor: 'transparent' }}
+              scrollEnabled={false}
+            >
+              <NetCard
+                header={'net'}
+                get={this.state.moneyToGet}
+                pay={this.state.moneyToPay}
+              />
+            </Content>
+            <ButtonBasic type="txt" label="+" onPress={this.moveToNewPayment} />
+          </Container>
+        </LinearGradient>
+      </ScrollView>
     );
   }
 

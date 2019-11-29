@@ -129,6 +129,7 @@ export default class NewPayment extends React.Component<Props> {
         });
         const userFilterdList = await fetchRes.json();
         userFilterdList.forEach(user => {
+          user.isIn = true;
           user.clicked = this.state.chosenNums.includes(user.phone)
             ? true
             : false;
@@ -335,6 +336,11 @@ export default class NewPayment extends React.Component<Props> {
     });
     console.log('afterFetch', this.state);
   };
+
+  componentWillReceiveProps() {
+    console.log('componentWillReceiveProps');
+    console.log('===props', this.props);
+  }
 
   render() {
     console.log('disabled', this.state.disabled);

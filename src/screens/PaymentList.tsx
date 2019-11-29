@@ -1,19 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { DrawerHeader } from '../components';
 import { screenStyles } from '../screenStyles';
 import {
   Container,
-  Header,
-  Title,
   Content,
-  Footer,
-  FooterTab,
   Button,
   Left,
   Right,
-  Body,
   Icon,
   List,
   ListItem
@@ -26,12 +21,20 @@ export interface Props {
 export interface State {
   email: string;
   paymentList: Object[];
+  refreshing: boolean;
+}
+
+function wait(timeout) {
+  return new Promise(resolve => {
+    setTimeout(resolve, timeout);
+  });
 }
 
 export default class PaymentList extends React.Component<Props, State> {
   state = {
     email: '',
-    paymentList: []
+    paymentList: [],
+    refreshing: false
   };
   toggleDrawer = () => {
     this.props.navigation.toggleDrawer();
@@ -76,59 +79,69 @@ export default class PaymentList extends React.Component<Props, State> {
     let responseJson = await response.json();
     this.setState({ email: user.email, paymentList: responseJson });
   }
+  onRefresh = async () => {
+    this.setState({ refreshing: true });
+    await this.getOwnPayments();
+    this.setState({ refreshing: false });
+  };
 
   render() {
     return (
-      <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
-        <Container style={screenStyles.container}>
-          <DrawerHeader
-            title="결제목록 리스트"
-            toggleDrawer={this.toggleDrawer}
+      <ScrollView
+        contentContainerStyle={this.styles.scrollView}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.onRefresh}
           />
+        }
+      >
+        <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
+          <Container style={screenStyles.container}>
+            <DrawerHeader
+              title="결제목록 리스트"
+              toggleDrawer={this.toggleDrawer}
+            />
 
-          <Content>
-            <Text>보라색:수금필요 노란색:입금필요</Text>
-            <List>
-              {this.state.paymentList.map(payment => {
-                return (
-                  //결제 종류별로 색 구분할거임. 그리고 key나 기타로 바로 개별view들어갈 때 해당 키 날릴거.
-                  <ListItem
-                    style={
-                      payment.boss ? this.styles.bossItem : this.styles.partItem
-                    }
-                    key={payment.pricebookId}
-                  >
-                    <Left>
-                      <Text>{payment.title}</Text>
-                      <Text>{payment.price}</Text>
-                    </Left>
-                    <Right>
-                      <Button
-                        rounded
-                        primary
-                        //danger
-                        style={this.styles.button}
-                        onPress={() => {
-                          this.pressEvent(payment.boss, payment.pricebookId);
-                        }}
-                      >
-                        <Icon name="arrow-forward" />
-                      </Button>
-                    </Right>
-                  </ListItem>
-                );
-              })}
-            </List>
-          </Content>
-          {/* <Footer>
-          <FooterTab>
-            <Button full>
-              <Text>Footer</Text>
-            </Button>
-          </FooterTab>
-        </Footer> */}
-        </Container>
-      </LinearGradient>
+            <Content>
+              <Text>보라색:수금필요 노란색:입금필요</Text>
+              <List>
+                {this.state.paymentList.map(payment => {
+                  return (
+                    //결제 종류별로 색 구분할거임. 그리고 key나 기타로 바로 개별view들어갈 때 해당 키 날릴거.
+                    <ListItem
+                      style={
+                        payment.boss
+                          ? this.styles.bossItem
+                          : this.styles.partItem
+                      }
+                      key={payment.pricebookId}
+                    >
+                      <Left>
+                        <Text>{payment.title}</Text>
+                        <Text>{payment.price}</Text>
+                      </Left>
+                      <Right>
+                        <Button
+                          rounded
+                          primary
+                          //danger
+                          style={this.styles.button}
+                          onPress={() => {
+                            this.pressEvent(payment.boss, payment.pricebookId);
+                          }}
+                        >
+                          <Icon name="arrow-forward" />
+                        </Button>
+                      </Right>
+                    </ListItem>
+                  );
+                })}
+              </List>
+            </Content>
+          </Container>
+        </LinearGradient>
+      </ScrollView>
     );
   }
   styles = StyleSheet.create({
@@ -144,6 +157,10 @@ export default class PaymentList extends React.Component<Props, State> {
       justifyContent: 'center'
     },
     bossItem: { backgroundColor: '#9c88ff' },
-    partItem: { backgroundColor: '#fbc531' }
+    partItem: { backgroundColor: '#fbc531' },
+    scrollView: {
+      flex: 1,
+      backgroundColor: 'pink'
+    }
   });
 }
