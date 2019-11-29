@@ -61,12 +61,13 @@ export default class NewPayment extends React.Component<Props> {
     chosenDate: new Date(),
     peopleCnt: 0,
     printModal: false,
-    disabled: this.props.fromListView ? false : true,
-    modifyButtonText: this.props.fromListView ? '등록' : '수정',
+    disabled: this.props.fromListView ? true : false,
+    modifyButtonText: '등록',
     email: '',
     pricebookId: '',
     billImgSrc: ''
   };
+  //    modifyButtonText: this.props.fromListView ? '등록' : '수정',
 
   //get user filtered contact list
   componentDidMount = async () => {
@@ -147,6 +148,7 @@ export default class NewPayment extends React.Component<Props> {
 
   onChangeTotalPay = e => {
     console.log('onchange do', e.nativeEvent.text);
+    this.calcN();
     this.setState({ ...this.state, totalPay: e.nativeEvent.text });
   };
 
@@ -163,17 +165,21 @@ export default class NewPayment extends React.Component<Props> {
   };
 
   remainder = '';
-  calcN = () => {
+  calcN = async () => {
+    console.log('////////////// * calcN * //////////////');
     console.log('state pay', this.state.totalPay);
     if (!this.state.totalPay) {
-      return '1/N';
+      this.setState({ ...this.state, singlePay: 'placeholder' });
+      console.log('placeholder');
     } else {
+      console.log('calcN!!!');
+
       const smallest = 100;
       const MoneyForOne =
         parseInt(this.state.totalPay) / (this.state.peopleCnt + 1);
       let change: any = Math.floor(MoneyForOne / smallest) * smallest;
       this.remainder = String(Math.round(MoneyForOne - change));
-      this.setState({ ...this.state, singlePay: change });
+      // this.setState({ ...this.state, singlePay: change });
 
       //print format
       const strChange = String(change);
@@ -183,18 +189,22 @@ export default class NewPayment extends React.Component<Props> {
           strChange.length % 3 === 0
             ? Math.floor(strChange.length / 3) - 1
             : Math.floor(strChange.length / 3);
+
         let last = strChange.length + 1;
+
         for (let i = maxComma; i > 0; i--) {
           formatStr = strChange.substring(last - 4, last) + ',' + formatStr;
           last = last - 4;
-          console.log(formatStr);
         }
         formatStr =
+          '₩' +
           strChange.substring(0, last) +
           ',' +
           formatStr.substring(0, formatStr.length - 1);
+        console.log('formatStr', formatStr);
       }
-      return `${formatStr} 원`;
+      await this.setState({ ...this.state, singlePay: formatStr });
+      console.log('singlePay', this.state.singlePay);
     }
   };
 
@@ -232,8 +242,6 @@ export default class NewPayment extends React.Component<Props> {
     //newList = [...friendList] loop to find person, clicked = ! clicked
     //setState {...this.state, friendList:newList}
     let cnt = 0;
-    console.log('handleSelectParty');
-    console.log('phone', phone);
     const newList = [...this.state.friendList];
     newList.forEach(person => {
       if (person.phone === phone) {
@@ -256,6 +264,7 @@ export default class NewPayment extends React.Component<Props> {
       chosenNums: chosen,
       chosenList: chosenL
     });
+    this.calcN();
     console.log('friendList', this.state.friendList);
     console.log('chosenNums', this.state.chosenNums);
   };
@@ -277,7 +286,7 @@ export default class NewPayment extends React.Component<Props> {
       this.state.chosenDate.getMonth() +
       '-' +
       this.state.chosenDate.getDate();
-
+    const singlePay = this.state.singlePay.replace(/[^0-9]/g, '');
     let payment: Payment = {
       priceBook: {
         totalPrice: Number(this.state.totalPay),
@@ -286,7 +295,7 @@ export default class NewPayment extends React.Component<Props> {
         partyDate,
         title: this.state.title,
         transCompleted: false,
-        fixedTotalPrice: Number(this.state.singlePay)
+        fixedTotalPrice: Number(singlePay)
       },
       email: user.email,
       participant: this.state.chosenList
@@ -422,7 +431,7 @@ export default class NewPayment extends React.Component<Props> {
                 </View>
 
                 <SplitPayment
-                  splitPayment={this.calcN()}
+                  splitPayment={this.state.singlePay}
                   remainder={this.remainder}
                 />
               </Form>

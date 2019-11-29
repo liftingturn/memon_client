@@ -10,7 +10,8 @@ export interface State {
 }
 export interface Props {
   disabled: boolean;
-  handlePicker: Promise<void>;
+  handlePicker?: Promise<void>;
+  uri?: any;
 }
 
 export default class PicPicker extends React.Component<Props, State> {
@@ -19,7 +20,7 @@ export default class PicPicker extends React.Component<Props, State> {
   };
 
   render() {
-    let { image } = this.state;
+    let { image } = this.props.uri ? this.props.uri : this.state;
 
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -29,6 +30,7 @@ export default class PicPicker extends React.Component<Props, State> {
           onPress={this._pickImage}
           disabled={this.props.disabled}
         />
+        <Text>{this.props.uri}</Text>
         {image && (
           <Image
             source={{ uri: image }}
