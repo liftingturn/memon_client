@@ -4,6 +4,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
 import { screenStyles, styles_newPayment } from '../screenStyles';
+import firebase from 'firebase';
+import config from '../../config';
 
 import {
   Header,
@@ -20,7 +22,8 @@ import {
   Content,
   Icon,
   Body,
-  List
+  List,
+  Spinner
 } from 'native-base';
 
 import {
@@ -33,15 +36,17 @@ import {
   ChosenFriendListItem,
   SplitPayment
 } from '../components';
-import config from '../../config';
+
 
 export interface State {
+  pushing: boolean;
   title: string;
   totalPay: string;
   chosenDate: Date;
   peopleCnt: number;
   isVisible: boolean;
   billImgSrc: any;
+  pricebookId: string;
 }
 //InfoToServer
 //totalPay, peopleCnt, subject, date
@@ -56,12 +61,14 @@ export interface Props {
 //자신이 boss일 때, part일 때 달라져야 한다.    입금요청/입금확인요청
 export default class SingleViewPart extends React.Component<Props, State> {
   state = {
+    pushing: false,
     title: '',
     totalPay: '',
     chosenDate: new Date(),
     peopleCnt: 1,
     isVisible: false,
     billImgSrc: null
+    pricebookId: ''
   };
 
   setDate(newDate: Date): any {
@@ -113,9 +120,44 @@ export default class SingleViewPart extends React.Component<Props, State> {
       title: responseJson.pricebook.title,
       totalPay: responseJson.pricebook.totalPrice,
       peopleCnt: responseJson.pricebook.count,
-      chosenDate: responseJson.pricebook.partyDate
+      chosenDate: responseJson.pricebook.partyDate,
+      pricebookId: responseJson.pricebook.id
     });
   }
+  pushRequest = async () => {
+    console.log('i want to push');
+
+    this.setState({ ...this.state, pushing: true });
+    const user = await firebase.auth().currentUser;
+    let emailObj = {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        title: user.displayName,
+        pricebookId: this.state.pricebookId,
+        msg: ` [${this.state.title}] 모임에 대한 입금 확인을 요청하였습니다.`,
+        target: 'boss'
+      })
+    };
+    let response = await fetch(
+      config.serverAddress + '/users/pushtoken',
+      emailObj
+    );
+    console.log('response.status', response.status);
+    if (response.status === 200) {
+      alert('메세지 전송 성공!');
+      this.setState({ ...this.state, pushing: false });
+    } else if (response.status === 400) {
+      alert('메세지 전송 실패');
+      this.setState({ ...this.state, pushing: false });
+    }
+    // let responseJson = await response.json();
+    // console.log(responseJson);
+  };
+
   render() {
     let fromList = !this.props.boss;
     let { billImgSrc } = this.state;
@@ -190,11 +232,15 @@ export default class SingleViewPart extends React.Component<Props, State> {
           </Content>
           <Footer>
             <FooterTab>
-              <Button>
-                <Text>결제 확인 요청</Text>
+              <Button onPress={this.pushRequest}>
+                {this.state.pushing === false ? (
+                  <Text>결제 확인 요청</Text>
+                ) : (
+                  <Spinner color="yellow" />
+                )}
               </Button>
             </FooterTab>
-          </Footer>
+        </Footer>
         </Container>
       </LinearGradient>
     );

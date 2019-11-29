@@ -6,6 +6,7 @@ import config from './../../config';
 import firebase from 'firebase';
 import { LinearGradient } from 'expo-linear-gradient';
 import { DrawerHeader } from '../components';
+import savePushToken from '../components/savePushToken';
 
 interface Props {
   navigation: any;
@@ -30,6 +31,8 @@ export default class PhoneInputScreen extends React.Component<Props, State> {
   };
 
   signup = async (phoneNumber, email) => {
+    let pushToken = await savePushToken();
+    console.log('pushToken in phoneinputScreen', pushToken);
     let signupBody = {
       method: 'POST',
       headers: {
@@ -39,12 +42,13 @@ export default class PhoneInputScreen extends React.Component<Props, State> {
       body: JSON.stringify({
         email: email, //토큰에서 email 긁거나 통과!
         phone: phoneNumber,
-        avatar: this.randomAvatar() //귣?
+        avatar: this.randomAvatar(), //귣?
+        pushtoken: pushToken
       })
     };
     try {
       let signupResult = await fetch(
-        config.serverAddress + '/signup',
+        config.serverAddress + '/users/signup',
         signupBody
       );
       if (!signupResult.ok) {
@@ -71,8 +75,9 @@ export default class PhoneInputScreen extends React.Component<Props, State> {
     var user = await firebase.auth().currentUser;
     let name, email, photoUrl, uid, emailVerified;
     if (user != null) {
+      //파이어베이스에 기록 존재하고
       name = user.displayName;
-      // email = email;
+
       email = user.email;
       photoUrl = user.photoURL;
       emailVerified = user.emailVerified;
