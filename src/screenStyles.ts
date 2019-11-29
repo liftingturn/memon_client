@@ -2,10 +2,10 @@ import { StyleSheet } from 'react-native';
 
 const screenStyles = StyleSheet.create({
   inputLabel: {
-    color: '#15181a',
-    fontWeight: 'bold',
-    fontSize: 16,
-    borderRightColor: 'grey',
+    color: 'grey',
+    fontWeight: '300',
+    fontSize: 15,
+    borderRightColor: '#c2c2c4',
     borderRightWidth: 1,
     flex: 1
   },

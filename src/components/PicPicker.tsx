@@ -10,6 +10,7 @@ export interface State {
 }
 export interface Props {
   disabled: boolean;
+  handlePicker: () => void;
 }
 
 export default class PicPicker extends React.Component<Props, State> {
@@ -63,6 +64,7 @@ export default class PicPicker extends React.Component<Props, State> {
     console.log(result);
 
     if (!result.cancelled) {
+      this.props.handlePicker(result.uri);
       this.setState({ image: result.uri });
     }
   };

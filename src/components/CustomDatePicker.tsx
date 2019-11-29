@@ -16,8 +16,9 @@ const CustomDatePicker = props => {
         placeHolderText="날짜를 선택해주세요."
         textStyle={{ color: 'green' }}
         placeHolderTextStyle={{
-          color: 'grey',
-          backgroundColor: 'transparent'
+          color: '#c2c2c4',
+          backgroundColor: 'transparent',
+          paddingLeft: 15
         }}
         onDateChange={props.setDate}
         disabled={props.disabled}

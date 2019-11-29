@@ -4,14 +4,17 @@ import { Button, View, Right, Left, Body } from 'native-base';
 import { Props } from '../screens/SingleViewPart';
 
 const ChosenFriendListItem = props => {
-  const status = 'done'; //props
-  const statusColor =
-    status !== 'done' ? (status === 'suggest' ? 'red' : 'yellow ') : 'green';
+  //const status = props.status ? '완료' : '대기'; //props
+  //  const statusColor = props.status !== 'done' ? '#bba8e0' : '#c2c2c4';
+
+  const status = props.name === '최방실' ? '완료' : '대기'; //props
+  const statusColor = status === '완료' ? '#bba8e0' : '#c2c2c4';
   const styles = StyleSheet.create({
     btn: {
-      backgroundColor: '#fff',
+      backgroundColor: 'transparent',
       borderWidth: 0,
-      borderColor: 'transparent',
+      borderColor: '#bba8e0',
+      borderBottomWidth: 1,
       height: 28,
       marginVertical: 3,
       marginRight: 0,
@@ -21,7 +24,7 @@ const ChosenFriendListItem = props => {
       elevation: 0
     },
     txt: {
-      color: '#1d1733',
+      color: 'grey',
       fontWeight: '400',
       fontSize: 15
     },
@@ -29,16 +32,21 @@ const ChosenFriendListItem = props => {
       color: statusColor,
       fontWeight: '600',
       marginRight: 20
+    },
+    section: {
+      flex: 1
     }
   });
   return (
     <Button style={styles.btn} disabled={true}>
-      <Left style={{ flex: 1 }} />
-      <Body style={{ flex: 1 }}>
+      <Left style={styles.section} />
+      <Body style={styles.section}>
         <Text style={styles.txt}>{props.name}</Text>
       </Body>
-      <Right style={{ flex: 1 }}>
-        <Text style={styles.status}>○</Text>
+      <Right style={styles.section}>
+        {props.name !== '나' ? (
+          <Text style={styles.status}>{status}</Text>
+        ) : null}
       </Right>
     </Button>
   );

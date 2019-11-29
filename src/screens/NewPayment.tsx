@@ -4,24 +4,17 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
 import screenStyles from '../screenStyles';
+import firebase from 'firebase';
+import { Person, Payment } from '../types';
 import {
-  Header,
   Form,
   Label,
-  Input,
   Item,
   Container,
-  Left,
   Right,
-  Footer,
-  FooterTab,
   Button,
   Content,
-  Icon,
-  Body,
-  Grid,
-  Col,
-  Row
+  Icon
 } from 'native-base';
 
 import {
@@ -41,18 +34,12 @@ export interface Props {
   fromListView: boolean;
 }
 
-export interface Person {
-  name: string;
-  phone: string;
-  id?: string;
-  clicked: boolean;
-}
 export interface State {
   friendList: Person[];
   chosenNums: string[];
   chosenList: Person[];
   title: string;
-  totalPay: string;
+  totalPay: number | string;
   chosenDate: Date;
   peopleCnt: number;
   printModal: boolean;
@@ -77,7 +64,8 @@ export default class NewPayment extends React.Component<Props> {
     modifyButtonText: this.props.fromListView === undefined ? '등록' : '수정',
     // --->> this.props.fromListView ? '등록' : '수정' ???
     email: '',
-    pricebookId: ''
+    pricebookId: '',
+    billImgSrc: ''
   };
 
   //get user filtered contact list
@@ -137,8 +125,6 @@ export default class NewPayment extends React.Component<Props> {
             Accept: 'application/json',
             'Content-Type': 'application/json'
           },
-          /////////////test mode/////////////
-          // JSON.stringify(newList)
           body: JSON.stringify(newList)
         });
         const userFilterdList = await fetchRes.json();
@@ -154,8 +140,8 @@ export default class NewPayment extends React.Component<Props> {
   };
 
   //form handler functions
-  setDate = newDate => {
-    this.setState({ ...this.state, chosenDate: newDate });
+  setDate = async newDate => {
+    await this.setState({ ...this.state, chosenDate: newDate });
   };
 
   onChangeTotalPay = e => {
@@ -171,7 +157,12 @@ export default class NewPayment extends React.Component<Props> {
     this.props.navigation.toggleDrawer();
   };
 
-  remainder = 0;
+  handlePicPicker = async uri => {
+    await this.setState({ ...this.state, billImgSrc: uri });
+    console.log('billImgSrc', this.state.billImgSrc);
+  };
+
+  remainder = '';
   calcN = () => {
     console.log('state pay', this.state.totalPay);
     if (!this.state.totalPay) {
@@ -180,20 +171,39 @@ export default class NewPayment extends React.Component<Props> {
       const smallest = 100;
       const MoneyForOne =
         parseInt(this.state.totalPay) / (this.state.peopleCnt + 1);
-      const change = Math.floor(MoneyForOne / smallest) * smallest;
-      this.remainder = Math.round(MoneyForOne - change);
-      console.log(this.remainder);
-      return `${change} 원`;
+      let change: any = Math.floor(MoneyForOne / smallest) * smallest;
+      this.remainder = String(Math.round(MoneyForOne - change));
+
+      const strChange = String(change);
+      let formatStr = '';
+      if (strChange.length > 3) {
+        let maxComma =
+          strChange.length % 3 === 0
+            ? Math.floor(strChange.length / 3) - 1
+            : Math.floor(strChange.length / 3);
+        let last = strChange.length + 1;
+        for (let i = maxComma; i > 0; i--) {
+          formatStr = strChange.substring(last - 4, last) + ',' + formatStr;
+          last = last - 4;
+          console.log(formatStr);
+        }
+        formatStr =
+          strChange.substring(0, last) +
+          ',' +
+          formatStr.substring(0, formatStr.length - 1);
+      }
+      return `${formatStr} 원`;
     }
   };
 
-  //handle mode change
+  //handle modify
   toModifyMode = () => {
     console.log('toggle');
     if (this.state.disabled) {
       alert('수정을 시작합니다.\n완료 후 저장을 꼭 눌러주세요!');
     } else {
       if (this.state.modifyButtonText === '등록') {
+        this.handleSubmit();
         alert('새 결제를 등록하였습니다.');
       } else {
         alert('변경사항을 저장하였습니다.');
@@ -253,6 +263,42 @@ export default class NewPayment extends React.Component<Props> {
     //복사해 둔 최초 스테이트 값으로 셋스테이트 (리랜더링)
     //버튼 '수정'
     //서버 안보냄.
+  };
+
+  handleSubmit = async () => {
+    const newPaymentAPI = config.serverAddress + '/payment';
+    const user = await firebase.auth().currentUser;
+    const partyDate =
+      this.state.chosenDate.getFullYear() +
+      '-' +
+      this.state.chosenDate.getMonth() +
+      '-' +
+      this.state.chosenDate.getDate();
+    let payment: Payment = {
+      priceBook: {
+        totalPrice: Number(this.state.totalPay),
+        billImgSrc: this.state.billImgSrc,
+        count: this.state.peopleCnt,
+        partyDate,
+        title: this.state.title,
+        transCompleted: false
+      },
+      email: user.email,
+      participant: this.state.chosenList
+    };
+    console.log('sumitted!', payment);
+
+    const fetchRes = await fetch(newPaymentAPI, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payment)
+    });
+    const priceBook = await fetchRes.json();
+    console.log('sumitted!', priceBook);
+    this.props.navigation.navigate('PaymentList');
   };
 
   doFetch = async () => {
@@ -340,26 +386,35 @@ export default class NewPayment extends React.Component<Props> {
                       onPress={this.modalSwitch}
                       style={screenStyles.iconBtn}
                     >
-                      <Icon name="search" style={{ color: '#6A1F9F' }} />
+                      <Icon
+                        name="search"
+                        fontSize={40}
+                        style={{ color: '#907be0' }}
+                      />
                     </Button>
                   </Right>
                 </Item>
-                {this.state.chosenList.length ? (
-                  <View style={{ flexDirection: 'column', marginVertical: 10 }}>
-                    {this.state.chosenList.map((person, i) => {
-                      return (
-                        <ChosenFriendListItem key={i} name={person.name} />
-                      );
-                    })}
-                  </View>
-                ) : null}
+                <View style={{ flexDirection: 'column', marginVertical: 10 }}>
+                  <ChosenFriendListItem name="나" />
+                  {this.state.chosenList.length
+                    ? this.state.chosenList.map((person, i) => {
+                        return (
+                          <ChosenFriendListItem key={i} name={person.name} />
+                        );
+                      })
+                    : null}
+                </View>
+
                 <SplitPayment
                   splitPayment={this.calcN()}
                   remainder={this.remainder}
                 />
               </Form>
             </View>
-            <PicPicker disabled={disabled} />
+            <PicPicker
+              disabled={disabled}
+              handlePicker={this.handlePicPicker}
+            />
           </Content>
           <NewPayFooter
             label={this.state.modifyButtonText}
@@ -393,8 +448,6 @@ export default class NewPayment extends React.Component<Props> {
     text: {
       color: '#3f2949',
       marginTop: 10
-    },
-    inputLabel: {},
-    inputBody: {}
+    }
   });
 }
