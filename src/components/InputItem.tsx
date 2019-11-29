@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Text } from 'react-native';
 import { Item, Label, Input } from 'native-base';
 import { screenStyles } from '../screenStyles';
 interface Props {
@@ -7,6 +8,7 @@ interface Props {
   disabled: boolean;
   keyT?: string;
   placeholder?: string;
+  txt: string;
 }
 
 const InputItem: React.FC<Props> = ({
@@ -14,7 +16,8 @@ const InputItem: React.FC<Props> = ({
   onChange,
   disabled,
   keyT,
-  placeholder
+  placeholder,
+  txt
 }) => {
   const KeyType = keyT ? keyT : 'default';
   return (
@@ -25,7 +28,7 @@ const InputItem: React.FC<Props> = ({
         onChange={onChange}
         disabled={disabled}
         keyboardType={KeyType}
-        placeholder={placeholder}
+        placeholder={placeholder ? placeholder : txt}
         placeholderTextColor="#c2c2c4"
       />
     </Item>

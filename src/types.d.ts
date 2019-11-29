@@ -15,6 +15,7 @@ export interface Payment {
     partyDate: string;
     title: string;
     transCompleted: boolean;
+    fixedTotalPrice: number;
   };
   email: string;
   participant: Person[];
