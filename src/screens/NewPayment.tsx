@@ -40,7 +40,8 @@ export interface State {
   chosenList: Person[];
   title: string;
   totalPay: number | string;
-  chosenDate: Date;
+  singlePay?: number | string;
+  chosenDate: Date | string;
   peopleCnt: number;
   printModal: boolean;
   disabled: boolean;
@@ -56,13 +57,12 @@ export default class NewPayment extends React.Component<Props> {
     chosenList: [],
     title: '',
     totalPay: '',
+    singlePay: '',
     chosenDate: new Date(),
     peopleCnt: 0,
     printModal: false,
-    disabled: this.props.fromListView === undefined ? false : true,
-    // --->> this.props.fromListView ? true : false ???
-    modifyButtonText: this.props.fromListView === undefined ? '등록' : '수정',
-    // --->> this.props.fromListView ? '등록' : '수정' ???
+    disabled: this.props.fromListView ? false : true,
+    modifyButtonText: this.props.fromListView ? '등록' : '수정',
     email: '',
     pricebookId: '',
     billImgSrc: ''
@@ -74,9 +74,9 @@ export default class NewPayment extends React.Component<Props> {
 
     //스크린 모드 식별
     const { navigation } = this.props;
-    console.log('this.props.navigation', navigation.state.params);
+    // console.log('this.props.navigation', navigation.state.params);
 
-    if (navigation.state.params === undefined) {
+    if (!navigation.state.params) {
       console.log('새 글 등록');
     } else {
       console.log('=========글 보기 페이지');
@@ -172,7 +172,9 @@ export default class NewPayment extends React.Component<Props> {
         parseInt(this.state.totalPay) / (this.state.peopleCnt + 1);
       let change: any = Math.floor(MoneyForOne / smallest) * smallest;
       this.remainder = String(Math.round(MoneyForOne - change));
+      this.setState({ ...this.state, singlePay: change });
 
+      //print format
       const strChange = String(change);
       let formatStr = '';
       if (strChange.length > 3) {
@@ -274,6 +276,7 @@ export default class NewPayment extends React.Component<Props> {
       this.state.chosenDate.getMonth() +
       '-' +
       this.state.chosenDate.getDate();
+
     let payment: Payment = {
       priceBook: {
         totalPrice: Number(this.state.totalPay),
@@ -281,7 +284,8 @@ export default class NewPayment extends React.Component<Props> {
         count: this.state.peopleCnt,
         partyDate,
         title: this.state.title,
-        transCompleted: false
+        transCompleted: false,
+        fixedTotalPrice: Number(this.state.singlePay)
       },
       email: user.email,
       participant: this.state.chosenList
@@ -315,7 +319,6 @@ export default class NewPayment extends React.Component<Props> {
       })
     };
     let response = await fetch(config.serverAddress + '/pricebook', emailObj);
-
     let responseJson = await response.json();
     console.log(
       responseJson.pricebook.title,
@@ -327,8 +330,10 @@ export default class NewPayment extends React.Component<Props> {
       title: responseJson.pricebook.title,
       totalPay: responseJson.pricebook.totalPrice,
       peopleCnt: responseJson.pricebook.count,
-      chosenDate: responseJson.pricebook.partyDate
+      chosenDate: responseJson.pricebook.partyDate,
+      billImgSrc: responseJson.pricebook.billImgSrc
     });
+    console.log('afterFetch', this.state);
   };
 
   render() {
@@ -354,6 +359,7 @@ export default class NewPayment extends React.Component<Props> {
                   disabled={disabled}
                   onChange={this.onChangeTitle}
                   placeholder="어떤 모임이었나요?"
+                  txt={this.state.title}
                 />
 
                 <Item fixedLabel>
@@ -369,6 +375,7 @@ export default class NewPayment extends React.Component<Props> {
                   onChange={this.onChangeTotalPay}
                   keyT="numeric"
                   placeholder="총 금액을 입력해주세요"
+                  txt={this.state.totalPay}
                 />
                 <Item fixedLabel>
                   <Label style={screenStyles.inputLabel}>참여자</Label>
@@ -417,6 +424,7 @@ export default class NewPayment extends React.Component<Props> {
             <PicPicker
               disabled={disabled}
               handlePicker={this.handlePicPicker}
+              uri={this.state.billImgSrc}
             />
           </Content>
           <NewPayFooter
