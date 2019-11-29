@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, StyleSheet } from 'react-native';
-import { Button, View, Right, Left, Body } from 'native-base';
+import { Button, Right, Left, Body } from 'native-base';
 import { Props } from '../screens/SingleViewPart';
 
 const ChosenFriendListItem = props => {

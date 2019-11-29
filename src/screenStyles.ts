@@ -9,6 +9,12 @@ const screenStyles = StyleSheet.create({
     borderRightWidth: 1,
     flex: 1
   },
+  inputTxt: {
+    flex: 2.2,
+    paddingLeft: 15,
+    fontSize: 16,
+    color: '#3b3b3b'
+  },
   container: {
     marginTop: 23,
     flex: 1,

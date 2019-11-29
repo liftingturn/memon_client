@@ -262,6 +262,7 @@ export default class NewPayment extends React.Component<Props> {
     //복사해 둔 최초 스테이트 값으로 셋스테이트 (리랜더링)
     //버튼 '수정'
     //서버 안보냄.
+    this.props.navigation.goBack();
   };
 
   handleSubmit = async () => {
@@ -336,7 +337,10 @@ export default class NewPayment extends React.Component<Props> {
     return (
       <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
         <Container style={screenStyles.container}>
-          <DrawerHeader title="새결제" toggleDrawer={this.toggleDrawer} />
+          <DrawerHeader
+            title="새결제 등록하기"
+            toggleDrawer={this.toggleDrawer}
+          />
           <Content
             contentContainerStyle={{
               justifyContent: 'flex-start',

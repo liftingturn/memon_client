@@ -14,7 +14,7 @@ const CustomDatePicker = props => {
         animationType="fade"
         androidMode="default"
         placeHolderText="날짜를 선택해주세요."
-        textStyle={{ color: 'green' }}
+        textStyle={{ color: '#3b3b3b', paddingLeft: 15 }}
         placeHolderTextStyle={{
           color: '#c2c2c4',
           backgroundColor: 'transparent',

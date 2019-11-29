@@ -1,7 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, BackHandler } from 'react-native';
+import { View, Text, StyleSheet, Modal } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { DrawerHeader } from '../components';
+import * as Permissions from 'expo-permissions';
+import * as Contacts from 'expo-contacts';
+import { screenStyles, styles_newPayment } from '../screenStyles';
+
 import {
   Header,
   Form,
@@ -20,9 +23,17 @@ import {
   List
 } from 'native-base';
 
-import PicPicker from '../components/PicPicker';
+import {
+  PicPicker,
+  CustomDatePicker,
+  InputItem,
+  FriendListModal,
+  DrawerHeader,
+  NewPayFooter,
+  ChosenFriendListItem,
+  SplitPayment
+} from '../components';
 import config from '../../config';
-export interface Props {}
 
 export interface State {
   title: string;
@@ -30,7 +41,7 @@ export interface State {
   chosenDate: Date;
   peopleCnt: number;
   isVisible: boolean;
-  image: any;
+  billImgSrc: any;
 }
 //InfoToServer
 //totalPay, peopleCnt, subject, date
@@ -50,7 +61,7 @@ export default class SingleViewPart extends React.Component<Props, State> {
     chosenDate: new Date(),
     peopleCnt: 1,
     isVisible: false,
-    image: null
+    billImgSrc: null
   };
 
   setDate(newDate: Date): any {
@@ -74,6 +85,9 @@ export default class SingleViewPart extends React.Component<Props, State> {
     } else {
       return String(parseInt(this.state.totalPay) / this.state.peopleCnt);
     }
+  };
+  handlePicPicker = async uri => {
+    this.setState({ ...this.state, billImgSrc: uri });
   };
   // handleBackPress = () => {};
   async componentDidMount() {
@@ -104,75 +118,85 @@ export default class SingleViewPart extends React.Component<Props, State> {
   }
   render() {
     let fromList = !this.props.boss;
-    let { image } = this.state;
+    let { billImgSrc } = this.state;
     return (
-      <Container style={this.styles.container}>
-        <Header>
-          <Left>
-            <Button transparent onPress={this.toggleDrawer}>
-              <Icon name="menu" />
-            </Button>
-          </Left>
-          <Body>
-            <Text>해당 결제 정보</Text>
-          </Body>
-          <Right />
-        </Header>
-        <Content>
-          <Text>Participant view</Text>
-          <Form style={{ width: 300 }}>
-            <Item fixedLabel>
-              <Label>제목</Label>
-              <Input onChange={this.onChangeTitle} disabled={fromList} />
-            </Item>
-            <Item fixedLabel>
-              <Label>결제생성일</Label>
-              <Text>
-                결제생성일 : {this.state.chosenDate.toString().substring(0, 10)}
-              </Text>
-            </Item>
-
-            <Item fixedLabel>
-              <Label>총 결제 금액</Label>
-              <Text>{this.state.totalPay} 원</Text>
-            </Item>
-            <Item fixedLabel>
-              <Label>참여자 목록</Label>
-              <List></List>
-              <Label>총 {this.state.peopleCnt} 명</Label>
-            </Item>
-            <Item fixedLabel>
-              <Label>1인당 금액</Label>
-              <Text>
-                {parseInt(this.state.totalPay) / this.state.peopleCnt} 원
-              </Text>
-            </Item>
-            <View
-              style={{
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              {image && (
-                <Image
-                  source={{ uri: image }}
-                  style={{ width: 200, height: 200 }}
-                />
-              )}
+      <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
+        <Container style={screenStyles.container}>
+          <DrawerHeader
+            title="Participant view"
+            toggleDrawer={this.toggleDrawer}
+          />
+          <Content
+            contentContainerStyle={{
+              justifyContent: 'flex-start',
+              paddingTop: 35
+            }}
+          >
+            <View style={{ alignItems: 'center', marginBottom: 15 }}>
+              <Form style={styles_newPayment.form}>
+                <Item fixedLabel>
+                  <Label style={screenStyles.inputLabel}>제목</Label>
+                  <Input
+                    style={screenStyles.inputTxt}
+                    onChange={this.onChangeTitle}
+                    disabled={fromList}
+                  />
+                </Item>
+                <Item fixedLabel>
+                  <Label style={screenStyles.inputLabel}>결제생성일</Label>
+                  <Text style={screenStyles.inputTxt}>
+                    {this.state.chosenDate.toString().substring(0, 10)}
+                  </Text>
+                </Item>
+                <Item fixedLabel>
+                  <Label style={screenStyles.inputLabel}>총 결제 금액</Label>
+                  <Text style={screenStyles.inputTxt}>
+                    {this.state.totalPay} 원
+                  </Text>
+                </Item>
+                <Item fixedLabel>
+                  <Label style={screenStyles.inputLabel}>참여자 목록</Label>
+                  <List></List>
+                  <Label style={screenStyles.inputTxt}>
+                    총 {this.state.peopleCnt} 명
+                  </Label>
+                </Item>
+                <Item fixedLabel>
+                  <Label style={screenStyles.inputLabel}>1인당 금액</Label>
+                  <Text style={screenStyles.inputTxt}>
+                    {parseInt(this.state.totalPay) / this.state.peopleCnt} 원
+                  </Text>
+                </Item>
+                <View
+                  style={{
+                    flex: 1,
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  {billImgSrc && (
+                    <Image
+                      source={{ uri: billImgSrc }}
+                      style={{ width: 200, height: 200 }}
+                    />
+                  )}
+                </View>
+              </Form>
             </View>
-          </Form>
-
-          <PicPicker disabled={fromList} />
-        </Content>
-        <Footer>
-          <FooterTab>
-            <Button>
-              <Text>결제 확인 요청</Text>
-            </Button>
-          </FooterTab>
-        </Footer>
-      </Container>
+            <PicPicker
+              disabled={fromList}
+              handlePicker={this.handlePicPicker}
+            />
+          </Content>
+          <Footer>
+            <FooterTab>
+              <Button>
+                <Text>결제 확인 요청</Text>
+              </Button>
+            </FooterTab>
+          </Footer>
+        </Container>
+      </LinearGradient>
     );
   }
   styles = StyleSheet.create({

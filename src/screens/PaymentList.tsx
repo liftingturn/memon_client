@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { DrawerHeader } from '../components';
+import { screenStyles } from '../screenStyles';
 import {
   Container,
   Header,
@@ -78,60 +79,56 @@ export default class PaymentList extends React.Component<Props, State> {
 
   render() {
     return (
-      <Container style={this.styles.container}>
-        <Header>
-          <Left>
-            <Button transparent onPress={this.toggleDrawer}>
-              <Icon name="menu" />
-            </Button>
-          </Left>
-          <Body>
-            <Text>결제목록 리스트</Text>
-          </Body>
-          <Right />
-        </Header>
-        <Content>
-          <Text>보라색:수금필요 노란색:입금필요</Text>
-          <List>
-            {this.state.paymentList.map(payment => {
-              return (
-                //결제 종류별로 색 구분할거임. 그리고 key나 기타로 바로 개별view들어갈 때 해당 키 날릴거.
-                <ListItem
-                  style={
-                    payment.boss ? this.styles.bossItem : this.styles.partItem
-                  }
-                  key={payment.pricebookId}
-                >
-                  <Left>
-                    <Text>{payment.title}</Text>
-                    <Text>{payment.price}</Text>
-                  </Left>
-                  <Right>
-                    <Button
-                      rounded
-                      primary
-                      //danger
-                      style={this.styles.button}
-                      onPress={() => {
-                        this.pressEvent(payment.boss, payment.pricebookId);
-                      }}
-                    >
-                      <Icon name="arrow-forward" />
-                    </Button>
-                  </Right>
-                </ListItem>
-              );
-            })}
-          </List>
-        </Content>
-        {/* <Footer>
+      <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
+        <Container style={screenStyles.container}>
+          <DrawerHeader
+            title="결제목록 리스트"
+            toggleDrawer={this.toggleDrawer}
+          />
+
+          <Content>
+            <Text>보라색:수금필요 노란색:입금필요</Text>
+            <List>
+              {this.state.paymentList.map(payment => {
+                return (
+                  //결제 종류별로 색 구분할거임. 그리고 key나 기타로 바로 개별view들어갈 때 해당 키 날릴거.
+                  <ListItem
+                    style={
+                      payment.boss ? this.styles.bossItem : this.styles.partItem
+                    }
+                    key={payment.pricebookId}
+                  >
+                    <Left>
+                      <Text>{payment.title}</Text>
+                      <Text>{payment.price}</Text>
+                    </Left>
+                    <Right>
+                      <Button
+                        rounded
+                        primary
+                        //danger
+                        style={this.styles.button}
+                        onPress={() => {
+                          this.pressEvent(payment.boss, payment.pricebookId);
+                        }}
+                      >
+                        <Icon name="arrow-forward" />
+                      </Button>
+                    </Right>
+                  </ListItem>
+                );
+              })}
+            </List>
+          </Content>
+          {/* <Footer>
           <FooterTab>
             <Button full>
               <Text>Footer</Text>
             </Button>
           </FooterTab>
         </Footer> */}
-      </Container>
+        </Container>
+      </LinearGradient>
     );
   }
   styles = StyleSheet.create({

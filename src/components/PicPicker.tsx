@@ -10,7 +10,7 @@ export interface State {
 }
 export interface Props {
   disabled: boolean;
-  handlePicker: () => void;
+  handlePicker: Promise<void>;
 }
 
 export default class PicPicker extends React.Component<Props, State> {
