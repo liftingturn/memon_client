@@ -28,8 +28,9 @@ const InputItem: React.FC<Props> = ({
         onChange={onChange}
         disabled={disabled}
         keyboardType={KeyType}
-        placeholder={placeholder ? placeholder : txt}
+        placeholder={placeholder}
         placeholderTextColor="#c2c2c4"
+        value={txt.toString()}
       />
     </Item>
   );
