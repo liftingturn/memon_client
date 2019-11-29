@@ -67,7 +67,8 @@ export default class DashboardScreen extends Component<Props, State> {
           >
             <NetCard
               header={'net'}
-              body={`받을 돈 : ${this.state.moneyToGet}\n줄 돈 : ${this.state.moneyToPay}`}
+              get={this.state.moneyToGet}
+              pay={this.state.moneyToPay}
             />
           </Content>
           <ButtonBasic type="txt" label="+" onPress={this.moveToNewPayment} />
