@@ -445,10 +445,13 @@ export default class NewPayment extends React.Component<Props> {
 
                 <Item fixedLabel>
                   <Label style={screenStyles.inputLabel}>날짜</Label>
-                  <CustomDatePicker
-                    disabled={disabled}
-                    setDate={this.setDate}
-                  />
+                  {disabled ? (
+                    <Text style={{ paddingLeft: 128, textAlign: 'center' }}>
+                      {this.state.chosenDate.toString()}
+                    </Text>
+                  ) : (
+                    <CustomDatePicker setDate={this.setDate} />
+                  )}
                 </Item>
                 <InputItem
                   label="금액"
