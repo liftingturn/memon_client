@@ -35,6 +35,7 @@ export interface Props {
 }
 
 export interface State {
+  pageTitle: string;
   friendList: Person[];
   chosenNums: string[];
   chosenList: Person[];
@@ -48,10 +49,12 @@ export interface State {
   modifyButtonText: string;
   email: string;
   pricebookId: string;
+  modalDisable: boolean;
 }
 
 export default class NewPayment extends React.Component<Props> {
   state = {
+    pageTitle: '새 결제 등록',
     friendList: [],
     chosenNums: [],
     chosenList: [],
@@ -61,11 +64,13 @@ export default class NewPayment extends React.Component<Props> {
     chosenDate: new Date(),
     peopleCnt: 0,
     printModal: false,
-    disabled: this.props.fromListView ? true : false,
+    disabled: false,
+    // modifyButtonText: this.props.fromListView ? '수정' : '등록',
     modifyButtonText: '등록',
     email: '',
     pricebookId: '',
-    billImgSrc: ''
+    billImgSrc: '',
+    modalDisable: false
   };
   //    modifyButtonText: this.props.fromListView ? '등록' : '수정',
 
@@ -78,9 +83,28 @@ export default class NewPayment extends React.Component<Props> {
     // console.log('this.props.navigation', navigation.state.params);
 
     if (!navigation.state.params) {
-      console.log('새 글 등록');
+      console.log('새 글 등록, state.disabled:', this.state.disabled);
+      this.setState({
+        pageTitle: '새 결제 등록',
+        friendList: [],
+        chosenNums: [],
+        chosenList: [],
+        title: '',
+        totalPay: '',
+        singlePay: '',
+        chosenDate: new Date(),
+        peopleCnt: 0,
+        printModal: false,
+        disabled: false,
+        // modifyButtonText: this.props.fromListView ? '수정' : '등록',
+        modifyButtonText: '등록',
+        email: '',
+        pricebookId: '',
+        billImgSrc: '',
+        modalDisable: false
+      });
     } else {
-      console.log('=========글 보기 페이지');
+      console.log('=========리스트에서 온거야 비활성화 해야해');
       const { fromListView, email, pricebookId } = navigation.state.params;
       //**************************//
       //서버에서 개별결제 페이지 리스폰스 보낼때 참여자 전화번호 같이 보내줘야함
@@ -90,8 +114,11 @@ export default class NewPayment extends React.Component<Props> {
         await this.setState({
           ...this.state,
           disabled: true,
+          modalDisable: true,
           email: email,
-          pricebookId: pricebookId
+          pricebookId: pricebookId,
+          modifyButtonText: '수정',
+          pageTitle: '단일 결제 정보'
         });
         await this.doFetch();
       }
@@ -165,9 +192,14 @@ export default class NewPayment extends React.Component<Props> {
   };
 
   remainder = '';
+<<<<<<< HEAD
   calcN = async () => {
     console.log('////////////// * calcN * //////////////');
     console.log('state pay', this.state.totalPay);
+=======
+  calcN = () => {
+    console.log('calc N', this.state);
+>>>>>>> 0ec23008cf3bd5f1b057ef7ec254bfe9625a5d40
     if (!this.state.totalPay) {
       this.setState({ ...this.state, singlePay: 'placeholder' });
       console.log('placeholder');
@@ -212,7 +244,7 @@ export default class NewPayment extends React.Component<Props> {
   toModifyMode = () => {
     console.log('toggle');
     if (this.state.disabled) {
-      alert('수정을 시작합니다.\n완료 후 저장을 꼭 눌러주세요!');
+      alert('입금상태를 수정합니다.\n완료 후 저장을 꼭 눌러주세요!');
     } else {
       if (this.state.modifyButtonText === '등록') {
         this.handleSubmit();
@@ -221,8 +253,10 @@ export default class NewPayment extends React.Component<Props> {
         alert('변경사항을 저장하였습니다.');
       }
     }
+
     this.setState({
       ...this.state,
+      modalDisable: !this.state.modalDisable,
       disabled: !this.state.disabled,
       modifyButtonText:
         this.state.modifyButtonText === '수정' ? '변경사항저장' : '수정'
@@ -312,6 +346,22 @@ export default class NewPayment extends React.Component<Props> {
     });
     const priceBook = await fetchRes.json();
     console.log('sumitted!', priceBook);
+    this.setState = {
+      friendList: [],
+      chosenNums: [],
+      chosenList: [],
+      title: '',
+      totalPay: '',
+      singlePay: '',
+      chosenDate: new Date(),
+      peopleCnt: 0,
+      printModal: false,
+      disabled: this.props.fromListView ? true : false,
+      modifyButtonText: this.props.fromListView ? '수정' : '등록',
+      email: '',
+      pricebookId: '',
+      billImgSrc: ''
+    };
     this.props.navigation.navigate('PaymentList');
   };
 
@@ -346,21 +396,38 @@ export default class NewPayment extends React.Component<Props> {
     console.log('afterFetch', this.state);
   };
 
-  componentWillReceiveProps() {
-    console.log('componentWillReceiveProps');
-    console.log('===props', this.props);
+  async componentWillReceiveProps() {
+    console.log('=========리스트에서 온거야 비활성화 해야해');
+    const {
+      fromListView,
+      email,
+      pricebookId
+    } = this.props.navigation.state.params;
+    //**************************//
+    //서버에서 개별결제 페이지 리스폰스 보낼때 참여자 전화번호 같이 보내줘야함
+    //참여자 전화번호 추출해서 state.chosenNums=[ 'phone', 'phone', 'phone' ]
+    // ---------> 비활성화 클릭하면, 등록된 결제건은 참여자 수정이 불가능합니다.
+    if (fromListView) {
+      await this.setState({
+        ...this.state,
+        disabled: true,
+        modalDisable: true,
+        email: email,
+        pricebookId: pricebookId,
+        modifyButtonText: '수정',
+        pageTitle: '단일 결제 정보'
+      });
+      await this.doFetch();
+    }
   }
 
   render() {
-    console.log('disabled', this.state.disabled);
-    let { disabled } = this.state;
+    console.log('disabled 렌더시에', this.state.disabled);
+    let { disabled, modalDisable, pageTitle } = this.state;
     return (
       <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
         <Container style={screenStyles.container}>
-          <DrawerHeader
-            title="새결제 등록하기"
-            toggleDrawer={this.toggleDrawer}
-          />
+          <DrawerHeader title={pageTitle} toggleDrawer={this.toggleDrawer} />
           <Content
             contentContainerStyle={{
               justifyContent: 'flex-start',
@@ -407,7 +474,7 @@ export default class NewPayment extends React.Component<Props> {
                   </Label>
                   <Right>
                     <Button
-                      disabled={disabled}
+                      disabled={modalDisable}
                       onPress={this.modalSwitch}
                       style={screenStyles.iconBtn}
                     >
@@ -431,7 +498,12 @@ export default class NewPayment extends React.Component<Props> {
                 </View>
 
                 <SplitPayment
+<<<<<<< HEAD
                   splitPayment={this.state.singlePay}
+=======
+                  // splitPayment={this.calcN()}
+                  splitPayment={'3'}
+>>>>>>> 0ec23008cf3bd5f1b057ef7ec254bfe9625a5d40
                   remainder={this.remainder}
                 />
               </Form>
