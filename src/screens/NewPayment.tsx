@@ -332,6 +332,11 @@ export default class NewPayment extends React.Component<Props> {
     });
   };
 
+  componentWillReceiveProps() {
+    console.log('componentWillReceiveProps');
+    console.log('===props', this.props);
+  }
+
   render() {
     console.log('disabled', this.state.disabled);
     let { disabled } = this.state;

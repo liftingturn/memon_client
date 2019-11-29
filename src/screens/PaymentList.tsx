@@ -1,25 +1,14 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  RefreshControl
-} from 'react-native';
+import { Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { DrawerHeader } from '../components';
 import { screenStyles } from '../screenStyles';
 import {
   Container,
-  Header,
-  Title,
   Content,
-  Footer,
-  FooterTab,
   Button,
   Left,
   Right,
-  Body,
   Icon,
   List,
   ListItem
@@ -33,7 +22,6 @@ export interface State {
   email: string;
   paymentList: Object[];
   refreshing: boolean;
-  setRefreshing: boolean;
 }
 
 function wait(timeout) {
@@ -46,8 +34,7 @@ export default class PaymentList extends React.Component<Props, State> {
   state = {
     email: '',
     paymentList: [],
-    refreshing: false,
-    setRefreshing: false
+    refreshing: false
   };
   toggleDrawer = () => {
     this.props.navigation.toggleDrawer();
@@ -152,13 +139,6 @@ export default class PaymentList extends React.Component<Props, State> {
                 })}
               </List>
             </Content>
-            {/* <Footer>
-          <FooterTab>
-            <Button full>
-              <Text>Footer</Text>
-            </Button>
-          </FooterTab>
-        </Footer> */}
           </Container>
         </LinearGradient>
       </ScrollView>

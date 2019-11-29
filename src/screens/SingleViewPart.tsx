@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, Modal } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Modal,
+  ScrollView,
+  RefreshControl
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
@@ -23,7 +30,8 @@ import {
   Icon,
   Body,
   List,
-  Spinner
+  Spinner,
+  Image
 } from 'native-base';
 
 import {
@@ -37,7 +45,6 @@ import {
   SplitPayment
 } from '../components';
 
-
 export interface State {
   pushing: boolean;
   title: string;
@@ -47,6 +54,7 @@ export interface State {
   isVisible: boolean;
   billImgSrc: any;
   pricebookId: string;
+  refreshing: boolean;
 }
 //InfoToServer
 //totalPay, peopleCnt, subject, date
@@ -68,7 +76,8 @@ export default class SingleViewPart extends React.Component<Props, State> {
     peopleCnt: 1,
     isVisible: false,
     billImgSrc: null,
-    pricebookId: ''
+    pricebookId: '',
+    refreshing: false
   };
 
   setDate(newDate: Date): any {
@@ -157,92 +166,106 @@ export default class SingleViewPart extends React.Component<Props, State> {
     // let responseJson = await response.json();
     // console.log(responseJson);
   };
-
+  _onRefresh = async () => {
+    this.setState({ refreshing: true });
+    await this.componentDidMount();
+    this.setState({ refreshing: false });
+  };
   render() {
     let fromList = !this.props.boss;
     let { billImgSrc } = this.state;
     return (
-      <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
-        <Container style={screenStyles.container}>
-          <DrawerHeader
-            title="Participant view"
-            toggleDrawer={this.toggleDrawer}
+      <ScrollView
+        contentContainerStyle={this.styles.scrollView}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this._onRefresh}
           />
-          <Content
-            contentContainerStyle={{
-              justifyContent: 'flex-start',
-              paddingTop: 35
-            }}
-          >
-            <View style={{ alignItems: 'center', marginBottom: 15 }}>
-              <Form style={styles_newPayment.form}>
-                <Item fixedLabel>
-                  <Label style={screenStyles.inputLabel}>제목</Label>
-                  <Input
-                    style={screenStyles.inputTxt}
-                    onChange={this.onChangeTitle}
-                    disabled={fromList}
-                  />
-                </Item>
-                <Item fixedLabel>
-                  <Label style={screenStyles.inputLabel}>결제생성일</Label>
-                  <Text style={screenStyles.inputTxt}>
-                    {this.state.chosenDate.toString().substring(0, 10)}
-                  </Text>
-                </Item>
-                <Item fixedLabel>
-                  <Label style={screenStyles.inputLabel}>총 결제 금액</Label>
-                  <Text style={screenStyles.inputTxt}>
-                    {this.state.totalPay} 원
-                  </Text>
-                </Item>
-                <Item fixedLabel>
-                  <Label style={screenStyles.inputLabel}>참여자 목록</Label>
-                  <List></List>
-                  <Label style={screenStyles.inputTxt}>
-                    총 {this.state.peopleCnt} 명
-                  </Label>
-                </Item>
-                <Item fixedLabel>
-                  <Label style={screenStyles.inputLabel}>1인당 금액</Label>
-                  <Text style={screenStyles.inputTxt}>
-                    {parseInt(this.state.totalPay) / this.state.peopleCnt} 원
-                  </Text>
-                </Item>
-                <View
-                  style={{
-                    flex: 1,
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  {billImgSrc && (
-                    <Image
-                      source={{ uri: billImgSrc }}
-                      style={{ width: 200, height: 200 }}
-                    />
-                  )}
-                </View>
-              </Form>
-            </View>
-            <PicPicker
-              disabled={fromList}
-              handlePicker={this.handlePicPicker}
+        }
+      >
+        <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
+          <Container style={screenStyles.container}>
+            <DrawerHeader
+              title="Participant view"
+              toggleDrawer={this.toggleDrawer}
             />
-          </Content>
-          <Footer>
-            <FooterTab>
-              <Button onPress={this.pushRequest}>
-                {this.state.pushing === false ? (
-                  <Text>결제 확인 요청</Text>
-                ) : (
-                  <Spinner color="yellow" />
-                )}
-              </Button>
-            </FooterTab>
-        </Footer>
-        </Container>
-      </LinearGradient>
+            <Content
+              contentContainerStyle={{
+                justifyContent: 'flex-start',
+                paddingTop: 35
+              }}
+            >
+              <View style={{ alignItems: 'center', marginBottom: 15 }}>
+                <Form style={styles_newPayment.form}>
+                  <Item fixedLabel>
+                    <Label style={screenStyles.inputLabel}>제목</Label>
+                    <Input
+                      style={screenStyles.inputTxt}
+                      onChange={this.onChangeTitle}
+                      disabled={fromList}
+                    />
+                  </Item>
+                  <Item fixedLabel>
+                    <Label style={screenStyles.inputLabel}>결제생성일</Label>
+                    <Text style={screenStyles.inputTxt}>
+                      {this.state.chosenDate.toString().substring(0, 10)}
+                    </Text>
+                  </Item>
+                  <Item fixedLabel>
+                    <Label style={screenStyles.inputLabel}>총 결제 금액</Label>
+                    <Text style={screenStyles.inputTxt}>
+                      {this.state.totalPay} 원
+                    </Text>
+                  </Item>
+                  <Item fixedLabel>
+                    <Label style={screenStyles.inputLabel}>참여자 목록</Label>
+                    <List></List>
+                    <Label style={screenStyles.inputTxt}>
+                      총 {this.state.peopleCnt} 명
+                    </Label>
+                  </Item>
+                  <Item fixedLabel>
+                    <Label style={screenStyles.inputLabel}>1인당 금액</Label>
+                    <Text style={screenStyles.inputTxt}>
+                      {parseInt(this.state.totalPay) / this.state.peopleCnt} 원
+                    </Text>
+                  </Item>
+                  <View
+                    style={{
+                      flex: 1,
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    {billImgSrc && (
+                      <Image
+                        source={{ uri: billImgSrc }}
+                        style={{ width: 200, height: 200 }}
+                      />
+                    )}
+                  </View>
+                </Form>
+              </View>
+              <PicPicker
+                disabled={fromList}
+                handlePicker={this.handlePicPicker}
+              />
+            </Content>
+            <Footer>
+              <FooterTab>
+                <Button onPress={this.pushRequest}>
+                  {this.state.pushing === false ? (
+                    <Text>결제 확인 요청</Text>
+                  ) : (
+                    <Spinner color="yellow" />
+                  )}
+                </Button>
+              </FooterTab>
+            </Footer>
+          </Container>
+        </LinearGradient>
+      </ScrollView>
     );
   }
   styles = StyleSheet.create({
@@ -262,6 +285,10 @@ export default class SingleViewPart extends React.Component<Props, State> {
     text: {
       color: '#3f2949',
       marginTop: 10
+    },
+    scrollView: {
+      flex: 1,
+      backgroundColor: 'pink'
     }
   });
 }
