@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text } from 'react-native';
 import { Header, Left, Button, Icon, Body, Right } from 'native-base';
-import screenStyles from '../screenStyles';
+import { screenStyles } from '../screenStyles';
 
 const DrawerHeader = props => {
   return (

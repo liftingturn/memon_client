@@ -3,25 +3,18 @@ import { View, Text, StyleSheet, Modal } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
-import screenStyles from '../screenStyles';
+import { screenStyles, styles_newPayment } from '../screenStyles';
+import firebase from 'firebase';
+import { Person, Payment } from '../types';
 import {
-  Header,
   Form,
   Label,
-  Input,
   Item,
   Container,
-  Left,
   Right,
-  Footer,
-  FooterTab,
   Button,
   Content,
-  Icon,
-  Body,
-  Grid,
-  Col,
-  Row
+  Icon
 } from 'native-base';
 
 import {
@@ -31,7 +24,8 @@ import {
   FriendListModal,
   DrawerHeader,
   NewPayFooter,
-  ChosenFriendListItem
+  ChosenFriendListItem,
+  SplitPayment
 } from '../components';
 import config from '../../config';
 
@@ -40,18 +34,12 @@ export interface Props {
   fromListView: boolean;
 }
 
-export interface Person {
-  name: string;
-  phone: string;
-  id?: string;
-  clicked: boolean;
-}
 export interface State {
   friendList: Person[];
   chosenNums: string[];
   chosenList: Person[];
   title: string;
-  totalPay: string;
+  totalPay: number | string;
   chosenDate: Date;
   peopleCnt: number;
   printModal: boolean;
@@ -76,7 +64,8 @@ export default class NewPayment extends React.Component<Props> {
     modifyButtonText: this.props.fromListView === undefined ? '등록' : '수정',
     // --->> this.props.fromListView ? '등록' : '수정' ???
     email: '',
-    pricebookId: ''
+    pricebookId: '',
+    billImgSrc: ''
   };
 
   //get user filtered contact list
@@ -136,9 +125,7 @@ export default class NewPayment extends React.Component<Props> {
             Accept: 'application/json',
             'Content-Type': 'application/json'
           },
-          /////////////test mode/////////////
-          // JSON.stringify(newList)
-          body: JSON.stringify([{ name: '최방실', phone: '01041554686' }])
+          body: JSON.stringify(newList)
         });
         const userFilterdList = await fetchRes.json();
         userFilterdList.forEach(user => {
@@ -153,8 +140,8 @@ export default class NewPayment extends React.Component<Props> {
   };
 
   //form handler functions
-  setDate = newDate => {
-    this.setState({ ...this.state, chosenDate: newDate });
+  setDate = async newDate => {
+    await this.setState({ ...this.state, chosenDate: newDate });
   };
 
   onChangeTotalPay = e => {
@@ -170,26 +157,52 @@ export default class NewPayment extends React.Component<Props> {
     this.props.navigation.toggleDrawer();
   };
 
+  handlePicPicker = async uri => {
+    this.setState({ ...this.state, billImgSrc: uri });
+  };
+
+  remainder = '';
   calcN = () => {
     console.log('state pay', this.state.totalPay);
     if (!this.state.totalPay) {
-      return 'total 금액 입력해주세요!';
+      return '1/N';
     } else {
       const smallest = 100;
       const MoneyForOne =
         parseInt(this.state.totalPay) / (this.state.peopleCnt + 1);
-      const change = Math.floor(MoneyForOne / smallest) * smallest;
-      return `${change} 원`;
+      let change: any = Math.floor(MoneyForOne / smallest) * smallest;
+      this.remainder = String(Math.round(MoneyForOne - change));
+
+      const strChange = String(change);
+      let formatStr = '';
+      if (strChange.length > 3) {
+        let maxComma =
+          strChange.length % 3 === 0
+            ? Math.floor(strChange.length / 3) - 1
+            : Math.floor(strChange.length / 3);
+        let last = strChange.length + 1;
+        for (let i = maxComma; i > 0; i--) {
+          formatStr = strChange.substring(last - 4, last) + ',' + formatStr;
+          last = last - 4;
+          console.log(formatStr);
+        }
+        formatStr =
+          strChange.substring(0, last) +
+          ',' +
+          formatStr.substring(0, formatStr.length - 1);
+      }
+      return `${formatStr} 원`;
     }
   };
 
-  //handle mode change
+  //handle modify
   toModifyMode = () => {
     console.log('toggle');
     if (this.state.disabled) {
       alert('수정을 시작합니다.\n완료 후 저장을 꼭 눌러주세요!');
     } else {
       if (this.state.modifyButtonText === '등록') {
+        this.handleSubmit();
         alert('새 결제를 등록하였습니다.');
       } else {
         alert('변경사항을 저장하였습니다.');
@@ -249,6 +262,43 @@ export default class NewPayment extends React.Component<Props> {
     //복사해 둔 최초 스테이트 값으로 셋스테이트 (리랜더링)
     //버튼 '수정'
     //서버 안보냄.
+    this.props.navigation.goBack();
+  };
+
+  handleSubmit = async () => {
+    const newPaymentAPI = config.serverAddress + '/payment';
+    const user = await firebase.auth().currentUser;
+    const partyDate =
+      this.state.chosenDate.getFullYear() +
+      '-' +
+      this.state.chosenDate.getMonth() +
+      '-' +
+      this.state.chosenDate.getDate();
+    let payment: Payment = {
+      priceBook: {
+        totalPrice: Number(this.state.totalPay),
+        billImgSrc: this.state.billImgSrc,
+        count: this.state.peopleCnt,
+        partyDate,
+        title: this.state.title,
+        transCompleted: false
+      },
+      email: user.email,
+      participant: this.state.chosenList
+    };
+    console.log('sumitted!', payment);
+
+    const fetchRes = await fetch(newPaymentAPI, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payment)
+    });
+    const priceBook = await fetchRes.json();
+    console.log('sumitted!', priceBook);
+    this.props.navigation.navigate('PaymentList');
   };
 
   doFetch = async () => {
@@ -287,83 +337,88 @@ export default class NewPayment extends React.Component<Props> {
     return (
       <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
         <Container style={screenStyles.container}>
-          <DrawerHeader title="새결제" toggleDrawer={this.toggleDrawer} />
-          <Grid style={{ alignItems: 'center' }}>
-            <Row size={1}>
-              <Content
-                contentContainerStyle={{ flex: 1, justifyContent: 'center' }}
-              >
-                <View style={{ alignItems: 'center' }}>
-                  <Form style={this.styles.form}>
-                    <InputItem
-                      label="제목"
-                      disabled={disabled}
-                      onChange={this.onChangeTitle}
-                    />
+          <DrawerHeader
+            title="새결제 등록하기"
+            toggleDrawer={this.toggleDrawer}
+          />
+          <Content
+            contentContainerStyle={{
+              justifyContent: 'flex-start',
+              paddingTop: 35
+            }}
+          >
+            <View style={{ alignItems: 'center', marginBottom: 15 }}>
+              <Form style={styles_newPayment.form}>
+                <InputItem
+                  label="제목"
+                  disabled={disabled}
+                  onChange={this.onChangeTitle}
+                  placeholder="어떤 모임이었나요?"
+                />
 
-                    <Item fixedLabel>
-                      <Label style={{ color: 'grey' }}>날짜</Label>
-                      <CustomDatePicker
-                        disabled={disabled}
-                        setDate={this.setDate}
-                      />
-                    </Item>
-                    <InputItem
-                      label="총 금액"
+                <Item fixedLabel>
+                  <Label style={screenStyles.inputLabel}>날짜</Label>
+                  <CustomDatePicker
+                    disabled={disabled}
+                    setDate={this.setDate}
+                  />
+                </Item>
+                <InputItem
+                  label="금액"
+                  disabled={disabled}
+                  onChange={this.onChangeTotalPay}
+                  keyT="numeric"
+                  placeholder="총 금액을 입력해주세요"
+                />
+                <Item fixedLabel>
+                  <Label style={screenStyles.inputLabel}>참여자</Label>
+                  <FriendListModal
+                    printModal={this.state.printModal}
+                    modalSwitch={this.modalSwitch}
+                    handleSelect={this.handleSelectParty}
+                    friendList={this.state.friendList}
+                  />
+                  <Label style={{ paddingLeft: 15 }}>
+                    {this.state.peopleCnt
+                      ? `총 ${this.state.peopleCnt} 명`
+                      : ''}
+                  </Label>
+                  <Right>
+                    <Button
                       disabled={disabled}
-                      onChange={this.onChangeTotalPay}
-                      keyT="numeric"
-                    />
-                    <Item fixedLabel>
-                      <Label style={{ color: 'grey' }}>참여한 사람</Label>
-                      <FriendListModal
-                        printModal={this.state.printModal}
-                        modalSwitch={this.modalSwitch}
-                        handleSelect={this.handleSelectParty}
-                        friendList={this.state.friendList}
+                      onPress={this.modalSwitch}
+                      style={screenStyles.iconBtn}
+                    >
+                      <Icon
+                        name="search"
+                        fontSize={40}
+                        style={{ color: '#907be0' }}
                       />
-                      <Label>
-                        {' '}
-                        {this.state.peopleCnt
-                          ? `총 ${this.state.peopleCnt} 명`
-                          : ''}
-                      </Label>
-                      <Right>
-                        <Button
-                          disabled={disabled}
-                          onPress={this.modalSwitch}
-                          style={screenStyles.iconBtn}
-                        >
-                          <Icon name="search" style={{ color: '#6A1F9F' }} />
-                        </Button>
-                      </Right>
-                    </Item>
+                    </Button>
+                  </Right>
+                </Item>
+                <View style={{ flexDirection: 'column', marginVertical: 10 }}>
+                  <ChosenFriendListItem name="나" />
+                  {this.state.chosenList.length
+                    ? this.state.chosenList.map((person, i) => {
+                        return (
+                          <ChosenFriendListItem key={i} name={person.name} />
+                        );
+                      })
+                    : null}
+                </View>
 
-                    {this.state.chosenList.length ? (
-                      <Item>
-                        {this.state.chosenList.map(person => {
-                          return <ChosenFriendListItem person={person.name} />;
-                        })}
-                      </Item>
-                    ) : (
-                      <Text />
-                    )}
-                    <Item fixedLabel>
-                      <Label style={{ color: 'grey' }}>1/n</Label>
-                      <Input placeholder={this.calcN()} disabled={true} />
-                    </Item>
-                  </Form>
-                </View>
-              </Content>
-            </Row>
-            <Row size={1}>
-              <Content>
-                <View style={{ justifyContent: 'flex-start' }}>
-                  <PicPicker disabled={disabled} />
-                </View>
-              </Content>
-            </Row>
-          </Grid>
+                <SplitPayment
+                  splitPayment={this.calcN()}
+                  remainder={this.remainder}
+                />
+              </Form>
+            </View>
+            <PicPicker
+              disabled={disabled}
+              handlePicker={this.handlePicPicker}
+            />
+          </Content>
           <NewPayFooter
             label={this.state.modifyButtonText}
             onPress={this.toModifyMode}
@@ -373,27 +428,4 @@ export default class NewPayment extends React.Component<Props> {
       </LinearGradient>
     );
   }
-  styles = StyleSheet.create({
-    container: {
-      marginTop: 24,
-      flex: 1,
-      backgroundColor: 'transparent'
-    },
-    form: {
-      width: 350,
-      backgroundColor: '#fff',
-      borderRadius: 10,
-      paddingLeft: 10,
-      paddingRight: 20
-    },
-    modal: {
-      flex: 1,
-      backgroundColor: 'rgba(52, 52, 52, 0.8)',
-      padding: 50
-    },
-    text: {
-      color: '#3f2949',
-      marginTop: 10
-    }
-  });
 }

@@ -7,11 +7,15 @@ import {
   CardItem,
   Text,
   Body,
-  Col
+  Col,
+  Item
 } from 'native-base';
+import NetCardElement from '../components/NetCardElement';
+
 interface Props {
   header?: string;
-  body: string;
+  pay: string;
+  get: string;
 }
 export default class NetCard extends Component<Props> {
   render() {
@@ -37,20 +41,20 @@ export default class NetCard extends Component<Props> {
               >
                 <CardItem
                   header
-                  style={{ borderRadius: 5, backgroundColor: 'transparent' }}
+                  style={{
+                    borderRadius: 5,
+                    backgroundColor: 'transparent',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start'
+                  }}
                 >
-                  <Text style={{ fontSize: 20, color: 'grey' }}>
+                  <Text
+                    style={{ fontSize: 20, color: 'grey', textAlign: 'left' }}
+                  >
                     {this.props.header ? this.props.header : ''}
                   </Text>
-                </CardItem>
-                <CardItem
-                  style={{ borderRadius: 5, backgroundColor: 'transparent' }}
-                >
-                  <Body>
-                    <Text style={{ fontSize: 15, color: 'darkgrey' }}>
-                      {this.props.body ? this.props.body : ''}
-                    </Text>
-                  </Body>
+                  <NetCardElement label="받을 돈" money={this.props.get} />
+                  <NetCardElement label="줄 돈" money={this.props.pay} />
                 </CardItem>
               </Card>
             </Content>

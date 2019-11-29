@@ -56,6 +56,21 @@ class LoadingScreen extends React.Component<Props> {
           style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
         >
           <Text
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            style={{
+              backgroundColor: 'transparent',
+              fontSize: 20,
+              fontStyle: 'italic',
+              fontWeight: '300',
+              color: '#fff'
+            }}
+          >
+            슬기로운 수금 생활
+          </Text>
+          <Text
+            numberOfLines={1}
+            adjustsFontSizeToFit
             style={{
               backgroundColor: 'transparent',
               fontSize: 60,
@@ -70,7 +85,7 @@ class LoadingScreen extends React.Component<Props> {
         <Footer
           style={{ justifyContent: 'center', backgroundColor: 'transParent' }}
         >
-          <Text style={{ color: '#fff', fontSize: 17, fontWeight: '400' }}>
+          <Text style={{ color: '#fff', fontSize: 15, fontWeight: '400' }}>
             @ Don Juan 2019
           </Text>
         </Footer>

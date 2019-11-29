@@ -10,6 +10,7 @@ import NetCard from './NetCard';
 import NewPayFooter from './NewPayFooter';
 import ButtonBasic from './ButtonBasic';
 import ChosenFriendListItem from './ChosenFriendListItem';
+import SplitPayment from './SplitPayment';
 
 export {
   ButtonBasic,
@@ -23,5 +24,6 @@ export {
   PicPicker,
   DrawerHeader,
   NetCard,
-  ChosenFriendListItem
+  ChosenFriendListItem,
+  SplitPayment
 };

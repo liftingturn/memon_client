@@ -17,8 +17,8 @@ const ButtonBasic = props => {
     },
     txt: {
       color: '#907ee0',
-      fontSize: 17,
-      fontWeight: '400'
+      fontSize: 20,
+      fontWeight: '500'
     },
     icon: {
       color: '#907ee0'
