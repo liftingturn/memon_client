@@ -192,9 +192,14 @@ export default class NewPayment extends React.Component<Props> {
   };
 
   remainder = '';
+<<<<<<< HEAD
   calcN = async () => {
     console.log('////////////// * calcN * //////////////');
     console.log('state pay', this.state.totalPay);
+=======
+  calcN = () => {
+    console.log('calc N', this.state);
+>>>>>>> 0ec23008cf3bd5f1b057ef7ec254bfe9625a5d40
     if (!this.state.totalPay) {
       this.setState({ ...this.state, singlePay: 'placeholder' });
       console.log('placeholder');
@@ -493,7 +498,12 @@ export default class NewPayment extends React.Component<Props> {
                 </View>
 
                 <SplitPayment
+<<<<<<< HEAD
                   splitPayment={this.state.singlePay}
+=======
+                  // splitPayment={this.calcN()}
+                  splitPayment={'3'}
+>>>>>>> 0ec23008cf3bd5f1b057ef7ec254bfe9625a5d40
                   remainder={this.remainder}
                 />
               </Form>
