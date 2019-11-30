@@ -36,6 +36,16 @@ const screenStyles = StyleSheet.create({
   iconBtn: {
     backgroundColor: 'transparent',
     elevation: 0
+  },
+  blacktext: {
+    color: 'black',
+    borderRightColor: '#c2c2c4',
+    borderRightWidth: 1
+  },
+  justifyC: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
   }
 });
 

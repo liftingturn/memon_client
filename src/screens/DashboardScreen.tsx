@@ -4,7 +4,8 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  RefreshControl
+  RefreshControl,
+  Dimensions
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NetCard, DrawerHeader, ButtonBasic } from '../components';
@@ -12,7 +13,19 @@ import config from './../../config';
 import firebase from 'firebase';
 import { screenStyles } from '../screenStyles';
 
-import { Container, Content, Button } from 'native-base';
+import {
+  Container,
+  Content,
+  Button,
+  Card,
+  CardItem,
+  Thumbnail,
+  Icon,
+  Left,
+  Body,
+  Image,
+  Right
+} from 'native-base';
 
 interface Props {
   navigation: any;
@@ -22,14 +35,19 @@ interface State {
   moneyToGet: string;
   uri: string;
   refreshing: boolean;
+  name: string;
+  avatar: string;
 }
 export default class DashboardScreen extends Component<Props, State> {
   state: State = {
     moneyToPay: '',
     moneyToGet: '',
     uri: '',
-    refreshing: false
+    refreshing: false,
+    name: '',
+    avatar: 'https://via.placeholder.com/150'
   };
+  deviceWidth = Dimensions.get('window').width;
   moveToNewPayment = () => {
     this.props.navigation.navigate('NewPayment');
   };
@@ -54,8 +72,11 @@ export default class DashboardScreen extends Component<Props, State> {
       });
       const parsedMoneyData = await fetchData.json();
       this.setState({
+        ...this.state,
         moneyToPay: parsedMoneyData.moneyToPay,
-        moneyToGet: parsedMoneyData.moneyToGet
+        moneyToGet: parsedMoneyData.moneyToGet,
+        avatar: parsedMoneyData.avatar,
+        name: user.displayName
       });
     } catch (error) {
       console.error(error);
@@ -80,7 +101,22 @@ export default class DashboardScreen extends Component<Props, State> {
         <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
           <Container style={screenStyles.container}>
             <DrawerHeader title="Memon" toggleDrawer={this.toggleDrawer} />
-
+            <Card
+              style={{
+                width: this.deviceWidth * 0.8,
+                marginLeft: this.deviceWidth * 0.1
+              }}
+            >
+              <CardItem>
+                <Thumbnail source={{ uri: this.state.avatar }} />
+                <Body>
+                  <Text style={{ marginLeft: 20 }}>
+                    {this.state.name}님,{'\n'}안녕하세요.{'\n'}오늘도 슬기로운
+                    수금생활 되세요!
+                  </Text>
+                </Body>
+              </CardItem>
+            </Card>
             <Content
               style={{ backgroundColor: 'transparent' }}
               scrollEnabled={false}
@@ -100,7 +136,7 @@ export default class DashboardScreen extends Component<Props, State> {
 
   styles = StyleSheet.create({
     container: {
-      marginTop: 23,
+      // marginTop: 23,
       flex: 1,
       backgroundColor: '#fff',
       // alignItems: 'center',

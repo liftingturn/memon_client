@@ -11,7 +11,8 @@ import {
   Right,
   Icon,
   List,
-  ListItem
+  ListItem,
+  Label
 } from 'native-base';
 import config from '../../config';
 import firebase from 'firebase';
@@ -117,9 +118,18 @@ export default class PaymentList extends React.Component<Props, State> {
                       }
                       key={payment.pricebookId}
                     >
-                      <Left>
-                        <Text>{payment.title}</Text>
-                        <Text>{payment.price}</Text>
+                      <Left style={screenStyles.justifyC}>
+                        <Label
+                          style={
+                            (screenStyles.inputLabel, screenStyles.blacktext)
+                          }
+                        >
+                          {payment.title + '  '}
+                        </Label>
+                        <Text style={screenStyles.inputTxt}>
+                          총 {payment.price} 원 {'\n'}
+                          {payment.partyDate}
+                        </Text>
                       </Left>
                       <Right>
                         <Button
