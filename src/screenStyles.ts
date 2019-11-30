@@ -11,7 +11,7 @@ const screenStyles = StyleSheet.create({
   },
   inputTxt: {
     flex: 2.2,
-    paddingLeft: 15,
+    paddingLeft: 14,
     fontSize: 16,
     color: '#3b3b3b'
   },
