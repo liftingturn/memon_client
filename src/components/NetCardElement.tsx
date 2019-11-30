@@ -32,7 +32,7 @@ const NetCardElement = props => {
           textAlign: 'center'
         }}
       >
-        {props.money}
+        {props.money}원
       </Text>
     </Item>
   );

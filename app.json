@@ -7,7 +7,7 @@
     "platforms": ["android", "web"],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/5959.png",
+    "icon": "./assets/memon-circle.png",
     "splash": {
       "image": "./assets/iOS-stock-6-for-iPhone-X.png",
       "resizeMode": "cover",

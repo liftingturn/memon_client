@@ -86,7 +86,7 @@ export default class DashboardScreen extends Component<Props, State> {
               scrollEnabled={false}
             >
               <NetCard
-                header={'net'}
+                header={'현재 미완료 금액 총계'}
                 get={this.state.moneyToGet}
                 pay={this.state.moneyToPay}
               />
