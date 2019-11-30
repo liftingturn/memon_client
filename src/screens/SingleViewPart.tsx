@@ -8,6 +8,7 @@ import {
   RefreshControl
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Col, Row, Grid } from 'react-native-easy-grid';
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
 import { screenStyles, styles_newPayment } from '../screenStyles';
@@ -224,11 +225,10 @@ export default class SingleViewPart extends React.Component<Props, State> {
                     </Text>
                   </Item>
                   <Item fixedLabel>
-                    <Label style={screenStyles.inputLabel}>참여자 목록</Label>
-                    <List></List>
-                    <Label style={screenStyles.inputTxt}>
+                    <Label style={screenStyles.inputLabel}>참여자 수</Label>
+                    <Text style={screenStyles.inputTxt}>
                       총 {this.state.peopleCnt} 명
-                    </Label>
+                    </Text>
                   </Item>
                   <Item fixedLabel>
                     <Label style={screenStyles.inputLabel}>1인당 금액</Label>

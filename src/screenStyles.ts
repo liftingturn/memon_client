@@ -11,7 +11,7 @@ const screenStyles = StyleSheet.create({
   },
   inputTxt: {
     flex: 2.2,
-    paddingLeft: 15,
+    paddingLeft: 14,
     fontSize: 16,
     color: '#3b3b3b'
   },
@@ -36,6 +36,16 @@ const screenStyles = StyleSheet.create({
   iconBtn: {
     backgroundColor: 'transparent',
     elevation: 0
+  },
+  blacktext: {
+    color: 'black',
+    borderRightColor: '#c2c2c4',
+    borderRightWidth: 1
+  },
+  justifyC: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
   }
 });
 
