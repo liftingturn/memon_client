@@ -76,8 +76,10 @@ export default class PaymentList extends React.Component<Props, State> {
       })
     };
     let response = await fetch(config.serverAddress + '/payment/all', emailObj);
-    console.log('response', response);
+    // console.log('response', response);
     let responseJson = await response.json();
+    console.log('responseJson', responseJson);
+
     this.setState({ email: user.email, paymentList: responseJson });
   }
   onRefresh = async () => {
@@ -107,7 +109,7 @@ export default class PaymentList extends React.Component<Props, State> {
             <Content>
               <Text>보라색:수금필요 노란색:입금필요</Text>
               <List>
-                {this.state.paymentList.map(payment => {
+                {this.state.paymentList.map((payment, i) => {
                   return (
                     //결제 종류별로 색 구분할거임. 그리고 key나 기타로 바로 개별view들어갈 때 해당 키 날릴거.
                     <ListItem
@@ -116,7 +118,7 @@ export default class PaymentList extends React.Component<Props, State> {
                           ? this.styles.bossItem
                           : this.styles.partItem
                       }
-                      key={payment.pricebookId}
+                      key={i}
                     >
                       <Left style={screenStyles.justifyC}>
                         <Label

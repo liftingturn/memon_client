@@ -28,6 +28,8 @@ import {
   SplitPayment
 } from '../components';
 import config from '../../config';
+import PhoneInputScreen from './PhoneInputScreen';
+import { timingSafeEqual } from 'crypto';
 
 export interface Props {
   navigation: any;
@@ -115,38 +117,89 @@ export default class NewPayment extends React.Component<Props> {
         fields: [Contacts.PHONE_NUMBERS, Contacts.EMAILS]
       });
 
-      if (data.length > 0) {
-        let newList = [];
-        for (let i = 1; i < data.length; i++) {
-          if (data[i].phoneNumbers) {
-            let contact: Person = {
-              name: data[i].name,
-              phone: data[i].phoneNumbers[0].number.replace(/\D/g, ''),
-              clicked: false
-            };
-            newList.push(contact);
-          }
+      let newList = [];
+      for (let i = 1; i < data.length; i++) {
+        if (data[i].phoneNumbers) {
+          let contact: Person = {
+            name: data[i].name,
+            phone: data[i].phoneNumbers[0].number.replace(/\D/g, ''),
+            clicked: false
+          };
+          newList.push(contact);
         }
-        // request server for checking app user
-        const fetchRes = await fetch(userCheckAPI, {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(newList)
-        });
-        const userFilterdList = await fetchRes.json();
-        userFilterdList.forEach(user => {
-          user.isIn = true;
-          user.clicked = this.state.chosenNums.includes(user.phone)
-            ? true
-            : false;
-        });
-        await this.setState({ ...this.state, friendList: userFilterdList });
-        console.log('userFilterdList', this.state.friendList);
       }
+      console.log('=====newList====', newList[0]);
+
+      if (navigation.state.params) {
+        let newChosen = [...this.state.chosenList];
+        newChosen.forEach(chosen => {
+          newList.forEach(gotName => {
+            if (chosen.phone === gotName.phone) {
+              console.log('찾았어요');
+              chosen.name = gotName.name;
+            }
+          });
+        });
+        await this.setState({ ...this.state, chosenList: newChosen });
+        console.log('=====+Name chosenList====', this.state.chosenList);
+      }
+      // request server for checking app user
+      const fetchRes = await fetch(userCheckAPI, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newList)
+      });
+      const userFilterdList = await fetchRes.json();
+      userFilterdList.forEach(user => {
+        user.isIn = true;
+        user.clicked = this.state.chosenNums.includes(user.phone)
+          ? true
+          : false;
+      });
+      await this.setState({ ...this.state, friendList: userFilterdList });
     }
+  };
+
+  doFetch = async () => {
+    let emailObj = {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        boss: this.props.navigation.state.params.fromListView,
+        email: this.props.navigation.state.params.email,
+        pricebookId: this.props.navigation.state.params.pricebookId
+      })
+    };
+    let response = await fetch(config.serverAddress + '/pricebook', emailObj);
+    let responseJson = await response.json();
+    ///// 참여자 목록 추출 ///////
+    console.log('페이먼트 추출해야함', responseJson.paymentObj);
+    const chosenList = responseJson.paymentObj.map(record => {
+      return {
+        name: '', ////백엔드에 추가 요청!!!!
+        phone: record.phone,
+        id: record.participantId, ////???????///
+        transId: record.id,
+        clicked: true,
+        isPayed: record.isPayed
+      };
+    });
+    await this.setState({
+      ...this.state,
+      title: responseJson.pricebook.title,
+      totalPay: responseJson.pricebook.totalPrice,
+      peopleCnt: responseJson.pricebook.count,
+      chosenDate: responseJson.pricebook.partyDate,
+      billImgSrc: responseJson.pricebook.billImgSrc,
+      chosenList: chosenList
+    });
+    console.log('afterFetch', this.state.chosenList);
   };
 
   //form handler functions
@@ -222,7 +275,7 @@ export default class NewPayment extends React.Component<Props> {
     if (this.state.modifyButtonText === '수정') {
       this.setState({
         ...this.state,
-        uniqueDisable: true,
+        uniqueDisable: false,
         modifyButtonText: '변경사항저장'
       });
       alert('입금상태를 수정합니다.\n완료 후 저장을 꼭 눌러주세요!');
@@ -331,35 +384,68 @@ export default class NewPayment extends React.Component<Props> {
     this.props.navigation.navigate('PaymentList');
   };
 
-  doFetch = async () => {
-    let emailObj = {
+  changePayedTrans = phone => {
+    let chosen = [...this.state.chosenList];
+    chosen.forEach(person => {
+      if (person.phone === phone) {
+        person.askConfirm = person.askConfirm ? false : true;
+      }
+    });
+    this.setState({ ...this.state, chosenList: chosen });
+  };
+
+  handleConfirmModified = async () => {
+    console.log('수정!!');
+    const askNotiAPI = config.serverAddress + '/users/pushtoken';
+    const askTransRcordAPI = config.serverAddress + '/payment/ispayed';
+
+    //거래레코드 ispayed 상태 변경 요청
+    const payedTrans = [];
+    this.state.chosenList.forEach(person => {
+      if (person.askConfirm) {
+        payedTrans.push(person.transId);
+      }
+    });
+    console.log('payedTrans', payedTrans);
+    const body = { paymentId: payedTrans };
+    const transRcords = await fetch(askTransRcordAPI, {
+      method: 'patch',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+
+    //푸시노티 API
+    const user = await firebase.auth().currentUser;
+    console.log(this.state.chosenList);
+    const party = [];
+    this.state.chosenList.forEach(person => {
+      if (person.askConfirm === true) {
+        party.push(person.id);
+      }
+    });
+    let pushBody = JSON.stringify({
+      pricebookId: this.state.pricebookId,
+      title: this.state.title,
+      msg: ` ${user.displayName} : 입금이 확인되었습니다.`,
+      target: 'participant',
+      participant: party
+    });
+    let pushRes = await fetch(config.serverAddress + '/users/pushtoken', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        boss: this.props.navigation.state.params.fromListView,
-        email: this.props.navigation.state.params.email,
-        pricebookId: this.props.navigation.state.params.pricebookId
-      })
-    };
-    let response = await fetch(config.serverAddress + '/pricebook', emailObj);
-    let responseJson = await response.json();
-    console.log(
-      responseJson.pricebook.title,
-      responseJson.pricebook.partyDate,
-      responseJson.pricebook.totalPrice
-    );
-    await this.setState({
-      ...this.state,
-      title: responseJson.pricebook.title,
-      totalPay: responseJson.pricebook.totalPrice,
-      peopleCnt: responseJson.pricebook.count,
-      chosenDate: responseJson.pricebook.partyDate,
-      billImgSrc: responseJson.pricebook.billImgSrc
+      body: pushBody
     });
-    console.log('afterFetch', this.state);
+    let res = await pushRes.json();
+    console.log(res);
+    this.toModifyMode();
+    //새로고침
+    this.componentDidMount();
   };
 
   async componentWillReceiveProps() {
@@ -369,10 +455,7 @@ export default class NewPayment extends React.Component<Props> {
       email,
       pricebookId
     } = this.props.navigation.state.params;
-    //**************************//
-    //서버에서 개별결제 페이지 리스폰스 보낼때 참여자 전화번호 같이 보내줘야함
-    //참여자 전화번호 추출해서 state.chosenNums=[ 'phone', 'phone', 'phone' ]
-    // ---------> 비활성화 클릭하면, 등록된 결제건은 참여자 수정이 불가능합니다.
+
     if (fromListView) {
       await this.setState({
         ...this.state,
@@ -387,6 +470,7 @@ export default class NewPayment extends React.Component<Props> {
     }
   }
 
+  // tslint:disable-next-line: max-func-body-length
   render() {
     console.log(
       'disabled 렌더시에 title',
@@ -395,7 +479,7 @@ export default class NewPayment extends React.Component<Props> {
     );
     let { disabled, uniqueDisable, pageTitle } = this.state;
     return (
-      <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
+      <LinearGradient style={{ flex: 1 }} colors={['#e2b3ff', '#937ee0']}>
         <Container style={screenStyles.container}>
           <DrawerHeader title={pageTitle} toggleDrawer={this.toggleDrawer} />
           <Content
@@ -413,7 +497,6 @@ export default class NewPayment extends React.Component<Props> {
                   placeholder="어떤 모임이었나요?"
                   txt={this.state.title}
                 />
-
                 <Item fixedLabel>
                   <Label style={screenStyles.inputLabel}>날짜</Label>
                   {disabled ? (
@@ -460,21 +543,25 @@ export default class NewPayment extends React.Component<Props> {
                   </Right>
                 </Item>
                 <View style={{ flexDirection: 'column', marginVertical: 10 }}>
-                  <ChosenFriendListItem name="나" />
-                  <Text>{uniqueDisable}</Text>
-                  {this.state.chosenList.length
+                  <ChosenFriendListItem
+                    name="나"
+                    uniqueDisable={this.state.uniqueDisable}
+                  />
+                  {this.state.chosenList.length > 0
                     ? this.state.chosenList.map((person, i) => {
                         return (
                           <ChosenFriendListItem
-                            disabled={uniqueDisable}
+                            uniqueDisable={uniqueDisable}
+                            mode={pageTitle}
                             key={i}
-                            name={person.name}
+                            person={person}
+                            changePayed={this.changePayedTrans}
+                            askConfirm={person.askConfirm}
                           />
                         );
                       })
                     : null}
                 </View>
-
                 <SplitPayment
                   splitPayment={this.state.singlePay}
                   remainder={this.remainder}
@@ -491,6 +578,7 @@ export default class NewPayment extends React.Component<Props> {
             label={this.state.modifyButtonText}
             onPress={this.toModifyMode}
             goBack={this.handleCancle}
+            handleConfirm={this.handleConfirmModified}
           />
         </Container>
       </LinearGradient>

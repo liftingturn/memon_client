@@ -98,7 +98,7 @@ export default class DashboardScreen extends Component<Props, State> {
           />
         }
       >
-        <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
+        <LinearGradient style={{ flex: 1 }} colors={['#e2b3ff', '#937ee0']}>
           <Container style={screenStyles.container}>
             <DrawerHeader title="Memon" toggleDrawer={this.toggleDrawer} />
             <Card
