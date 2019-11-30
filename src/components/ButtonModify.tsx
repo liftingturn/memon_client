@@ -6,9 +6,16 @@ interface Props {
   label: string;
   onPress: () => void;
   goBack: () => void;
+  handleConfirm: () => void;
 }
 
 export default class ButtonModify extends React.Component<Props> {
+  onPress = () => {
+    this.props.label === '변경사항저장'
+      ? this.props.handleConfirm()
+      : this.props.onPress();
+  };
+
   handleBackPress = async () => {
     if (this.props.label === '변경사항저장') {
       await Alert.alert('Alert', '수정을 취소합니다.', [
@@ -35,7 +42,7 @@ export default class ButtonModify extends React.Component<Props> {
 
   render() {
     return (
-      <Button onPress={this.props.onPress}>
+      <Button onPress={this.onPress}>
         <Text>{this.props.label}</Text>
       </Button>
     );

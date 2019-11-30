@@ -4,11 +4,18 @@ import { Button, Right, Left, Body } from 'native-base';
 import { Props } from '../screens/SingleViewPart';
 
 const ChosenFriendListItem = props => {
-  //const status = props.status ? '완료' : '대기'; //props
+  //const status = props.isPayed ? '완료' : '대기'; //props
   //  const statusColor = props.status !== 'done' ? '#bba8e0' : '#c2c2c4';
-
-  const status = props.name === '최방실' ? '완료' : '대기'; //props
+  if (!props.name) {
+    const status = props.person.isPayed ? '완료' : '대기'; //props
+    const buttonMSG = props.askConfirm ? '완료' : '입금확인';
+    const body = props.person.name;
+  } else {
+    const body = props.name;
+  }
+  const askBgc = props.askConfirm ? 'orange' : 'yellow';
   const statusColor = status === '완료' ? '#bba8e0' : '#c2c2c4';
+
   const styles = StyleSheet.create({
     btn: {
       backgroundColor: 'transparent',
@@ -28,6 +35,15 @@ const ChosenFriendListItem = props => {
       fontWeight: '400',
       fontSize: 15
     },
+    payedModify: {
+      color: '#bba8e0',
+      fontWeight: '600',
+      marginRight: 20
+    },
+    askConfirm: {
+      height: 15,
+      backgroundColor: askBgc
+    },
     status: {
       color: statusColor,
       fontWeight: '600',
@@ -37,15 +53,34 @@ const ChosenFriendListItem = props => {
       flex: 1
     }
   });
+  console.log('========쵸즌리스트아이템 프롭스=======', props);
+
+  const handleCheckPay = () => {
+    props.changePayed(props.person.phone);
+  };
+
   return (
     <Button style={styles.btn} disabled={true}>
       <Left style={styles.section} />
       <Body style={styles.section}>
-        <Text style={styles.txt}>{props.name}</Text>
+        <Text style={styles.txt}>{body}</Text>
       </Body>
       <Right style={styles.section}>
         {props.name !== '나' ? (
-          <Text style={styles.status}>{status}</Text>
+          props.mode === '단일 결제 정보' ? (
+            props.uniqueDisable ? (
+              //조회모드
+              <Text style={styles.status}>{status}</Text>
+            ) : (
+              // 수정모드
+              <Button onPress={handleCheckPay} style={styles.askConfirm}>
+                <Text>{buttonMSG}</Text>
+              </Button>
+            )
+          ) : (
+            //입력모드
+            <Text style={styles.status}>{status}</Text>
+          )
         ) : null}
       </Right>
     </Button>

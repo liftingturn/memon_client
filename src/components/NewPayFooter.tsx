@@ -10,6 +10,7 @@ const NewPayFooter = props => {
           label={props.label}
           onPress={props.onPress}
           goBack={props.goback}
+          handleConfirm={props.handleConfirm}
         />
       </FooterTab>
     </Footer>
