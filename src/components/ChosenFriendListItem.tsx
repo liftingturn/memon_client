@@ -6,16 +6,16 @@ import { Props } from '../screens/SingleViewPart';
 const ChosenFriendListItem = props => {
   //const status = props.isPayed ? '완료' : '대기'; //props
   //  const statusColor = props.status !== 'done' ? '#bba8e0' : '#c2c2c4';
-  if (!props.name) {
-    const status = props.person.isPayed ? '완료' : '대기'; //props
-    const buttonMSG = props.askConfirm ? '완료' : '입금확인';
-    const body = props.person.name;
-  } else {
-    const body = props.name;
-  }
-  const askBgc = props.askConfirm ? 'orange' : 'yellow';
-  const statusColor = status === '완료' ? '#bba8e0' : '#c2c2c4';
 
+  const status = props.isPayed ? '완료' : '대기'; //props
+  const statusColor = status === '완료' ? '#bba8e0' : '#c2c2c4';
+  const buttonMSG = props.askConfirm ? '완료' : '입금확인';
+  const askBgc = props.askConfirm ? 'orange' : 'yellow';
+  const body = props.name
+    ? props.name
+    : props.person
+    ? props.person.name
+    : null;
   const styles = StyleSheet.create({
     btn: {
       backgroundColor: 'transparent',
