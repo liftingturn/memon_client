@@ -135,7 +135,6 @@ export default class NewPayment extends React.Component<Props> {
         newChosen.forEach(chosen => {
           newList.forEach(gotName => {
             if (chosen.phone === gotName.phone) {
-              console.log('찾았어요');
               chosen.name = gotName.name;
             }
           });
@@ -158,6 +157,7 @@ export default class NewPayment extends React.Component<Props> {
         user.clicked = this.state.chosenNums.includes(user.phone)
           ? true
           : false;
+        user.isPayed = user.isPayed ? user.isPayed : false;
       });
       await this.setState({ ...this.state, friendList: userFilterdList });
     }
@@ -181,8 +181,9 @@ export default class NewPayment extends React.Component<Props> {
     ///// 참여자 목록 추출 ///////
     console.log('페이먼트 추출해야함', responseJson.paymentObj);
     const chosenList = responseJson.paymentObj.map(record => {
+      console.log('///////////맵!!!////////////', record);
       return {
-        name: '', ////백엔드에 추가 요청!!!!
+        name: '',
         phone: record.phone,
         id: record.participantId, ////???????///
         transId: record.id,
@@ -549,9 +550,10 @@ export default class NewPayment extends React.Component<Props> {
                   />
                   {this.state.chosenList.length > 0
                     ? this.state.chosenList.map((person, i) => {
+                        console.log('///////////map///////////', person);
                         return (
                           <ChosenFriendListItem
-                            uniqueDisable={uniqueDisable}
+                            modifyButtonText={this.state.modifyButtonText}
                             mode={pageTitle}
                             key={i}
                             person={person}

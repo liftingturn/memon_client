@@ -6,16 +6,18 @@ import { Props } from '../screens/SingleViewPart';
 const ChosenFriendListItem = props => {
   //const status = props.isPayed ? '완료' : '대기'; //props
   //  const statusColor = props.status !== 'done' ? '#bba8e0' : '#c2c2c4';
+  let status, statusColor, buttonMSG, askBgc, body;
 
-  const status = props.isPayed ? '완료' : '대기'; //props
-  const statusColor = status === '완료' ? '#bba8e0' : '#c2c2c4';
-  const buttonMSG = props.askConfirm ? '완료' : '입금확인';
-  const askBgc = props.askConfirm ? 'orange' : 'yellow';
-  const body = props.name
-    ? props.name
-    : props.person
-    ? props.person.name
-    : null;
+  if (!props.name) {
+    status = props.person.isPayed ? '완료' : '대기'; //props
+    statusColor = status === '완료' ? '#bba8e0' : '#c2c2c4';
+    buttonMSG = props.askConfirm ? '완료' : '입금확인';
+    askBgc = props.askConfirm ? 'orange' : 'yellow';
+    body = props.name ? props.name : props.person ? props.person.name : null;
+  } else {
+    body = '나';
+  }
+
   const styles = StyleSheet.create({
     btn: {
       backgroundColor: 'transparent',
@@ -53,8 +55,18 @@ const ChosenFriendListItem = props => {
       flex: 1
     }
   });
-  console.log('========쵸즌리스트아이템 프롭스=======', props);
+  console.log('= =======쵸즌리스트아이템 프롭스=======', props);
 
+  const { modifyButtonText } = props;
+  //화면모드
+  let mode =
+    modifyButtonText === '수정'
+      ? 'view'
+      : modifyButtonText === '등록' || !modifyButtonText
+      ? 'new'
+      : 'modify';
+
+  console.log('mode', mode);
   const handleCheckPay = () => {
     props.changePayed(props.person.phone);
   };
@@ -66,22 +78,16 @@ const ChosenFriendListItem = props => {
         <Text style={styles.txt}>{body}</Text>
       </Body>
       <Right style={styles.section}>
-        {props.name !== '나' ? (
-          props.mode === '단일 결제 정보' ? (
-            props.uniqueDisable ? (
-              //조회모드
-              <Text style={styles.status}>{status}</Text>
-            ) : (
-              // 수정모드
-              <Button onPress={handleCheckPay} style={styles.askConfirm}>
-                <Text>{buttonMSG}</Text>
-              </Button>
-            )
-          ) : (
-            //입력모드
-            <Text style={styles.status}>{status}</Text>
-          )
-        ) : null}
+        {props.name ? null : mode === 'new' ? ( //나 //새결제
+          <Text style={styles.status}>{status}</Text>
+        ) : mode === 'view' ? ( //조회
+          <Text style={styles.status}>{status}</Text>
+        ) : (
+          // 수정모드
+          <Button onPress={handleCheckPay} style={styles.askConfirm}>
+            <Text>{buttonMSG}</Text>
+          </Button>
+        )}
       </Right>
     </Button>
   );
