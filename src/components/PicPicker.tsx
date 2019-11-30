@@ -7,6 +7,7 @@ import ButtonBasic from './ButtonBasic';
 
 export interface State {
   image: any;
+  disabled: boolean;
 }
 export interface Props {
   disabled: boolean;
@@ -16,7 +17,8 @@ export interface Props {
 
 export default class PicPicker extends React.Component<Props, State> {
   state = {
-    image: null
+    image: null,
+    disabled: false
   };
 
   render() {
@@ -43,6 +45,7 @@ export default class PicPicker extends React.Component<Props, State> {
   }
 
   componentDidMount() {
+    this.setState({ ...this.state, disabled: this.props.disabled });
     this.getPermissionAsync();
   }
 
