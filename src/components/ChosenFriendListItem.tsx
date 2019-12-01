@@ -6,12 +6,13 @@ import { Props } from '../screens/SingleViewPart';
 const ChosenFriendListItem = props => {
   //const status = props.isPayed ? '완료' : '대기'; //props
   //  const statusColor = props.status !== 'done' ? '#bba8e0' : '#c2c2c4';
-  let status, statusColor, buttonMSG, askBgc, body;
+  let status, statusColor, buttonMSG, askBgc, body, confirmDisable;
 
   if (!props.name) {
     status = props.person.isPayed ? '완료' : '대기'; //props
     statusColor = status === '완료' ? '#bba8e0' : '#c2c2c4';
-    buttonMSG = props.askConfirm ? '완료' : '입금확인';
+    buttonMSG = props.askConfirm || props.person.isPayed ? '완료' : '입금확인';
+    confirmDisable = props.person.isPayed ? true : false;
     askBgc = props.askConfirm ? 'orange' : 'yellow';
     body = props.name ? props.name : props.person ? props.person.name : null;
   } else {
@@ -43,7 +44,9 @@ const ChosenFriendListItem = props => {
       marginRight: 20
     },
     askConfirm: {
-      height: 15,
+      marginRight: 10,
+      paddingHorizontal: 10,
+      height: 19,
       backgroundColor: askBgc
     },
     status: {
@@ -84,7 +87,11 @@ const ChosenFriendListItem = props => {
           <Text style={styles.status}>{status}</Text>
         ) : (
           // 수정모드
-          <Button onPress={handleCheckPay} style={styles.askConfirm}>
+          <Button
+            onPress={handleCheckPay}
+            style={styles.askConfirm}
+            disabled={confirmDisable}
+          >
             <Text>{buttonMSG}</Text>
           </Button>
         )}
