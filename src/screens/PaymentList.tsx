@@ -1,5 +1,11 @@
 import React from 'react';
-import { Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
+import {
+  Text,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+  BackHandler
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { DrawerHeader } from '../components';
 import { screenStyles } from '../screenStyles';
@@ -59,6 +65,9 @@ export default class PaymentList extends React.Component<Props, State> {
     }
   };
   componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress', () => {
+      this.props.navigation.navigate('Home');
+    });
     this.getOwnPayments();
   }
 

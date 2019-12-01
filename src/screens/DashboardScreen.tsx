@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  View,
+  BackHandler,
   Text,
   StyleSheet,
   ScrollView,
@@ -11,20 +11,17 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { NetCard, DrawerHeader, ButtonBasic } from '../components';
 import config from './../../config';
 import firebase from 'firebase';
-import { screenStyles } from '../screenStyles';
+import { screenStyles, styles_Toast } from '../screenStyles';
 
 import {
   Container,
   Content,
-  Button,
   Card,
   CardItem,
   Thumbnail,
-  Icon,
-  Left,
   Body,
-  Image,
-  Right
+  Toast,
+  Root
 } from 'native-base';
 
 interface Props {
@@ -37,6 +34,8 @@ interface State {
   refreshing: boolean;
   name: string;
   avatar: string;
+  goBack: number;
+  showToast: boolean;
 }
 export default class DashboardScreen extends Component<Props, State> {
   state: State = {
@@ -45,7 +44,9 @@ export default class DashboardScreen extends Component<Props, State> {
     uri: '',
     refreshing: false,
     name: '',
-    avatar: 'https://via.placeholder.com/150'
+    avatar: 'https://via.placeholder.com/150',
+    goBack: 0,
+    showToast: false
   };
   deviceWidth = Dimensions.get('window').width;
   moveToNewPayment = () => {
@@ -55,6 +56,7 @@ export default class DashboardScreen extends Component<Props, State> {
     this.props.navigation.toggleDrawer();
   };
   async componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.goBack);
     const fetchAdd = config.serverAddress + '/main';
 
     try {
@@ -87,50 +89,71 @@ export default class DashboardScreen extends Component<Props, State> {
     await this.componentDidMount();
     this.setState({ refreshing: false });
   };
+
+  goBack = async () => {
+    await this.setState({ ...this.state, goBack: this.state.goBack + 1 });
+    if (this.state.goBack === 1) {
+      Toast.show({
+        text: '한 번 더 누르면 앱을 종료합니다',
+        style: styles_Toast.container,
+        textStyle: styles_Toast.txt,
+        duration: 3000
+      });
+    } else if (this.state.goBack > 1) {
+      this.setState({ ...this.state, goBack: 0 });
+      BackHandler.exitApp();
+    }
+  };
   render() {
     console.log('================enter dashboard');
     return (
-      <ScrollView
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.refreshing}
-            onRefresh={this._onRefresh}
-          />
-        }
-      >
-        <LinearGradient style={{ flex: 1 }} colors={['#e2b3ff', '#937ee0']}>
-          <Container style={screenStyles.container}>
-            <DrawerHeader title="Memon" toggleDrawer={this.toggleDrawer} />
-            <Card
-              style={{
-                width: this.deviceWidth * 0.8,
-                marginLeft: this.deviceWidth * 0.1
-              }}
-            >
-              <CardItem>
-                <Thumbnail source={{ uri: this.state.avatar }} />
-                <Body>
-                  <Text style={{ marginLeft: 20 }}>
-                    {this.state.name}님,{'\n'}안녕하세요.{'\n'}오늘도 슬기로운
-                    수금생활 되세요!
-                  </Text>
-                </Body>
-              </CardItem>
-            </Card>
-            <Content
-              style={{ backgroundColor: 'transparent' }}
-              scrollEnabled={false}
-            >
-              <NetCard
-                header={'현재 미완료 금액 총계'}
-                get={this.state.moneyToGet}
-                pay={this.state.moneyToPay}
+      <Root>
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this._onRefresh}
+            />
+          }
+        >
+          <LinearGradient style={{ flex: 1 }} colors={['#e2b3ff', '#937ee0']}>
+            <Container style={screenStyles.container}>
+              <DrawerHeader title="Memon" toggleDrawer={this.toggleDrawer} />
+              <Card
+                style={{
+                  width: this.deviceWidth * 0.8,
+                  marginLeft: this.deviceWidth * 0.1
+                }}
+              >
+                <CardItem>
+                  <Thumbnail source={{ uri: this.state.avatar }} />
+                  <Body>
+                    <Text style={{ marginLeft: 20 }}>
+                      {this.state.name}님,{'\n'}안녕하세요.{'\n'}오늘도 슬기로운
+                      수금생활 되세요!
+                    </Text>
+                  </Body>
+                </CardItem>
+              </Card>
+              <Content
+                style={{ backgroundColor: 'transparent' }}
+                scrollEnabled={false}
+              >
+                <NetCard
+                  header={'현재 미완료 금액 총계'}
+                  get={this.state.moneyToGet}
+                  pay={this.state.moneyToPay}
+                />
+              </Content>
+              <ButtonBasic
+                type="txt"
+                label="+"
+                onPress={this.moveToNewPayment}
               />
-            </Content>
-            <ButtonBasic type="txt" label="+" onPress={this.moveToNewPayment} />
-          </Container>
-        </LinearGradient>
-      </ScrollView>
+            </Container>
+          </LinearGradient>
+        </ScrollView>
+      </Root>
     );
   }
 
