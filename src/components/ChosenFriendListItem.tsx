@@ -63,7 +63,7 @@ const ChosenFriendListItem = props => {
   const { modifyButtonText } = props;
   //화면모드
   let mode =
-    modifyButtonText === '수정'
+    modifyButtonText === '수정' || '거래 종료' || '확인'
       ? 'view'
       : modifyButtonText === '등록' || !modifyButtonText
       ? 'new'

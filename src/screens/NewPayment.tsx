@@ -55,6 +55,7 @@ export interface State {
   pricebookId: string;
   uniqueDisable: boolean;
   showToast: boolean;
+  readyComplete: false;
 }
 
 export default class NewPayment extends React.Component<Props> {
@@ -76,7 +77,9 @@ export default class NewPayment extends React.Component<Props> {
     pricebookId: '',
     billImgSrc: '',
     uniqueDisable: false,
-    showToast: false
+    showToast: false,
+    readyComplete: false,
+    transCompleted: false
   };
 
   async componentWillReceiveProps() {
@@ -112,11 +115,17 @@ export default class NewPayment extends React.Component<Props> {
       console.log('새 글 등록, state.disabled:', this.state.disabled);
     } else {
       console.log('=========리스트에서 온거야 비활성화 해야해');
-      const { fromListView, email, pricebookId } = navigation.state.params;
+      const {
+        fromListView,
+        email,
+        pricebookId,
+        transCompleted
+      } = navigation.state.params;
       //**************************//
       //서버에서 개별결제 페이지 리스폰스 보낼때 참여자 전화번호 같이 보내줘야함
       //참여자 전화번호 추출해서 state.chosenNums=[ 'phone', 'phone', 'phone' ]
       // ---------> 비활성화 클릭하면, 등록된 결제건은 참여자 수정이 불가능합니다.
+      const modifyButtonText = transCompleted ? '확인' : '수정';
       if (fromListView) {
         await this.setState({
           ...this.state,
@@ -124,8 +133,9 @@ export default class NewPayment extends React.Component<Props> {
           uniqueDisable: true,
           email: email,
           pricebookId: pricebookId,
-          modifyButtonText: '수정',
-          pageTitle: '단일 결제 정보'
+          modifyButtonText: modifyButtonText,
+          pageTitle: '단일 결제 정보',
+          transCompleted: transCompleted
         });
         await this.doFetch();
       }
@@ -152,7 +162,6 @@ export default class NewPayment extends React.Component<Props> {
           newList.push(contact);
         }
       }
-      console.log('=====newList====', newList[0]);
 
       if (navigation.state.params) {
         let newChosen = [...this.state.chosenList];
@@ -164,7 +173,6 @@ export default class NewPayment extends React.Component<Props> {
           });
         });
         await this.setState({ ...this.state, chosenList: newChosen });
-        console.log('=====+Name chosenList====', this.state.chosenList);
       }
       // request server for checking app user
       const fetchRes = await fetch(userCheckAPI, {
@@ -214,6 +222,7 @@ export default class NewPayment extends React.Component<Props> {
         isPayed: record.isPayed
       };
     });
+    ///// 결제 완료 여부 ///
     await this.setState({
       ...this.state,
       title: responseJson.pricebook.title,
@@ -223,7 +232,25 @@ export default class NewPayment extends React.Component<Props> {
       billImgSrc: responseJson.pricebook.billImgSrc,
       chosenList: chosenList
     });
-    console.log('afterFetch', this.state.chosenList);
+    const chosenState = this.state.chosenList;
+    console.log('afterFetch', chosenState);
+    let payedCnt = 0;
+    for (let i = 0; i < chosenState.length; i++) {
+      if (chosenState[i].isPayed) {
+        payedCnt++;
+      }
+    }
+    console.log('transCompleted#########', this.state.transCompleted);
+    if (payedCnt === responseJson.pricebook.count) {
+      if (!this.state.transCompleted) {
+        this.setState({
+          ...this.state,
+          readyComplete: true,
+          modifyButtonText: '거래 종료'
+        });
+        console.log('readyComplete#########', this.state.readyComplete);
+      }
+    }
     return;
   };
 
@@ -404,6 +431,11 @@ export default class NewPayment extends React.Component<Props> {
         duration: 3000,
         style: styles_Toast.container
       });
+    } else if (this.state.modifyButtonText === '거래 종료') {
+      this.hadleClose();
+      this.props.navigation.navigate('PaymentList');
+    } else if (this.state.modifyButtonText === '확인') {
+      this.props.navigation.navigate('PaymentList');
     }
   };
 
@@ -500,7 +532,34 @@ export default class NewPayment extends React.Component<Props> {
     this.componentDidMount();
     return;
   };
-  //handleClose
+
+  hadleClose = async () => {
+    console.log('======close Payment======');
+    const closeAPI = config.serverAddress + '/pricebook/transCompleted';
+    const body = {
+      pricebookId: this.props.navigation.state.params.pricebookId
+    };
+    console.log(body);
+
+    const res = await fetch(closeAPI, {
+      method: 'patch',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    console.log('=======response=======', res);
+    if (res.status === 200) {
+      Toast.show({
+        text: `${this.state.title} 거래가 완료되었습니다.`
+      });
+    } else {
+      Toast.show({
+        text: `시스템 오류입니다.`
+      });
+    }
+  };
 
   // tslint:disable-next-line: max-func-body-length
   render() {
