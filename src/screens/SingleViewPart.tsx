@@ -5,7 +5,8 @@ import {
   StyleSheet,
   Modal,
   ScrollView,
-  RefreshControl
+  RefreshControl,
+  BackHandler
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Col, Row, Grid } from 'react-native-easy-grid';
@@ -110,7 +111,9 @@ export default class SingleViewPart extends React.Component<Props, State> {
   };
   // handleBackPress = () => {};
   async componentDidMount() {
-    // BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+    BackHandler.addEventListener('hardwareBackPress', () => {
+      this.props.navigation.navigate('Home');
+    });
     if (this.props.navigation.state.params === undefined) {
       alert('해당 페이지는 결제 리스트를 통한 접근만 사용합니다.');
       this.props.navigation.navigate('Home');

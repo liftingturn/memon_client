@@ -1,5 +1,11 @@
 import React from 'react';
-import { Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
+import {
+  Text,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+  BackHandler
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { DrawerHeader } from '../components';
 import { screenStyles } from '../screenStyles';
@@ -40,14 +46,15 @@ export default class PaymentList extends React.Component<Props, State> {
   toggleDrawer = () => {
     this.props.navigation.toggleDrawer();
   };
-  pressEvent = (isBoss, pricebookId) => {
+  pressEvent = (isBoss, pricebookId, transCompleted) => {
     console.log(this, 'click!');
     if (isBoss) {
       console.log('go boss!');
       this.props.navigation.navigate('NewPayment', {
         fromListView: true,
         email: this.state.email,
-        pricebookId: pricebookId
+        pricebookId: pricebookId,
+        transCompleted: transCompleted
       });
     } else {
       console.log('go pay');
@@ -59,6 +66,9 @@ export default class PaymentList extends React.Component<Props, State> {
     }
   };
   componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress', () => {
+      this.props.navigation.navigate('Home');
+    });
     this.getOwnPayments();
   }
 
@@ -78,7 +88,7 @@ export default class PaymentList extends React.Component<Props, State> {
     let response = await fetch(config.serverAddress + '/payment/all', emailObj);
     // console.log('response', response);
     let responseJson = await response.json();
-    console.log('responseJson', responseJson);
+    // console.log('responseJson', responseJson);
 
     this.setState({ email: user.email, paymentList: responseJson });
   }
@@ -114,7 +124,9 @@ export default class PaymentList extends React.Component<Props, State> {
                     //결제 종류별로 색 구분할거임. 그리고 key나 기타로 바로 개별view들어갈 때 해당 키 날릴거.
                     <ListItem
                       style={
-                        payment.boss
+                        payment.transCompleted
+                          ? this.styles.completed
+                          : payment.boss
                           ? this.styles.bossItem
                           : this.styles.partItem
                       }
@@ -129,18 +141,25 @@ export default class PaymentList extends React.Component<Props, State> {
                           {payment.title + '  '}
                         </Label>
                         <Text style={screenStyles.inputTxt}>
-                          총 {payment.price} 원 {'\n'}
-                          {payment.partyDate}
+                          {payment.transCompleted
+                            ? '완료된 거래'
+                            : `총 ${payment.price} 원`}
+                          {`\n ${payment.partyDate}`}
                         </Text>
                       </Left>
                       <Right>
+                        <Text>{payment.transCompleted}</Text>
                         <Button
                           rounded
                           primary
                           //danger
                           style={this.styles.button}
                           onPress={() => {
-                            this.pressEvent(payment.boss, payment.pricebookId);
+                            this.pressEvent(
+                              payment.boss,
+                              payment.pricebookId,
+                              payment.transCompleted
+                            );
                           }}
                         >
                           <Icon name="arrow-forward" />
@@ -170,6 +189,7 @@ export default class PaymentList extends React.Component<Props, State> {
     },
     bossItem: { backgroundColor: '#9c88ff' },
     partItem: { backgroundColor: '#fbc531' },
+    completed: { backgroundColor: '#dbdbdb' },
     scrollView: {
       flex: 1,
       backgroundColor: 'pink'

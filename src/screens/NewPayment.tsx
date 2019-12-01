@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, Modal } from 'react-native';
+import { View, Text, BackHandler } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
-import { screenStyles, styles_newPayment } from '../screenStyles';
+import { screenStyles, styles_newPayment, styles_Toast } from '../screenStyles';
 import firebase from 'firebase';
 import { Person, Payment } from '../types';
 import {
@@ -14,7 +14,9 @@ import {
   Right,
   Button,
   Content,
-  Icon
+  Icon,
+  Root,
+  Toast
 } from 'native-base';
 
 import {
@@ -52,6 +54,8 @@ export interface State {
   email: string;
   pricebookId: string;
   uniqueDisable: boolean;
+  showToast: boolean;
+  readyComplete: false;
 }
 
 export default class NewPayment extends React.Component<Props> {
@@ -72,12 +76,35 @@ export default class NewPayment extends React.Component<Props> {
     email: '',
     pricebookId: '',
     billImgSrc: '',
-    uniqueDisable: false
+    uniqueDisable: false,
+    showToast: false,
+    readyComplete: false,
+    transCompleted: false
   };
-  //    modifyButtonText: this.props.fromListView ? '등록' : '수정',
 
-  //get user filtered contact list
+  async componentWillReceiveProps() {
+    console.log('=========리스트에서 온거야 비활성화 해야해');
+    const {
+      fromListView,
+      email,
+      pricebookId
+    } = this.props.navigation.state.params;
+
+    if (fromListView) {
+      await this.setState({
+        ...this.state,
+        disabled: true,
+        uniqueDisable: true,
+        email: email,
+        pricebookId: pricebookId,
+        modifyButtonText: '수정',
+        pageTitle: '단일 결제 정보'
+      });
+      await this.doFetch();
+    }
+  }
   componentDidMount = async () => {
+    BackHandler.addEventListener('hardwareBackPress', this.goBack);
     console.log('fromListView', this.props.fromListView);
 
     //스크린 모드 식별
@@ -88,11 +115,17 @@ export default class NewPayment extends React.Component<Props> {
       console.log('새 글 등록, state.disabled:', this.state.disabled);
     } else {
       console.log('=========리스트에서 온거야 비활성화 해야해');
-      const { fromListView, email, pricebookId } = navigation.state.params;
+      const {
+        fromListView,
+        email,
+        pricebookId,
+        transCompleted
+      } = navigation.state.params;
       //**************************//
       //서버에서 개별결제 페이지 리스폰스 보낼때 참여자 전화번호 같이 보내줘야함
       //참여자 전화번호 추출해서 state.chosenNums=[ 'phone', 'phone', 'phone' ]
       // ---------> 비활성화 클릭하면, 등록된 결제건은 참여자 수정이 불가능합니다.
+      const modifyButtonText = transCompleted ? '확인' : '수정';
       if (fromListView) {
         await this.setState({
           ...this.state,
@@ -100,8 +133,9 @@ export default class NewPayment extends React.Component<Props> {
           uniqueDisable: true,
           email: email,
           pricebookId: pricebookId,
-          modifyButtonText: '수정',
-          pageTitle: '단일 결제 정보'
+          modifyButtonText: modifyButtonText,
+          pageTitle: '단일 결제 정보',
+          transCompleted: transCompleted
         });
         await this.doFetch();
       }
@@ -128,7 +162,6 @@ export default class NewPayment extends React.Component<Props> {
           newList.push(contact);
         }
       }
-      console.log('=====newList====', newList[0]);
 
       if (navigation.state.params) {
         let newChosen = [...this.state.chosenList];
@@ -140,7 +173,6 @@ export default class NewPayment extends React.Component<Props> {
           });
         });
         await this.setState({ ...this.state, chosenList: newChosen });
-        console.log('=====+Name chosenList====', this.state.chosenList);
       }
       // request server for checking app user
       const fetchRes = await fetch(userCheckAPI, {
@@ -162,7 +194,6 @@ export default class NewPayment extends React.Component<Props> {
       await this.setState({ ...this.state, friendList: userFilterdList });
     }
   };
-
   doFetch = async () => {
     let emailObj = {
       method: 'POST',
@@ -191,6 +222,7 @@ export default class NewPayment extends React.Component<Props> {
         isPayed: record.isPayed
       };
     });
+    ///// 결제 완료 여부 ///
     await this.setState({
       ...this.state,
       title: responseJson.pricebook.title,
@@ -200,7 +232,51 @@ export default class NewPayment extends React.Component<Props> {
       billImgSrc: responseJson.pricebook.billImgSrc,
       chosenList: chosenList
     });
-    console.log('afterFetch', this.state.chosenList);
+    const chosenState = this.state.chosenList;
+    console.log('afterFetch', chosenState);
+    let payedCnt = 0;
+    for (let i = 0; i < chosenState.length; i++) {
+      if (chosenState[i].isPayed) {
+        payedCnt++;
+      }
+    }
+    console.log('transCompleted#########', this.state.transCompleted);
+    if (payedCnt === responseJson.pricebook.count) {
+      if (!this.state.transCompleted) {
+        this.setState({
+          ...this.state,
+          readyComplete: true,
+          modifyButtonText: '거래 종료'
+        });
+        console.log('readyComplete#########', this.state.readyComplete);
+      }
+    }
+    return;
+  };
+
+  //backHandler
+  goBack = () => {
+    console.log(this.props.navigation);
+    if (this.props.navigation.state.params) {
+      console.log("goBack it's view");
+      this.handleGoback('view');
+    } else {
+      console.log("goBack it's new");
+      this.handleGoback('new');
+    }
+  };
+
+  handleGoback = from => {
+    if (from === 'view') {
+      this.props.navigation.navigate('PaymentList');
+    } else if (from === 'new') {
+      this.props.navigation.navigate('Home');
+    }
+  };
+
+  //drawer
+  toggleDrawer = () => {
+    this.props.navigation.toggleDrawer();
   };
 
   //form handler functions
@@ -216,10 +292,6 @@ export default class NewPayment extends React.Component<Props> {
 
   onChangeTitle = e => {
     this.setState({ ...this.state, title: e.nativeEvent.text });
-  };
-
-  toggleDrawer = () => {
-    this.props.navigation.toggleDrawer();
   };
 
   handlePicPicker = async uri => {
@@ -270,36 +342,7 @@ export default class NewPayment extends React.Component<Props> {
     }
   };
 
-  //handle modify
-  toModifyMode = () => {
-    console.log('toggle');
-    if (this.state.modifyButtonText === '수정') {
-      this.setState({
-        ...this.state,
-        uniqueDisable: false,
-        modifyButtonText: '변경사항저장'
-      });
-      alert('입금상태를 수정합니다.\n완료 후 저장을 꼭 눌러주세요!');
-    } else if (this.state.modifyButtonText === '등록') {
-      this.handleSubmit();
-      this.setState({
-        ...this.state,
-        uniqueDisable: true,
-        disabled: true,
-        modifyButtonText: '수정'
-      });
-      alert('새 결제를 등록하였습니다.');
-    } else if (this.state.modifyButtonText === '변경사항저장') {
-      this.setState({
-        ...this.state,
-        uniqueDisable: true,
-        modifyButtonText: '수정'
-      });
-      alert('변경사항을 저장하였습니다.');
-    }
-  };
-
-  //modal contacts switch
+  //modal to select party
   modalSwitch = () => {
     this.setState({
       ...this.state,
@@ -307,7 +350,6 @@ export default class NewPayment extends React.Component<Props> {
     });
   };
 
-  //handle select party
   handleSelectParty = async phone => {
     //newList = [...friendList] loop to find person, clicked = ! clicked
     //setState {...this.state, friendList:newList}
@@ -339,12 +381,62 @@ export default class NewPayment extends React.Component<Props> {
     console.log('chosenNums', this.state.chosenNums);
   };
 
-  //handle cancle modifying
-  handleCancle = () => {
-    //복사해 둔 최초 스테이트 값으로 셋스테이트 (리랜더링)
-    //버튼 '수정'
-    //서버 안보냄.
-    this.props.navigation.goBack();
+  changePayedTrans = phone => {
+    let chosen = [...this.state.chosenList];
+    chosen.forEach(person => {
+      if (person.phone === phone) {
+        person.askConfirm = person.askConfirm ? false : true;
+      }
+    });
+    this.setState({ ...this.state, chosenList: chosen });
+  };
+
+  //handle modify & submit
+  toModifyMode = async () => {
+    console.log('=====수정모드변경===');
+    console.log(`====현재 수정 버튼 : ${this.state.modifyButtonText}=====`);
+
+    if (this.state.modifyButtonText === '수정') {
+      this.setState({
+        ...this.state,
+        uniqueDisable: false,
+        modifyButtonText: '변경사항저장'
+      });
+      Toast.show({
+        text: '입금상태를 수정합니다.\n완료 후 저장을 꼭 눌러주세요!',
+        duration: 3000,
+        style: styles_Toast.container
+      });
+    } else if (this.state.modifyButtonText === '등록') {
+      Toast.show({
+        text: '새 결제를 등록하였습니다.',
+        duration: 3000,
+        style: styles_Toast.container
+      });
+      this.setState({
+        ...this.state,
+        uniqueDisable: true,
+        disabled: true,
+        modifyButtonText: '수정'
+      });
+      this.handleSubmit();
+    } else if (this.state.modifyButtonText === '변경사항저장') {
+      this.setState({
+        ...this.state,
+        uniqueDisable: true,
+        modifyButtonText: '수정'
+      });
+      Toast.show({
+        text: '변경사항을 저장하였습니다.',
+        duration: 3000,
+        style: styles_Toast.container
+      });
+    } else if (this.state.modifyButtonText === '거래 종료') {
+      this.hadleClose();
+      this.props.navigation.navigate('PaymentList');
+    } else if (this.state.modifyButtonText === '확인') {
+      this.props.navigation.navigate('PaymentList');
+    }
   };
 
   handleSubmit = async () => {
@@ -381,18 +473,8 @@ export default class NewPayment extends React.Component<Props> {
       body: JSON.stringify(payment)
     });
     const priceBook = await fetchRes.json();
-    console.log('sumitted!', priceBook);
+    console.log('=======sumitted!======', priceBook);
     this.props.navigation.navigate('PaymentList');
-  };
-
-  changePayedTrans = phone => {
-    let chosen = [...this.state.chosenList];
-    chosen.forEach(person => {
-      if (person.phone === phone) {
-        person.askConfirm = person.askConfirm ? false : true;
-      }
-    });
-    this.setState({ ...this.state, chosenList: chosen });
   };
 
   handleConfirmModified = async () => {
@@ -446,30 +528,38 @@ export default class NewPayment extends React.Component<Props> {
     console.log(res);
     this.toModifyMode();
     //새로고침
+
     this.componentDidMount();
+    return;
   };
 
-  async componentWillReceiveProps() {
-    console.log('=========리스트에서 온거야 비활성화 해야해');
-    const {
-      fromListView,
-      email,
-      pricebookId
-    } = this.props.navigation.state.params;
+  hadleClose = async () => {
+    console.log('======close Payment======');
+    const closeAPI = config.serverAddress + '/pricebook/transCompleted';
+    const body = {
+      pricebookId: this.props.navigation.state.params.pricebookId
+    };
+    console.log(body);
 
-    if (fromListView) {
-      await this.setState({
-        ...this.state,
-        disabled: true,
-        uniqueDisable: true,
-        email: email,
-        pricebookId: pricebookId,
-        modifyButtonText: '수정',
-        pageTitle: '단일 결제 정보'
+    const res = await fetch(closeAPI, {
+      method: 'patch',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    console.log('=======response=======', res);
+    if (res.status === 200) {
+      Toast.show({
+        text: `${this.state.title} 거래가 완료되었습니다.`
       });
-      await this.doFetch();
+    } else {
+      Toast.show({
+        text: `시스템 오류입니다.`
+      });
     }
-  }
+  };
 
   // tslint:disable-next-line: max-func-body-length
   render() {
@@ -480,110 +570,113 @@ export default class NewPayment extends React.Component<Props> {
     );
     let { disabled, uniqueDisable, pageTitle } = this.state;
     return (
-      <LinearGradient style={{ flex: 1 }} colors={['#e2b3ff', '#937ee0']}>
-        <Container style={screenStyles.container}>
-          <DrawerHeader title={pageTitle} toggleDrawer={this.toggleDrawer} />
-          <Content
-            contentContainerStyle={{
-              justifyContent: 'flex-start',
-              paddingTop: 35
-            }}
-          >
-            <View style={{ alignItems: 'center', marginBottom: 15 }}>
-              <Form style={styles_newPayment.form}>
-                <InputItem
-                  label="제목"
-                  disabled={disabled}
-                  onChange={this.onChangeTitle}
-                  placeholder="어떤 모임이었나요?"
-                  txt={this.state.title}
-                />
-                <Item fixedLabel>
-                  <Label style={screenStyles.inputLabel}>날짜</Label>
-                  {disabled ? (
-                    <Text style={{ paddingLeft: 128, textAlign: 'center' }}>
-                      {this.state.chosenDate.toString()}
-                    </Text>
-                  ) : (
-                    <CustomDatePicker setDate={this.setDate} />
-                  )}
-                </Item>
-                <InputItem
-                  label="금액"
-                  disabled={disabled}
-                  onChange={this.onChangeTotalPay}
-                  keyT="numeric"
-                  placeholder="총 금액을 입력해주세요"
-                  txt={this.state.totalPay}
-                />
-                <Item fixedLabel>
-                  <Label style={screenStyles.inputLabel}>참여자</Label>
-                  <FriendListModal
-                    printModal={this.state.printModal}
-                    modalSwitch={this.modalSwitch}
-                    handleSelect={this.handleSelectParty}
-                    friendList={this.state.friendList}
+      <Root>
+        <LinearGradient style={{ flex: 1 }} colors={['#e2b3ff', '#937ee0']}>
+          <Container style={screenStyles.container}>
+            <DrawerHeader title={pageTitle} toggleDrawer={this.toggleDrawer} />
+            <Content
+              contentContainerStyle={{
+                justifyContent: 'flex-start',
+                paddingTop: 35
+              }}
+            >
+              <View style={{ alignItems: 'center', marginBottom: 15 }}>
+                <Form style={styles_newPayment.form}>
+                  <InputItem
+                    label="제목"
+                    disabled={disabled}
+                    onChange={this.onChangeTitle}
+                    placeholder="어떤 모임이었나요?"
+                    txt={this.state.title}
                   />
-                  <Label style={{ paddingLeft: 15 }}>
-                    {this.state.peopleCnt
-                      ? `총 ${this.state.peopleCnt} 명`
-                      : ''}
-                  </Label>
-                  <Right>
-                    <Button
-                      disabled={disabled}
-                      onPress={this.modalSwitch}
-                      style={screenStyles.iconBtn}
-                    >
-                      <Icon
-                        name="search"
-                        fontSize={40}
-                        style={{ color: '#907be0' }}
-                      />
-                    </Button>
-                  </Right>
-                </Item>
-                <View style={{ flexDirection: 'column', marginVertical: 10 }}>
-                  <ChosenFriendListItem
-                    name="나"
-                    uniqueDisable={this.state.uniqueDisable}
+                  <Item fixedLabel>
+                    <Label style={screenStyles.inputLabel}>날짜</Label>
+                    {disabled ? (
+                      <Text style={{ paddingLeft: 128, textAlign: 'center' }}>
+                        {this.state.chosenDate.toString()}
+                      </Text>
+                    ) : (
+                      <CustomDatePicker setDate={this.setDate} />
+                    )}
+                  </Item>
+                  <InputItem
+                    label="금액"
+                    disabled={disabled}
+                    onChange={this.onChangeTotalPay}
+                    keyT="numeric"
+                    placeholder="총 금액을 입력해주세요"
+                    txt={this.state.totalPay}
                   />
-                  {this.state.chosenList.length > 0
-                    ? this.state.chosenList.map((person, i) => {
-                        console.log('///////////map///////////', person);
-                        return (
-                          <ChosenFriendListItem
-                            modifyButtonText={this.state.modifyButtonText}
-                            mode={pageTitle}
-                            key={i}
-                            person={person}
-                            changePayed={this.changePayedTrans}
-                            askConfirm={person.askConfirm}
-                          />
-                        );
-                      })
-                    : null}
-                </View>
-                <SplitPayment
-                  splitPayment={this.state.singlePay}
-                  remainder={this.remainder}
-                />
-              </Form>
-            </View>
-            <PicPicker
-              disabled={disabled}
-              handlePicker={this.handlePicPicker}
-              uri={this.state.billImgSrc}
+                  <Item fixedLabel>
+                    <Label style={screenStyles.inputLabel}>참여자</Label>
+                    <FriendListModal
+                      printModal={this.state.printModal}
+                      modalSwitch={this.modalSwitch}
+                      handleSelect={this.handleSelectParty}
+                      friendList={this.state.friendList}
+                    />
+                    <Label style={{ paddingLeft: 15 }}>
+                      {this.state.peopleCnt
+                        ? `총 ${this.state.peopleCnt} 명`
+                        : ''}
+                    </Label>
+                    <Right>
+                      <Button
+                        disabled={disabled}
+                        onPress={this.modalSwitch}
+                        style={screenStyles.iconBtn}
+                      >
+                        <Icon
+                          name="search"
+                          fontSize={40}
+                          style={{ color: '#907be0' }}
+                        />
+                      </Button>
+                    </Right>
+                  </Item>
+                  <View style={{ flexDirection: 'column', marginVertical: 10 }}>
+                    <ChosenFriendListItem
+                      name="나"
+                      uniqueDisable={this.state.uniqueDisable}
+                    />
+                    {this.state.chosenList.length > 0
+                      ? this.state.chosenList.map((person, i) => {
+                          console.log('///////////map///////////', person);
+                          return (
+                            <ChosenFriendListItem
+                              modifyButtonText={this.state.modifyButtonText}
+                              mode={pageTitle}
+                              key={i}
+                              person={person}
+                              changePayed={this.changePayedTrans}
+                              askConfirm={person.askConfirm}
+                            />
+                          );
+                        })
+                      : null}
+                  </View>
+                  <SplitPayment
+                    splitPayment={this.state.singlePay}
+                    remainder={this.remainder}
+                  />
+                </Form>
+              </View>
+              <PicPicker
+                disabled={disabled}
+                handlePicker={this.handlePicPicker}
+                uri={this.state.billImgSrc}
+              />
+            </Content>
+
+            <NewPayFooter
+              label={this.state.modifyButtonText}
+              onPress={this.toModifyMode}
+              goBack={this.handleGoback}
+              handleConfirm={this.handleConfirmModified}
             />
-          </Content>
-          <NewPayFooter
-            label={this.state.modifyButtonText}
-            onPress={this.toModifyMode}
-            goBack={this.handleCancle}
-            handleConfirm={this.handleConfirmModified}
-          />
-        </Container>
-      </LinearGradient>
+          </Container>
+        </LinearGradient>
+      </Root>
     );
   }
 }

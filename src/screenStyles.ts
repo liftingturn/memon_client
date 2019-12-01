@@ -75,4 +75,17 @@ const styles_newPayment = StyleSheet.create({
   }
 });
 
-export { screenStyles, styles_newPayment };
+const styles_Toast = {
+  container: {
+    height: 50,
+    margin: 20,
+    marginBottom: 20,
+    borderRadius: 5,
+    paddingHorizontal: 100
+  },
+  txt: {
+    paddingHorizontal: 20
+  }
+};
+
+export { screenStyles, styles_newPayment, styles_Toast };

@@ -11,9 +11,12 @@ interface Props {
 
 export default class ButtonModify extends React.Component<Props> {
   onPress = () => {
-    this.props.label === '변경사항저장'
-      ? this.props.handleConfirm()
-      : this.props.onPress();
+    if (this.props.label === '변경사항저장') {
+      this.props.handleConfirm();
+      this.props.onPress();
+    } else {
+      this.props.onPress();
+    }
   };
 
   handleBackPress = async () => {
@@ -22,7 +25,6 @@ export default class ButtonModify extends React.Component<Props> {
         {
           text: '확인',
           onPress: () => {
-            console.log('ok');
             this.props.goBack();
           }
         },
