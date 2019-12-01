@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, BackHandler } from 'react-native';
+import { View, BackHandler, RefreshControl, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
@@ -16,7 +16,8 @@ import {
   Content,
   Icon,
   Root,
-  Toast
+  Toast,
+  Input
 } from 'native-base';
 
 import {
@@ -67,7 +68,7 @@ export default class NewPayment extends React.Component<Props> {
     title: '',
     totalPay: '',
     singlePay: '',
-    chosenDate: new Date(),
+    chosenDate: '',
     peopleCnt: 0,
     printModal: false,
     disabled: false,
@@ -79,7 +80,8 @@ export default class NewPayment extends React.Component<Props> {
     uniqueDisable: false,
     showToast: false,
     readyComplete: false,
-    transCompleted: false
+    transCompleted: false,
+    refreshing: false
   };
 
   async componentWillReceiveProps() {
@@ -210,13 +212,11 @@ export default class NewPayment extends React.Component<Props> {
     let response = await fetch(config.serverAddress + '/pricebook', emailObj);
     let responseJson = await response.json();
     ///// 참여자 목록 추출 ///////
-    console.log('페이먼트 추출해야함', responseJson.paymentObj);
     const chosenList = responseJson.paymentObj.map(record => {
-      console.log('///////////맵!!!////////////', record);
       return {
         name: '',
         phone: record.phone,
-        id: record.participantId, ////???????///
+        id: record.participantId,
         transId: record.id,
         clicked: true,
         isPayed: record.isPayed
@@ -253,7 +253,14 @@ export default class NewPayment extends React.Component<Props> {
     }
     return;
   };
-
+  //새로고침
+  onRefresh = async () => {
+    console.log('refresh!');
+    this.setState({ refreshing: true });
+    await this.doFetch();
+    // memo: 수정후 새로고침인 경우 이름 빈 문자열로 초기화시키지 않도록 분기해야함
+    this.setState({ refreshing: false });
+  };
   //backHandler
   goBack = () => {
     console.log(this.props.navigation);
@@ -284,10 +291,10 @@ export default class NewPayment extends React.Component<Props> {
     await this.setState({ ...this.state, chosenDate: newDate });
   };
 
-  onChangeTotalPay = e => {
+  onChangeTotalPay = async e => {
     console.log('onchange do', e.nativeEvent.text);
+    await this.setState({ ...this.state, totalPay: e.nativeEvent.text });
     this.calcN();
-    this.setState({ ...this.state, totalPay: e.nativeEvent.text });
   };
 
   onChangeTitle = e => {
@@ -303,8 +310,7 @@ export default class NewPayment extends React.Component<Props> {
     console.log('////////////// * calcN * //////////////');
     console.log('state pay', this.state.totalPay);
     if (!this.state.totalPay) {
-      this.setState({ ...this.state, singlePay: 'placeholder' });
-      console.log('placeholder');
+      this.setState({ ...this.state, singlePay: '총금액을 입력해주세요.' });
     } else {
       console.log('calcN!!!');
 
@@ -316,28 +322,9 @@ export default class NewPayment extends React.Component<Props> {
       // this.setState({ ...this.state, singlePay: change });
 
       //print format
-      const strChange = String(change);
-      let formatStr = '';
-      if (strChange.length > 3) {
-        let maxComma =
-          strChange.length % 3 === 0
-            ? Math.floor(strChange.length / 3) - 1
-            : Math.floor(strChange.length / 3);
-
-        let last = strChange.length + 1;
-
-        for (let i = maxComma; i > 0; i--) {
-          formatStr = strChange.substring(last - 4, last) + ',' + formatStr;
-          last = last - 4;
-        }
-        formatStr =
-          '₩' +
-          strChange.substring(0, last) +
-          ',' +
-          formatStr.substring(0, formatStr.length - 1);
-        console.log('formatStr', formatStr);
-      }
-      await this.setState({ ...this.state, singlePay: formatStr });
+      const strChange =
+        '₩ ' + change.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      await this.setState({ ...this.state, singlePay: strChange });
       console.log('singlePay', this.state.singlePay);
     }
   };
@@ -426,6 +413,7 @@ export default class NewPayment extends React.Component<Props> {
         uniqueDisable: true,
         modifyButtonText: '수정'
       });
+      this.onRefresh();
       Toast.show({
         text: '변경사항을 저장하였습니다.',
         duration: 3000,
@@ -571,13 +559,13 @@ export default class NewPayment extends React.Component<Props> {
     let { disabled, uniqueDisable, pageTitle } = this.state;
     return (
       <Root>
-        <LinearGradient style={{ flex: 1 }} colors={['#e2b3ff', '#937ee0']}>
+        <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
           <Container style={screenStyles.container}>
             <DrawerHeader title={pageTitle} toggleDrawer={this.toggleDrawer} />
             <Content
               contentContainerStyle={{
                 justifyContent: 'flex-start',
-                paddingTop: 35
+                paddingTop: 100
               }}
             >
               <View style={{ alignItems: 'center', marginBottom: 15 }}>
@@ -590,11 +578,14 @@ export default class NewPayment extends React.Component<Props> {
                     txt={this.state.title}
                   />
                   <Item fixedLabel>
-                    <Label style={screenStyles.inputLabel}>날짜</Label>
+                    <Label style={screenStyles.inputItemLabel}>날짜</Label>
                     {disabled ? (
-                      <Text style={{ paddingLeft: 128, textAlign: 'center' }}>
-                        {this.state.chosenDate.toString()}
-                      </Text>
+                      <Input
+                        style={screenStyles.inputItemBody}
+                        disabled={true}
+                        placeholderTextColor="#c2c2c4"
+                        value={this.state.chosenDate.toString()}
+                      />
                     ) : (
                       <CustomDatePicker setDate={this.setDate} />
                     )}
@@ -608,7 +599,7 @@ export default class NewPayment extends React.Component<Props> {
                     txt={this.state.totalPay}
                   />
                   <Item fixedLabel>
-                    <Label style={screenStyles.inputLabel}>참여자</Label>
+                    <Label style={screenStyles.inputItemLabel}>참여자</Label>
                     <FriendListModal
                       printModal={this.state.printModal}
                       modalSwitch={this.modalSwitch}

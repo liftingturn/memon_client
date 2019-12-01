@@ -20,17 +20,18 @@ const InputItem: React.FC<Props> = ({
   txt
 }) => {
   const KeyType = keyT ? keyT : 'default';
+  const price = txt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   return (
     <Item fixedLabel>
-      <Label style={screenStyles.inputLabel}>{label}</Label>
+      <Label style={screenStyles.inputItemLabel}>{label}</Label>
       <Input
-        style={{ paddingLeft: 15, fontSize: 16, color: '#3b3b3b' }}
+        style={screenStyles.inputItemBody}
         onChange={onChange}
         disabled={disabled}
         keyboardType={KeyType}
         placeholder={placeholder}
         placeholderTextColor="#c2c2c4"
-        value={txt.toString()}
+        value={price}
       />
     </Item>
   );
