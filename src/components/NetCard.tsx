@@ -26,17 +26,18 @@ export default class NetCard extends Component<Props> {
             style={{
               backgroundColor: 'transparent',
               height: 300,
-              paddingHorizontal: 30,
+              paddingHorizontal: 40,
               paddingTop: 30
             }}
           >
             <Content>
               <Card
                 style={{
-                  margin: 30,
-                  borderRadius: 7,
+                  borderRadius: 15,
                   elevation: 5,
-                  backgroundColor: '#fbfafc'
+                  backgroundColor: '#fbfafc',
+                  borderColor: '#eff0eb',
+                  borderWidth: 3
                 }}
               >
                 <CardItem

@@ -13,7 +13,9 @@ const ButtonBasic = props => {
       padding: 20,
       marginBottom: 30,
       borderRadius: 50,
-      elevation: 1
+      elevation: 1,
+      borderColor: '#eff0eb',
+      borderWidth: 3
     },
     txt: {
       color: '#907ee0',

@@ -39,7 +39,7 @@ const screenStyles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
     color: '#f6f6f6',
-    fontFamily: 'Godo'
+    fontFamily: 'GodoB'
   },
   iconBtn: {
     backgroundColor: 'transparent',
@@ -66,11 +66,13 @@ const styles_newPayment = StyleSheet.create({
   form: {
     width: 350,
     backgroundColor: '#f5effb',
-    borderRadius: 5,
+    borderRadius: 15,
     paddingLeft: 10,
     paddingRight: 20,
     marginBottom: 30,
-    elevation: 5
+    elevation: 5,
+    borderColor: '#eff0eb',
+    borderWidth: 3
   },
   modal: {
     flex: 1,
@@ -86,10 +88,10 @@ const styles_newPayment = StyleSheet.create({
 const styles_Toast = {
   container: {
     height: 50,
-    margin: 20,
-    marginBottom: 20,
-    borderRadius: 5,
-    paddingHorizontal: 100
+    margin: 3,
+    marginBottom: 3,
+    borderRadius: 10,
+    paddingHorizontal: 10
   },
   txt: {
     paddingHorizontal: 20
@@ -119,6 +121,34 @@ const styles_PaymentList = StyleSheet.create({
   }
 });
 
+const styles_Dashboard = StyleSheet.create({
+  userCardItem: {
+    borderRadius: 15,
+    borderColor: '#eff0eb',
+    borderWidth: 2
+  },
+  thumnail: {
+    borderRadius: 20,
+    marginHorizontal: 10,
+    borderColor: '#eff0eb',
+    borderWidth: 2
+  },
+  userName: {
+    fontFamily: 'GodoB',
+    marginLeft: 20,
+    fontSize: 17,
+    marginBottom: 5,
+    backgroundColor: '#fbfafc',
+    color: '#252625'
+  },
+  greetingBody: {
+    marginLeft: 20,
+    marginRight: 0,
+    fontFamily: 'BMHANNAAir',
+    fontSize: 14,
+    color: 'grey'
+  }
+});
 const styles_NetCard = {
   elementItem: {
     flex: 1,
@@ -145,36 +175,59 @@ const styles_NetCard = {
     textAlign: 'center'
   }
 };
-const styles_Dashboard = StyleSheet.create({
-  thumnail: {
-    borderRadius: 20,
-    marginHorizontal: 10,
-    borderColor: '#eff0eb',
-    borderWidth: 2
-  },
-  userName: {
-    marginLeft: 20,
-    fontSize: 17,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    backgroundColor: '#fbfafc',
-    color: '#252625',
-    fontFamily: 'Godo'
-  },
-  greetingBody: {
-    marginLeft: 20,
+
+const styles_ChosenFrientListItem = StyleSheet.create({
+  btn: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    borderColor: '#bba8e0',
+    borderBottomWidth: 1,
+    height: 28,
+    marginVertical: 3,
     marginRight: 0,
-    fontFamily: 'BMHANNAAir',
-    fontSize: 14,
-    color: 'grey'
+    marginLeft: 10,
+    borderRadius: 2,
+    justifyContent: 'center',
+    elevation: 0
+  },
+  txt: {
+    color: 'grey',
+    fontWeight: '400',
+    fontSize: 15
+  },
+  payedModify: {
+    color: '#bba8e0',
+    fontWeight: '600',
+    marginRight: 20
+  },
+  askConfirm: {
+    marginRight: 10,
+    paddingHorizontal: 10,
+    height: 19
+  },
+  status: {
+    fontWeight: '600',
+    marginRight: 20
+  },
+  section: {
+    flex: 1
   }
 });
 
+const styles_SingleView = StyleSheet.create({
+  contentContainer: {
+    justifyContent: 'flex-start',
+    paddingTop: 35
+  },
+  item: { marginVertical: 10, paddingBottom: 10 }
+});
 export {
+  styles_SingleView,
   styles_Dashboard,
   styles_NetCard,
   styles_PaymentList,
   screenStyles,
   styles_newPayment,
-  styles_Toast
+  styles_Toast,
+  styles_ChosenFrientListItem
 };

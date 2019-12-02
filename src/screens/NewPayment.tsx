@@ -55,13 +55,15 @@ export interface State {
   email: string;
   pricebookId: string;
   uniqueDisable: boolean;
-  showToast: boolean;
   readyComplete: false;
+  showToast: boolean;
+  goBack: number;
+  successSubmit: boolean;
 }
 
 export default class NewPayment extends React.Component<Props> {
   state = {
-    pageTitle: '단일 결제 정보',
+    pageTitle: '새 거래',
     friendList: [],
     chosenNums: [],
     chosenList: [],
@@ -69,7 +71,7 @@ export default class NewPayment extends React.Component<Props> {
     totalPay: '',
     singlePay: '',
     chosenDate: '',
-    peopleCnt: 0,
+    peopleCnt: 1,
     printModal: false,
     disabled: false,
     // modifyButtonText: this.props.fromListView ? '수정' : '등록',
@@ -78,10 +80,12 @@ export default class NewPayment extends React.Component<Props> {
     pricebookId: '',
     billImgSrc: '',
     uniqueDisable: false,
-    showToast: false,
     readyComplete: false,
     transCompleted: false,
-    refreshing: false
+    refreshing: false,
+    showToast: false,
+    goBack: 0,
+    successSubmit: false
   };
 
   async componentWillReceiveProps() {
@@ -100,7 +104,7 @@ export default class NewPayment extends React.Component<Props> {
         email: email,
         pricebookId: pricebookId,
         modifyButtonText: '수정',
-        pageTitle: '단일 결제 정보'
+        pageTitle: '거래 정보'
       });
       await this.doFetch();
     }
@@ -278,7 +282,18 @@ export default class NewPayment extends React.Component<Props> {
     if (from === 'view') {
       this.props.navigation.navigate('PaymentList');
     } else if (from === 'new') {
-      this.props.navigation.navigate('Home');
+      console.log('뒤로가기 클릭함, 현재 goBack: ', this.state.goBack);
+      if (this.state.goBack === 0) {
+        Toast.show({
+          text: '저장이 되지 않았어요!\n한 번 더 누르면 홈으로 갑니다.',
+          duration: 2000,
+          textStyle: styles_Toast.txt,
+          style: styles_Toast.container
+        });
+        this.setState({ goBack: ++this.state.goBack });
+      } else {
+        this.props.navigation.navigate('홈');
+      }
     }
   };
 
@@ -316,16 +331,35 @@ export default class NewPayment extends React.Component<Props> {
       console.log('calcN!!!');
 
       const smallest = 100;
-      const MoneyForOne =
-        parseInt(this.state.totalPay) / (this.state.peopleCnt + 1);
+      const MoneyForOne = parseInt(this.state.totalPay) / this.state.peopleCnt;
       let change: any = Math.floor(MoneyForOne / smallest) * smallest;
       this.remainder = String(Math.round(MoneyForOne - change));
-      // this.setState({ ...this.state, singlePay: change });
+      console.log('*******change: ', change);
+      console.log('*******remainder: ', this.remainder);
 
       //print format
-      const strChange =
-        '₩ ' + change.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-      await this.setState({ ...this.state, singlePay: strChange });
+      const strChange = String(change);
+      let formatStr = '';
+      if (strChange.length > 3) {
+        let maxComma =
+          strChange.length % 3 === 0
+            ? Math.floor(strChange.length / 3) - 1
+            : Math.floor(strChange.length / 3);
+
+        let last = strChange.length + 1;
+
+        for (let i = maxComma; i > 0; i--) {
+          formatStr = strChange.substring(last - 4, last) + ',' + formatStr;
+          last = last - 4;
+        }
+        formatStr =
+          '₩' +
+          strChange.substring(0, last) +
+          ',' +
+          formatStr.substring(0, formatStr.length - 1);
+        console.log('formatStr', formatStr);
+      }
+      await this.setState({ ...this.state, singlePay: formatStr });
       console.log('singlePay', this.state.singlePay);
     }
   };
@@ -360,13 +394,14 @@ export default class NewPayment extends React.Component<Props> {
     await this.setState({
       ...this.state,
       friendList: newList,
-      peopleCnt: cnt,
+      peopleCnt: ++cnt,
       chosenNums: chosen,
       chosenList: chosenL
     });
     this.calcN();
-    console.log('friendList', this.state.friendList);
-    console.log('chosenNums', this.state.chosenNums);
+    // console.log('friendList', this.state.friendList);
+    // console.log('chosenNums', this.state.chosenNums);
+    console.log('selectParty - peopleCnt: ', this.state.peopleCnt);
   };
 
   changePayedTrans = phone => {
@@ -396,18 +431,7 @@ export default class NewPayment extends React.Component<Props> {
         style: styles_Toast.container
       });
     } else if (this.state.modifyButtonText === '등록') {
-      Toast.show({
-        text: '새 결제를 등록하였습니다.',
-        duration: 1000,
-        style: styles_Toast.container
-      });
-      this.setState({
-        ...this.state,
-        uniqueDisable: true,
-        disabled: true,
-        modifyButtonText: '수정'
-      });
-      this.handleSubmit();
+      await this.handleSubmit();
     } else if (this.state.modifyButtonText === '변경사항저장') {
       this.setState({
         ...this.state,
@@ -422,49 +446,110 @@ export default class NewPayment extends React.Component<Props> {
       });
     } else if (this.state.modifyButtonText === '거래 종료') {
       this.hadleClose();
-      this.props.navigation.navigate('PaymentList');
+      this.props.navigation.navigate('결제목록');
     } else if (this.state.modifyButtonText === '확인') {
-      this.props.navigation.navigate('PaymentList');
+      this.props.navigation.navigate('결제목록');
     }
   };
 
   handleSubmit = async () => {
-    const newPaymentAPI = config.serverAddress + '/payment';
-    const user = await firebase.auth().currentUser;
-    const chosenDate = new Date(this.state.chosenDate);
-    const partyDate =
-      chosenDate.getFullYear() +
-      '-' +
-      chosenDate.getMonth() +
-      '-' +
-      chosenDate.getDate();
-    const singlePay = this.state.singlePay.replace(/[^0-9]/g, '');
-    let payment: Payment = {
-      priceBook: {
-        totalPrice: Number(this.state.totalPay),
-        billImgSrc: this.state.billImgSrc,
-        count: this.state.peopleCnt,
-        partyDate,
-        title: this.state.title,
-        transCompleted: false,
-        fixedTotalPrice: Number(singlePay)
-      },
-      email: user.email,
-      participant: this.state.chosenList
-    };
-    console.log('sumitted!', payment);
+    const { chosenDate, chosenList, title, totalPay } = this.state;
+    const ready = chosenDate && title && totalPay ? true : false;
+    if (ready) {
+      console.log('===서브밋준비====', {
+        chosenDate,
+        chosenList: chosenList.length,
+        title,
+        totalPay
+      });
+      if (chosenList.length === 0) {
+        await Toast.show({
+          text: '수금할 참여자를 선택해주세요!',
+          duration: 2000,
+          style: styles_Toast.container,
+          textStyle: styles_Toast.txt
+        });
+      } else {
+        const newPaymentAPI = config.serverAddress + '/payment';
+        const user = await firebase.auth().currentUser;
+//         const chosenDate = new Date(this.state.chosenDate);
+        const partyDate =
+          this.state.chosenDate.getFullYear() +
+          '-' +
+          this.state.chosenDate.getMonth() +
+          '-' +
+          this.state.chosenDate.getDate();
+//         const partyDate =
+//       chosenDate.getFullYear() +
+//       '-' +
+//       chosenDate.getMonth() +
+//       '-' +
+//       chosenDate.getDate();
+        const singlePay =
+          parseInt(this.state.singlePay.replace(/[^0-9]/g, '')) *
+          this.state.peopleCnt;
+        console.log('fixedSinglePay!!!!!!!!', singlePay);
+        console.log('peopleCnt!!!!!!!!', this.state.peopleCnt);
 
-    const fetchRes = await fetch(newPaymentAPI, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payment)
-    });
-    const priceBook = await fetchRes.json();
-    console.log('=======sumitted!======', priceBook);
-    this.props.navigation.navigate('PaymentList');
+        let payment: Payment = {
+          priceBook: {
+            totalPrice: Number(this.state.totalPay),
+            billImgSrc: this.state.billImgSrc,
+            count: this.state.peopleCnt,
+            partyDate,
+            title: this.state.title,
+            transCompleted: false,
+            fixedTotalPrice: singlePay
+          },
+          email: user.email,
+          participant: this.state.chosenList
+        };
+        console.log('sumitted!', payment);
+
+        const fetchRes = await fetch(newPaymentAPI, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payment)
+        });
+        const priceBook = await fetchRes.json();
+        console.log(priceBook);
+        priceBook ? await this.setState({ successSubmit: true }) : null;
+        if (this.state.successSubmit) {
+          console.log('등록성공');
+          await Toast.show({
+            text: '새 거래를 등록했습니다.',
+            duration: 1000,
+            style: styles_Toast.container
+          });
+          await this.setState({
+            ...this.state,
+            uniqueDisable: true,
+            disabled: true,
+            modifyButtonText: '수정'
+          });
+          !this.state.showToast
+            ? this.props.navigation.navigate('결제목록')
+            : null;
+        } else {
+          Toast.show({
+            text: '거래를 등록하지 못했습니다.',
+            duration: 1000,
+            style: styles_Toast.container
+          });
+        }
+      }
+    } else {
+      Toast.show({
+        text: '등록할 거래 정보를 입력해주세요.',
+        duration: 2000,
+        style: styles_Toast.container,
+        textStyle: styles_Toast.txt
+      });
+    }
+
   };
 
   handleConfirmModified = async () => {
@@ -567,7 +652,7 @@ export default class NewPayment extends React.Component<Props> {
             <Content
               contentContainerStyle={{
                 justifyContent: 'flex-start',
-                paddingTop: 100
+                paddingTop: 60
               }}
             >
               <View style={{ alignItems: 'center', marginBottom: 15 }}>
@@ -630,7 +715,7 @@ export default class NewPayment extends React.Component<Props> {
                   <View style={{ flexDirection: 'column', marginVertical: 10 }}>
                     <ChosenFriendListItem
                       name="나"
-                      uniqueDisable={this.state.uniqueDisable}
+                      uniqueDisable={uniqueDisable}
                     />
                     {this.state.chosenList.length > 0
                       ? this.state.chosenList.map((person, i) => {

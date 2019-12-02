@@ -18,7 +18,9 @@ export default class App extends React.Component {
   async componentDidMount() {
     await Font.loadAsync({
       BMHANNAAir: require('./assets/Fonts/BMDOHYEON_ttf.ttf'),
-      Godo: require('./assets/Fonts/GodoM.ttf')
+      Godo: require('./assets/Fonts/GodoM.ttf'),
+      GodoB: require('./assets/Fonts/GodoB.ttf'),
+      Roboto_medium: require('./assets/Fonts/Roboto_medium.ttf')
     });
     this.setState({ ...this.state, fontsLoaded: true });
   }

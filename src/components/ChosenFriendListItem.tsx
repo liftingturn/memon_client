@@ -1,8 +1,7 @@
 import React from 'react';
 import { Text, StyleSheet } from 'react-native';
 import { Button, Right, Left, Body } from 'native-base';
-import { Props } from '../screens/SingleViewPart';
-
+import { styles_ChosenFrientListItem } from '../screenStyles';
 const ChosenFriendListItem = props => {
   //const status = props.isPayed ? '완료' : '대기'; //props
   //  const statusColor = props.status !== 'done' ? '#bba8e0' : '#c2c2c4';
@@ -11,48 +10,26 @@ const ChosenFriendListItem = props => {
   if (!props.name) {
     status = props.person.isPayed ? '완납' : '미납'; //props
     statusColor = status === '완료' ? '#bba8e0' : '#c2c2c4';
-    buttonMSG = props.askConfirm || props.person.isPayed ? '완료' : '입금확인';
+    buttonMSG = props.askConfirm || props.person.isPayed ? '완납' : '미납';
     confirmDisable = props.person.isPayed ? true : false;
-    askBgc = props.askConfirm ? 'orange' : 'yellow';
+    askBgc = props.askConfirm
+      ? 'orange'
+      : props.person.isPayed
+      ? 'grey'
+      : 'yellow';
     body = props.name ? props.name : props.person ? props.person.name : null;
   } else {
     body = '나';
   }
 
   const styles = StyleSheet.create({
-    btn: {
-      backgroundColor: 'transparent',
-      borderWidth: 0,
-      borderColor: '#bba8e0',
-      borderBottomWidth: 1,
-      height: 28,
-      marginVertical: 3,
-      marginRight: 0,
-      marginLeft: 10,
-      borderRadius: 2,
-      justifyContent: 'center',
-      elevation: 0
-    },
-    txt: {
-      color: 'grey',
-      fontWeight: '400',
-      fontSize: 15
-    },
-    payedModify: {
-      color: '#bba8e0',
-      fontWeight: '600',
-      marginRight: 20
-    },
     askConfirm: {
-      marginRight: 10,
-      paddingHorizontal: 10,
-      height: 19,
+      ...styles_ChosenFrientListItem.askConfirm,
       backgroundColor: askBgc
     },
     status: {
-      color: statusColor,
-      fontWeight: '600',
-      marginRight: 20
+      ...styles_ChosenFrientListItem.status,
+      color: statusColor
     },
     section: {
       flex: 1
@@ -76,10 +53,10 @@ const ChosenFriendListItem = props => {
   };
 
   return (
-    <Button style={styles.btn} disabled={true}>
-      <Left style={styles.section} />
-      <Body style={styles.section}>
-        <Text style={styles.txt}>{body}</Text>
+    <Button style={styles_ChosenFrientListItem.btn} disabled={true}>
+      <Left style={styles_ChosenFrientListItem.section} />
+      <Body style={styles_ChosenFrientListItem.section}>
+        <Text style={styles_ChosenFrientListItem.txt}>{body}</Text>
       </Body>
       <Right style={styles.section}>
         {props.name ? null : mode === 'new' ? ( //나 //새결제
