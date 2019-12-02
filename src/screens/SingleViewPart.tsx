@@ -12,40 +12,28 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
-import { screenStyles, styles_newPayment } from '../screenStyles';
+import {
+  screenStyles,
+  styles_newPayment,
+  styles_SingleView
+} from '../screenStyles';
 import firebase from 'firebase';
 import config from '../../config';
 
 import {
-  Header,
   Form,
   Label,
-  Input,
   Item,
   Container,
-  Left,
-  Right,
   Footer,
   FooterTab,
   Button,
   Content,
-  Icon,
-  Body,
-  List,
   Spinner,
   Image
 } from 'native-base';
 
-import {
-  PicPicker,
-  CustomDatePicker,
-  InputItem,
-  FriendListModal,
-  DrawerHeader,
-  NewPayFooter,
-  ChosenFriendListItem,
-  SplitPayment
-} from '../components';
+import { PicPicker, DrawerHeader } from '../components';
 
 export interface State {
   pushing: boolean;
@@ -65,6 +53,7 @@ export interface Props {
   boss: boolean;
   email: string;
   pricebookId: string;
+  isPayed: boolean;
 }
 
 //prop이나 request를 통해서 해당 거래 정보 접근해야 하고,
@@ -112,7 +101,7 @@ export default class SingleViewPart extends React.Component<Props, State> {
   // handleBackPress = () => {};
   async componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', () => {
-      this.props.navigation.navigate('Home');
+      this.props.navigation.navigate('결제목록');
     });
     if (this.props.navigation.state.params === undefined) {
       alert('해당 페이지는 결제 리스트를 통한 접근만 사용합니다.');
@@ -146,45 +135,56 @@ export default class SingleViewPart extends React.Component<Props, State> {
   }
   pushRequest = async () => {
     console.log('i want to push');
-
-    this.setState({ ...this.state, pushing: true });
-    const user = await firebase.auth().currentUser;
-    let emailObj = {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        title: user.displayName,
-        pricebookId: this.state.pricebookId,
-        msg: ` [${this.state.title}] 모임에 대한 입금 확인을 요청하였습니다.`,
-        target: 'boss'
-      })
-    };
-    let response = await fetch(
-      config.serverAddress + '/users/pushtoken',
-      emailObj
-    );
-    console.log('response.status', response.status);
-    if (response.status === 200) {
-      alert('메세지 전송 성공!');
-      this.setState({ ...this.state, pushing: false });
-    } else if (response.status === 400) {
-      alert('메세지 전송 실패');
-      this.setState({ ...this.state, pushing: false });
+    if (this.props.navigation.state.params.isPayed) {
+      this.props.navigation.navigate('결제목록');
+    } else {
+      this.setState({ ...this.state, pushing: true });
+      const user = await firebase.auth().currentUser;
+      let emailObj = {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: user.displayName,
+          pricebookId: this.state.pricebookId,
+          msg: ` [${this.state.title}] 모임에 대한 입금 확인을 요청하였습니다.`,
+          target: 'boss'
+        })
+      };
+      let response = await fetch(
+        config.serverAddress + '/users/pushtoken',
+        emailObj
+      );
+      console.log('response.status', response.status);
+      if (response.status === 200) {
+        alert('메세지 전송 성공!');
+        this.setState({ ...this.state, pushing: false });
+      } else if (response.status === 400) {
+        alert('메세지 전송 실패');
+        this.setState({ ...this.state, pushing: false });
+      }
+      // let responseJson = await response.json();
+      // console.log(responseJson);
     }
-    // let responseJson = await response.json();
-    // console.log(responseJson);
   };
   _onRefresh = async () => {
     this.setState({ refreshing: true });
     await this.componentDidMount();
     this.setState({ refreshing: false });
   };
+  // tslint:disable-next-line: max-func-body-length
   render() {
+    console.log('싱글뷰페이지 프롭스 봅시다', this.props);
     let fromList = !this.props.boss;
     let { billImgSrc } = this.state;
+    const title = this.props.navigation.state.params.isPayed
+      ? '지불 완료'
+      : '입금 확인을 요청하세요!';
+    const priceforOne = (parseInt(this.state.totalPay) / this.state.peopleCnt)
+      .toString()
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     return (
       <ScrollView
         contentContainerStyle={this.styles.scrollView}
@@ -197,47 +197,45 @@ export default class SingleViewPart extends React.Component<Props, State> {
       >
         <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
           <Container style={screenStyles.container}>
-            <DrawerHeader
-              title="입금 확인을 요청하세요!"
-              toggleDrawer={this.toggleDrawer}
-            />
-            <Content
-              contentContainerStyle={{
-                justifyContent: 'flex-start',
-                paddingTop: 35
-              }}
-            >
+            <DrawerHeader title={title} toggleDrawer={this.toggleDrawer} />
+            <Content contentContainerStyle={styles_SingleView.contentContainer}>
               <View style={{ alignItems: 'center', marginBottom: 15 }}>
                 <Form style={styles_newPayment.form}>
-                  <Item fixedLabel>
-                    <Label style={screenStyles.inputLabel}>제목</Label>
+                  <Item
+                    fixedLabel
+                    style={{ ...styles_SingleView.item, paddingTop: 10 }}
+                  >
+                    <Label style={screenStyles.inputItemLabel}>제목</Label>
                     <Text style={screenStyles.inputTxt}>
                       {this.state.title}
                     </Text>
                   </Item>
-                  <Item fixedLabel>
-                    <Label style={screenStyles.inputLabel}>모임일</Label>
+                  <Item fixedLabel style={styles_SingleView.item}>
+                    <Label style={screenStyles.inputItemLabel}>모임일</Label>
                     <Text style={screenStyles.inputTxt}>
                       {this.state.chosenDate.toString().substring(0, 10)}
                     </Text>
                   </Item>
-                  <Item fixedLabel>
-                    <Label style={screenStyles.inputLabel}>총 금액</Label>
+                  <Item fixedLabel style={styles_SingleView.item}>
+                    <Label style={screenStyles.inputItemLabel}>총 금액</Label>
                     <Text style={screenStyles.inputTxt}>
-                      {this.state.totalPay} 원
+                      {this.state.totalPay
+                        .toString()
+                        .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}{' '}
+                      원
                     </Text>
                   </Item>
-                  <Item fixedLabel>
-                    <Label style={screenStyles.inputLabel}>참여자 수</Label>
+                  <Item fixedLabel style={styles_SingleView.item}>
+                    <Label style={screenStyles.inputItemLabel}>참여자 수</Label>
                     <Text style={screenStyles.inputTxt}>
                       총 {this.state.peopleCnt} 명
                     </Text>
                   </Item>
-                  <Item fixedLabel>
-                    <Label style={screenStyles.inputLabel}>1인당 금액</Label>
-                    <Text style={screenStyles.inputTxt}>
-                      {parseInt(this.state.totalPay) / this.state.peopleCnt} 원
-                    </Text>
+                  <Item fixedLabel style={styles_SingleView.item}>
+                    <Label style={screenStyles.inputItemLabel}>
+                      1인당 금액
+                    </Label>
+                    <Text style={screenStyles.inputTxt}>{priceforOne} 원</Text>
                   </Item>
                   <View
                     style={{
@@ -261,10 +259,12 @@ export default class SingleViewPart extends React.Component<Props, State> {
               />
             </Content>
             <Footer>
-              <FooterTab>
+              <FooterTab style={{ backgroundColor: '#FFF' }}>
                 <Button onPress={this.pushRequest}>
-                  {this.state.pushing === false ? (
-                    <Text>결제 확인 요청</Text>
+                  {title === '지불 완료' ? (
+                    <Text style={{ fontFamily: 'Godo' }}>확인</Text>
+                  ) : this.state.pushing === false ? (
+                    <Text style={{ fontFamily: 'Godo' }}>결제 확인 요청</Text>
                   ) : (
                     <Spinner color="yellow" />
                   )}

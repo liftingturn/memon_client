@@ -100,7 +100,7 @@ export default class NewPayment extends React.Component<Props> {
         email: email,
         pricebookId: pricebookId,
         modifyButtonText: '수정',
-        pageTitle: '단일 결제 정보'
+        pageTitle: '거래 정보'
       });
       await this.doFetch();
     }

@@ -214,7 +214,15 @@ const styles_ChosenFrientListItem = StyleSheet.create({
   }
 });
 
+const styles_SingleView = StyleSheet.create({
+  contentContainer: {
+    justifyContent: 'flex-start',
+    paddingTop: 35
+  },
+  item: { marginVertical: 10, paddingBottom: 10 }
+});
 export {
+  styles_SingleView,
   styles_Dashboard,
   styles_NetCard,
   styles_PaymentList,

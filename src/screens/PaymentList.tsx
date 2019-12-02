@@ -13,7 +13,6 @@ import {
   Container,
   Content,
   Button,
-  Left,
   Right,
   Icon,
   List,
@@ -46,22 +45,23 @@ export default class PaymentList extends React.Component<Props, State> {
   toggleDrawer = () => {
     this.props.navigation.toggleDrawer();
   };
-  pressEvent = (isBoss, pricebookId, transCompleted) => {
+  pressEvent = payment => {
     console.log(this, 'click!');
-    if (isBoss) {
+    if (payment.boss) {
       console.log('go boss!');
       this.props.navigation.navigate('결제생성', {
         fromListView: true,
         email: this.state.email,
-        pricebookId: pricebookId,
-        transCompleted: transCompleted
+        pricebookId: payment.pricebookId,
+        transCompleted: payment.transCompleted
       });
     } else {
       console.log('go pay');
       this.props.navigation.navigate('참여자개별결제페이지', {
         boss: false,
         email: this.state.email,
-        pricebookId: pricebookId
+        pricebookId: payment.pricebookId,
+        isPayed: payment.isPayed
       });
     }
   };
@@ -116,7 +116,6 @@ export default class PaymentList extends React.Component<Props, State> {
         <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
           <Container style={screenStyles.container}>
             <DrawerHeader title="거래 목록" toggleDrawer={this.toggleDrawer} />
-
             <Content>
               <List
                 style={{
@@ -136,6 +135,8 @@ export default class PaymentList extends React.Component<Props, State> {
                     ? this.styles.completed
                     : payment.boss
                     ? this.styles.bossItem
+                    : payment.isPayed
+                    ? this.styles.completed
                     : this.styles.partItem;
                   const statusTxt = payment.transCompleted
                     ? payment.boss
@@ -143,6 +144,8 @@ export default class PaymentList extends React.Component<Props, State> {
                       : '✔️ 지불완료'
                     : payment.boss
                     ? '♦️ 받을 돈'
+                    : payment.isPayed
+                    ? '◼️ 준 돈'
                     : '♦️ 줄 돈';
                   return (
                     //결제 종류별로 색 구분할거임. 그리고 key나 기타로 바로 개별view들어갈 때 해당 키 날릴거.
@@ -172,11 +175,8 @@ export default class PaymentList extends React.Component<Props, State> {
                           rounded
                           style={this.styles.button}
                           onPress={() => {
-                            this.pressEvent(
-                              payment.boss,
-                              payment.pricebookId,
-                              payment.transCompleted
-                            );
+                            console.log(payment);
+                            this.pressEvent(payment);
                           }}
                         >
                           <Icon
