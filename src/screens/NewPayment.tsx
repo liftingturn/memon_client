@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, BackHandler, RefreshControl, ScrollView } from 'react-native';
+import { View, BackHandler, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
@@ -88,6 +88,11 @@ export default class NewPayment extends React.Component<Props> {
     successSubmit: false
   };
 
+  componentWillUnmount = () => {
+    this.props.navigation.state.params
+      ? (this.props.navigation.state.params.fromListView = false)
+      : null;
+  };
   async componentWillReceiveProps() {
     console.log('=========리스트에서 온거야 비활성화 해야해');
     const {
@@ -269,7 +274,11 @@ export default class NewPayment extends React.Component<Props> {
   //backHandler
   goBack = () => {
     console.log(this.props.navigation);
-    if (this.props.navigation.state.params) {
+    const isView = Boolean(
+      this.props.navigation.state.params &&
+        this.props.navigation.state.params.fromListView
+    );
+    if (isView) {
       console.log("goBack it's view");
       this.handleGoback('view');
     } else {
@@ -280,8 +289,29 @@ export default class NewPayment extends React.Component<Props> {
 
   handleGoback = from => {
     if (from === 'view') {
-      this.props.navigation.navigate('PaymentList');
+      console.log("Handle goBack it's view");
+      console.log(this.state.modifyButtonText);
+      if (this.state.modifyButtonText === '변경사항저장') {
+        Alert.alert('Alert', '수정을 취소합니다.', [
+          {
+            text: '확인',
+            onPress: () => {
+              this.props.navigation.navigate('결제목록');
+            }
+          },
+          {
+            text: '취소',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel'
+          }
+        ]);
+      } else {
+        console.log('조회 후 퇴장');
+        this.props.navigation.navigate('결제목록');
+      }
     } else if (from === 'new') {
+      console.log("Handle goBack it's new");
+
       console.log('뒤로가기 클릭함, 현재 goBack: ', this.state.goBack);
       if (this.state.goBack === 0) {
         Toast.show({
@@ -413,7 +443,7 @@ export default class NewPayment extends React.Component<Props> {
       });
       Toast.show({
         text: '입금상태를 수정합니다.\n완료 후 저장을 꼭 눌러주세요!',
-        duration: 1000,
+        duration: 2000,
         style: styles_Toast.container
       });
     } else if (this.state.modifyButtonText === '등록') {
@@ -427,7 +457,7 @@ export default class NewPayment extends React.Component<Props> {
       this.onRefresh();
       Toast.show({
         text: '변경사항을 저장하였습니다.',
-        duration: 1000,
+        duration: 2000,
         style: styles_Toast.container
       });
     } else if (this.state.modifyButtonText === '거래 종료') {
@@ -507,7 +537,7 @@ export default class NewPayment extends React.Component<Props> {
           console.log('등록성공');
           await Toast.show({
             text: '새 거래를 등록했습니다.',
-            duration: 1000,
+            duration: 2000,
             style: styles_Toast.container
           });
           await this.setState({
@@ -736,6 +766,7 @@ export default class NewPayment extends React.Component<Props> {
               onPress={this.toModifyMode}
               goBack={this.handleGoback}
               handleConfirm={this.handleConfirmModified}
+              navigation={this.props.navigation}
             />
           </Container>
         </LinearGradient>

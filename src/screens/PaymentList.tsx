@@ -65,13 +65,18 @@ export default class PaymentList extends React.Component<Props, State> {
       });
     }
   };
+
+  goBack = () => {
+    this.props.navigation.navigate('홈');
+    return;
+  };
   componentDidMount() {
-    BackHandler.addEventListener('hardwareBackPress', () => {
-      this.props.navigation.navigate('홈');
-    });
+    BackHandler.addEventListener('hardwareBackPress', this.goBack);
     this.getOwnPayments();
   }
-
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.goBack);
+  }
   async getOwnPayments() {
     const user = await firebase.auth().currentUser;
     console.log('==============user:', user.email);
