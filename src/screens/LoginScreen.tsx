@@ -1,9 +1,17 @@
 import * as React from 'react';
-import { View, StyleSheet, ActivityIndicator, Button } from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  ActivityIndicator,
+  Button
+} from 'react-native';
+import { Footer } from 'native-base';
 import * as Google from 'expo-google-app-auth';
 import firebase from 'firebase';
 import config from './../../config';
-
+import { LinearGradient } from 'expo-linear-gradient';
+import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
 interface State {
   whileAsync: boolean;
 }
@@ -106,20 +114,33 @@ class LoginScreen extends React.Component<State> {
 
   render() {
     return (
-      <View style={styles.container}>
-        {this.state.whileAsync === false ? (
-          <Button
-            title="Sign In With Google"
-            onPress={this.signInWithGoogleAsync}
-          />
-        ) : (
-          <ActivityIndicator size="large" />
-        )}
-        {/* <Button
-          title="Sign In With Google"
-          onPress={this.signInWithGoogleAsync}
-        /> */}
-      </View>
+      <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <Text numberOfLines={1} adjustsFontSizeToFit style={styles.sub}>
+            슬기로운 수금 생활
+          </Text>
+          <Text numberOfLines={1} adjustsFontSizeToFit style={styles.main}>
+            Memon
+          </Text>
+          {this.state.whileAsync === false ? (
+            <Button
+              title="Sign In With Google"
+              onPress={this.signInWithGoogleAsync}
+            />
+          ) : (
+            <ActivityIndicator size="large" />
+          )}
+        </View>
+        <Footer
+          style={{ justifyContent: 'center', backgroundColor: 'transParent' }}
+        >
+          <Text style={{ color: '#fff', fontSize: 15, fontWeight: '400' }}>
+            @ Don Juan 2019
+          </Text>
+        </Footer>
+      </LinearGradient>
     );
   }
 }
@@ -131,5 +152,17 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  sub: {
+    backgroundColor: 'transparent',
+    fontWeight: '300',
+    color: '#fff',
+    fontSize: RFPercentage(3)
+  },
+  main: {
+    backgroundColor: 'transparent',
+    fontWeight: '500',
+    color: '#fff',
+    fontSize: RFPercentage(8)
   }
 });
