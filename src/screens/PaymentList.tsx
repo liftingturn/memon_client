@@ -67,7 +67,7 @@ export default class PaymentList extends React.Component<Props, State> {
   };
   componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', () => {
-      this.props.navigation.navigate('Home');
+      this.props.navigation.navigate('홈');
     });
     this.getOwnPayments();
   }

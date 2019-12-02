@@ -35,7 +35,6 @@ interface State {
   avatar: string;
   goBack: number;
   showToast: boolean;
-  fontsLoaded: boolean;
 }
 export default class DashboardScreen extends Component<Props, State> {
   state: State = {

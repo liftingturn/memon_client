@@ -55,13 +55,14 @@ export interface State {
   email: string;
   pricebookId: string;
   uniqueDisable: boolean;
-  showToast: boolean;
   readyComplete: false;
+  showToast: boolean;
+  goBack: number;
 }
 
 export default class NewPayment extends React.Component<Props> {
   state = {
-    pageTitle: '새 수금 등록',
+    pageTitle: '새 거래',
     friendList: [],
     chosenNums: [],
     chosenList: [],
@@ -78,10 +79,11 @@ export default class NewPayment extends React.Component<Props> {
     pricebookId: '',
     billImgSrc: '',
     uniqueDisable: false,
-    showToast: false,
     readyComplete: false,
     transCompleted: false,
-    refreshing: false
+    refreshing: false,
+    showToast: false,
+    goBack: 0
   };
 
   async componentWillReceiveProps() {
@@ -278,7 +280,17 @@ export default class NewPayment extends React.Component<Props> {
     if (from === 'view') {
       this.props.navigation.navigate('PaymentList');
     } else if (from === 'new') {
-      this.props.navigation.navigate('Home');
+      console.log('뒤로가기 클릭함, 현재 goBack: ', this.state.goBack);
+      if (this.state.goBack === 0) {
+        Toast.show({
+          text: '저장이 되지 않았어요!\n한 번 더 누르면 홈으로 갑니다.',
+          duration: 2000,
+          textStyle: styles_Toast.txt
+        });
+        this.setState({ goBack: ++this.state.goBack });
+      } else {
+        this.props.navigation.navigate('홈');
+      }
     }
   };
 
@@ -594,7 +606,7 @@ export default class NewPayment extends React.Component<Props> {
             <Content
               contentContainerStyle={{
                 justifyContent: 'flex-start',
-                paddingTop: 100
+                paddingTop: 60
               }}
             >
               <View style={{ alignItems: 'center', marginBottom: 15 }}>
@@ -657,7 +669,7 @@ export default class NewPayment extends React.Component<Props> {
                   <View style={{ flexDirection: 'column', marginVertical: 10 }}>
                     <ChosenFriendListItem
                       name="나"
-                      uniqueDisable={this.state.uniqueDisable}
+                      uniqueDisable={uniqueDisable}
                     />
                     {this.state.chosenList.length > 0
                       ? this.state.chosenList.map((person, i) => {

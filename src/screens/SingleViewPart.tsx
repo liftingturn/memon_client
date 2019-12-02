@@ -105,7 +105,7 @@ export default class SingleViewPart extends React.Component<Props, State> {
     });
     if (this.props.navigation.state.params === undefined) {
       alert('해당 페이지는 결제 리스트를 통한 접근만 사용합니다.');
-      this.props.navigation.navigate('Home');
+      this.props.navigation.navigate('홈');
     } else {
       let emailObj = {
         method: 'POST',
