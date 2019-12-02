@@ -15,7 +15,7 @@ const DrawerHeader = props => {
         style={{
           paddingTop: 22,
           alignItems: 'center',
-          fontFamily: 'GodoB',
+          fontFamily: 'Godo',
           fontSize: 25
         }}
       >
