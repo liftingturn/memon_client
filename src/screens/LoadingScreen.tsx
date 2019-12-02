@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Footer } from 'native-base';
 import firebase from 'firebase';
 import config from '../../config';
-
+import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
 interface Props {
   navigation: any;
 }
@@ -55,32 +55,13 @@ class LoadingScreen extends React.Component<Props> {
         <View
           style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
         >
-          <Text
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            style={{
-              backgroundColor: 'transparent',
-              fontSize: 15,
-              fontStyle: 'italic',
-              fontWeight: '300',
-              color: '#fff'
-            }}
-          >
+          <Text numberOfLines={1} adjustsFontSizeToFit style={styles.sub}>
             슬기로운 수금 생활
           </Text>
-          <Text
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            style={{
-              backgroundColor: 'transparent',
-              fontSize: 60,
-              fontStyle: 'italic',
-              fontWeight: '500',
-              color: '#fff'
-            }}
-          >
+          <Text numberOfLines={1} adjustsFontSizeToFit style={styles.main}>
             Memon
           </Text>
+          <ActivityIndicator size="large" />
         </View>
         <Footer
           style={{ justifyContent: 'center', backgroundColor: 'transParent' }}
@@ -101,5 +82,17 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  sub: {
+    backgroundColor: 'transparent',
+    fontWeight: '300',
+    color: '#fff',
+    fontSize: RFPercentage(3)
+  },
+  main: {
+    backgroundColor: 'transparent',
+    fontWeight: '500',
+    color: '#fff',
+    fontSize: RFPercentage(8)
   }
 });
