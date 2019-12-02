@@ -472,12 +472,19 @@ export default class NewPayment extends React.Component<Props> {
       } else {
         const newPaymentAPI = config.serverAddress + '/payment';
         const user = await firebase.auth().currentUser;
+//         const chosenDate = new Date(this.state.chosenDate);
         const partyDate =
           this.state.chosenDate.getFullYear() +
           '-' +
           this.state.chosenDate.getMonth() +
           '-' +
           this.state.chosenDate.getDate();
+//         const partyDate =
+//       chosenDate.getFullYear() +
+//       '-' +
+//       chosenDate.getMonth() +
+//       '-' +
+//       chosenDate.getDate();
         const singlePay =
           parseInt(this.state.singlePay.replace(/[^0-9]/g, '')) *
           this.state.peopleCnt;
@@ -542,6 +549,7 @@ export default class NewPayment extends React.Component<Props> {
         textStyle: styles_Toast.txt
       });
     }
+
   };
 
   handleConfirmModified = async () => {
@@ -663,7 +671,7 @@ export default class NewPayment extends React.Component<Props> {
                         style={screenStyles.inputItemBody}
                         disabled={true}
                         placeholderTextColor="#c2c2c4"
-                        value={this.state.chosenDate.toString()}
+                        value={this.state.chosenDate}
                       />
                     ) : (
                       <CustomDatePicker setDate={this.setDate} />
