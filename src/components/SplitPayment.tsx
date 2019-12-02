@@ -6,14 +6,14 @@ import { screenStyles } from '../screenStyles';
 const SplitPayment = props => {
   return (
     <Item fixedLabel>
-      <Label style={{ ...screenStyles.inputLabel, fontWeight: '600' }}>
+      <Label style={{ ...screenStyles.inputItemLabel, fontWeight: '600' }}>
         1 / N
       </Label>
       <View style={{ flex: 2.2 }}>
         <Item>
           <Input
             style={{ paddingLeft: 15, fontSize: 16, flex: 1 }}
-            placeholder={'금액을 입력해주세요'}
+            placeholder={'총 금액을 입력해주세요'}
             value={props.splitPayment}
             placeholderTextColor="#907ee0"
             disabled={true}

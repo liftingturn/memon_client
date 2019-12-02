@@ -61,7 +61,7 @@ export interface State {
 
 export default class NewPayment extends React.Component<Props> {
   state = {
-    pageTitle: '단일 결제 정보',
+    pageTitle: '새 수금 등록',
     friendList: [],
     chosenNums: [],
     chosenList: [],
@@ -69,7 +69,7 @@ export default class NewPayment extends React.Component<Props> {
     totalPay: '',
     singlePay: '',
     chosenDate: '',
-    peopleCnt: 0,
+    peopleCnt: 1,
     printModal: false,
     disabled: false,
     // modifyButtonText: this.props.fromListView ? '수정' : '등록',
@@ -316,16 +316,35 @@ export default class NewPayment extends React.Component<Props> {
       console.log('calcN!!!');
 
       const smallest = 100;
-      const MoneyForOne =
-        parseInt(this.state.totalPay) / (this.state.peopleCnt + 1);
+      const MoneyForOne = parseInt(this.state.totalPay) / this.state.peopleCnt;
       let change: any = Math.floor(MoneyForOne / smallest) * smallest;
       this.remainder = String(Math.round(MoneyForOne - change));
-      // this.setState({ ...this.state, singlePay: change });
+      console.log('*******change: ', change);
+      console.log('*******remainder: ', this.remainder);
 
       //print format
-      const strChange =
-        '₩ ' + change.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-      await this.setState({ ...this.state, singlePay: strChange });
+      const strChange = String(change);
+      let formatStr = '';
+      if (strChange.length > 3) {
+        let maxComma =
+          strChange.length % 3 === 0
+            ? Math.floor(strChange.length / 3) - 1
+            : Math.floor(strChange.length / 3);
+
+        let last = strChange.length + 1;
+
+        for (let i = maxComma; i > 0; i--) {
+          formatStr = strChange.substring(last - 4, last) + ',' + formatStr;
+          last = last - 4;
+        }
+        formatStr =
+          '₩' +
+          strChange.substring(0, last) +
+          ',' +
+          formatStr.substring(0, formatStr.length - 1);
+        console.log('formatStr', formatStr);
+      }
+      await this.setState({ ...this.state, singlePay: formatStr });
       console.log('singlePay', this.state.singlePay);
     }
   };
@@ -360,13 +379,14 @@ export default class NewPayment extends React.Component<Props> {
     await this.setState({
       ...this.state,
       friendList: newList,
-      peopleCnt: cnt,
+      peopleCnt: ++cnt,
       chosenNums: chosen,
       chosenList: chosenL
     });
     this.calcN();
-    console.log('friendList', this.state.friendList);
-    console.log('chosenNums', this.state.chosenNums);
+    // console.log('friendList', this.state.friendList);
+    // console.log('chosenNums', this.state.chosenNums);
+    console.log('selectParty - peopleCnt: ', this.state.peopleCnt);
   };
 
   changePayedTrans = phone => {
@@ -396,6 +416,7 @@ export default class NewPayment extends React.Component<Props> {
         style: styles_Toast.container
       });
     } else if (this.state.modifyButtonText === '등록') {
+      // if()
       Toast.show({
         text: '새 결제를 등록하였습니다.',
         duration: 1000,
@@ -408,6 +429,7 @@ export default class NewPayment extends React.Component<Props> {
         modifyButtonText: '수정'
       });
       this.handleSubmit();
+      this.props.navigation.navigate('결제목록');
     } else if (this.state.modifyButtonText === '변경사항저장') {
       this.setState({
         ...this.state,
@@ -422,13 +444,14 @@ export default class NewPayment extends React.Component<Props> {
       });
     } else if (this.state.modifyButtonText === '거래 종료') {
       this.hadleClose();
-      this.props.navigation.navigate('PaymentList');
+      this.props.navigation.navigate('결제목록');
     } else if (this.state.modifyButtonText === '확인') {
-      this.props.navigation.navigate('PaymentList');
+      this.props.navigation.navigate('결제목록');
     }
   };
 
   handleSubmit = async () => {
+    console.log();
     const newPaymentAPI = config.serverAddress + '/payment';
     const user = await firebase.auth().currentUser;
     const partyDate =
@@ -437,7 +460,12 @@ export default class NewPayment extends React.Component<Props> {
       this.state.chosenDate.getMonth() +
       '-' +
       this.state.chosenDate.getDate();
-    const singlePay = this.state.singlePay.replace(/[^0-9]/g, '');
+    const singlePay =
+      parseInt(this.state.singlePay.replace(/[^0-9]/g, '')) *
+      this.state.peopleCnt;
+    console.log('fixedSinglePay!!!!!!!!', singlePay);
+    console.log('peopleCnt!!!!!!!!', this.state.peopleCnt);
+
     let payment: Payment = {
       priceBook: {
         totalPrice: Number(this.state.totalPay),
@@ -446,7 +474,7 @@ export default class NewPayment extends React.Component<Props> {
         partyDate,
         title: this.state.title,
         transCompleted: false,
-        fixedTotalPrice: Number(singlePay)
+        fixedTotalPrice: singlePay
       },
       email: user.email,
       participant: this.state.chosenList
