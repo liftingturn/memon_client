@@ -128,6 +128,7 @@ export default class PaymentList extends React.Component<Props, State> {
                 }}
               >
                 {this.state.paymentList.map((payment, i) => {
+                  console.log(payment);
                   const price = payment.price
                     .toString()
                     .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -138,11 +139,11 @@ export default class PaymentList extends React.Component<Props, State> {
                     : this.styles.partItem;
                   const statusTxt = payment.transCompleted
                     ? payment.boss
-                      ? '받은 돈'
-                      : '준 돈'
+                      ? '✔️ 수금완료'
+                      : '✔️ 지불완료'
                     : payment.boss
-                    ? '받을 돈'
-                    : '줄 돈';
+                    ? '♦️ 받을 돈'
+                    : '♦️ 줄 돈';
                   return (
                     //결제 종류별로 색 구분할거임. 그리고 key나 기타로 바로 개별view들어갈 때 해당 키 날릴거.
                     <ListItem style={ItemStyle} key={i}>
@@ -161,8 +162,10 @@ export default class PaymentList extends React.Component<Props, State> {
                         </Text>
                       </Label>
                       <Text style={styles_PaymentList.infoTxt}>
-                        {`${price} 원`}
-                        {`\n${payment.partyDate}`}
+                        {payment.transCompleted && payment.boss
+                          ? '수금 클리어\n'
+                          : `${price} 원\n`}
+                        {payment.partyDate}
                       </Text>
                       <Right>
                         <Button
