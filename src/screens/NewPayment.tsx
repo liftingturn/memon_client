@@ -331,35 +331,21 @@ export default class NewPayment extends React.Component<Props> {
       console.log('calcN!!!');
 
       const smallest = 100;
-      const MoneyForOne = parseInt(this.state.totalPay) / this.state.peopleCnt;
+      const totalPay = this.state.totalPay.toString().replace(/[^0-9]/g, '');
+      const MoneyForOne = parseInt(totalPay) / this.state.peopleCnt;
       let change: any = Math.floor(MoneyForOne / smallest) * smallest;
       this.remainder = String(Math.round(MoneyForOne - change));
       console.log('*******change: ', change);
       console.log('*******remainder: ', this.remainder);
 
       //print format
-      const strChange = String(change);
-      let formatStr = '';
-      if (strChange.length > 3) {
-        let maxComma =
-          strChange.length % 3 === 0
-            ? Math.floor(strChange.length / 3) - 1
-            : Math.floor(strChange.length / 3);
-
-        let last = strChange.length + 1;
-
-        for (let i = maxComma; i > 0; i--) {
-          formatStr = strChange.substring(last - 4, last) + ',' + formatStr;
-          last = last - 4;
-        }
-        formatStr =
-          '₩' +
-          strChange.substring(0, last) +
-          ',' +
-          formatStr.substring(0, formatStr.length - 1);
-        console.log('formatStr', formatStr);
-      }
-      await this.setState({ ...this.state, singlePay: formatStr });
+      let formatStr =
+        '₩ ' + change.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      await this.setState({
+        ...this.state,
+        singlePay: formatStr,
+        totalPay: totalPay.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      });
       console.log('singlePay', this.state.singlePay);
     }
   };
@@ -472,19 +458,19 @@ export default class NewPayment extends React.Component<Props> {
       } else {
         const newPaymentAPI = config.serverAddress + '/payment';
         const user = await firebase.auth().currentUser;
-//         const chosenDate = new Date(this.state.chosenDate);
+        //         const chosenDate = new Date(this.state.chosenDate);
         const partyDate =
           this.state.chosenDate.getFullYear() +
           '-' +
           this.state.chosenDate.getMonth() +
           '-' +
           this.state.chosenDate.getDate();
-//         const partyDate =
-//       chosenDate.getFullYear() +
-//       '-' +
-//       chosenDate.getMonth() +
-//       '-' +
-//       chosenDate.getDate();
+        //         const partyDate =
+        //       chosenDate.getFullYear() +
+        //       '-' +
+        //       chosenDate.getMonth() +
+        //       '-' +
+        //       chosenDate.getDate();
         const singlePay =
           parseInt(this.state.singlePay.replace(/[^0-9]/g, '')) *
           this.state.peopleCnt;
@@ -549,7 +535,6 @@ export default class NewPayment extends React.Component<Props> {
         textStyle: styles_Toast.txt
       });
     }
-
   };
 
   handleConfirmModified = async () => {
