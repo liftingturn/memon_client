@@ -88,10 +88,10 @@ const styles_newPayment = StyleSheet.create({
 const styles_Toast = {
   container: {
     height: 50,
-    margin: 20,
-    marginBottom: 20,
-    borderRadius: 5,
-    paddingHorizontal: 100
+    margin: 3,
+    marginBottom: 3,
+    borderRadius: 10,
+    paddingHorizontal: 10
   },
   txt: {
     paddingHorizontal: 20

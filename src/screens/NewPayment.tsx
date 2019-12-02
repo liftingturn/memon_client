@@ -58,6 +58,7 @@ export interface State {
   readyComplete: false;
   showToast: boolean;
   goBack: number;
+  successSubmit: boolean;
 }
 
 export default class NewPayment extends React.Component<Props> {
@@ -83,7 +84,8 @@ export default class NewPayment extends React.Component<Props> {
     transCompleted: false,
     refreshing: false,
     showToast: false,
-    goBack: 0
+    goBack: 0,
+    successSubmit: false
   };
 
   async componentWillReceiveProps() {
@@ -285,7 +287,8 @@ export default class NewPayment extends React.Component<Props> {
         Toast.show({
           text: '저장이 되지 않았어요!\n한 번 더 누르면 홈으로 갑니다.',
           duration: 2000,
-          textStyle: styles_Toast.txt
+          textStyle: styles_Toast.txt,
+          style: styles_Toast.container
         });
         this.setState({ goBack: ++this.state.goBack });
       } else {
@@ -428,20 +431,7 @@ export default class NewPayment extends React.Component<Props> {
         style: styles_Toast.container
       });
     } else if (this.state.modifyButtonText === '등록') {
-      // if()
-      Toast.show({
-        text: '새 결제를 등록하였습니다.',
-        duration: 1000,
-        style: styles_Toast.container
-      });
-      this.setState({
-        ...this.state,
-        uniqueDisable: true,
-        disabled: true,
-        modifyButtonText: '수정'
-      });
-      this.handleSubmit();
-      this.props.navigation.navigate('결제목록');
+      await this.handleSubmit();
     } else if (this.state.modifyButtonText === '변경사항저장') {
       this.setState({
         ...this.state,
@@ -463,47 +453,95 @@ export default class NewPayment extends React.Component<Props> {
   };
 
   handleSubmit = async () => {
-    console.log();
-    const newPaymentAPI = config.serverAddress + '/payment';
-    const user = await firebase.auth().currentUser;
-    const partyDate =
-      this.state.chosenDate.getFullYear() +
-      '-' +
-      this.state.chosenDate.getMonth() +
-      '-' +
-      this.state.chosenDate.getDate();
-    const singlePay =
-      parseInt(this.state.singlePay.replace(/[^0-9]/g, '')) *
-      this.state.peopleCnt;
-    console.log('fixedSinglePay!!!!!!!!', singlePay);
-    console.log('peopleCnt!!!!!!!!', this.state.peopleCnt);
+    const { chosenDate, chosenList, title, totalPay } = this.state;
+    const ready = chosenDate && title && totalPay ? true : false;
+    if (ready) {
+      console.log('===서브밋준비====', {
+        chosenDate,
+        chosenList: chosenList.length,
+        title,
+        totalPay
+      });
+      if (chosenList.length === 0) {
+        await Toast.show({
+          text: '수금할 참여자를 선택해주세요!',
+          duration: 2000,
+          style: styles_Toast.container,
+          textStyle: styles_Toast.txt
+        });
+      } else {
+        const newPaymentAPI = config.serverAddress + '/payment';
+        const user = await firebase.auth().currentUser;
+        const partyDate =
+          this.state.chosenDate.getFullYear() +
+          '-' +
+          this.state.chosenDate.getMonth() +
+          '-' +
+          this.state.chosenDate.getDate();
+        const singlePay =
+          parseInt(this.state.singlePay.replace(/[^0-9]/g, '')) *
+          this.state.peopleCnt;
+        console.log('fixedSinglePay!!!!!!!!', singlePay);
+        console.log('peopleCnt!!!!!!!!', this.state.peopleCnt);
 
-    let payment: Payment = {
-      priceBook: {
-        totalPrice: Number(this.state.totalPay),
-        billImgSrc: this.state.billImgSrc,
-        count: this.state.peopleCnt,
-        partyDate,
-        title: this.state.title,
-        transCompleted: false,
-        fixedTotalPrice: singlePay
-      },
-      email: user.email,
-      participant: this.state.chosenList
-    };
-    console.log('sumitted!', payment);
+        let payment: Payment = {
+          priceBook: {
+            totalPrice: Number(this.state.totalPay),
+            billImgSrc: this.state.billImgSrc,
+            count: this.state.peopleCnt,
+            partyDate,
+            title: this.state.title,
+            transCompleted: false,
+            fixedTotalPrice: singlePay
+          },
+          email: user.email,
+          participant: this.state.chosenList
+        };
+        console.log('sumitted!', payment);
 
-    const fetchRes = await fetch(newPaymentAPI, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payment)
-    });
-    const priceBook = await fetchRes.json();
-    console.log('=======sumitted!======', priceBook);
-    this.props.navigation.navigate('PaymentList');
+        const fetchRes = await fetch(newPaymentAPI, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payment)
+        });
+        const priceBook = await fetchRes.json();
+        console.log(priceBook);
+        priceBook ? await this.setState({ successSubmit: true }) : null;
+        if (this.state.successSubmit) {
+          console.log('등록성공');
+          await Toast.show({
+            text: '새 거래를 등록했습니다.',
+            duration: 1000,
+            style: styles_Toast.container
+          });
+          await this.setState({
+            ...this.state,
+            uniqueDisable: true,
+            disabled: true,
+            modifyButtonText: '수정'
+          });
+          !this.state.showToast
+            ? this.props.navigation.navigate('결제목록')
+            : null;
+        } else {
+          Toast.show({
+            text: '거래를 등록하지 못했습니다.',
+            duration: 1000,
+            style: styles_Toast.container
+          });
+        }
+      }
+    } else {
+      Toast.show({
+        text: '등록할 거래 정보를 입력해주세요.',
+        duration: 2000,
+        style: styles_Toast.container,
+        textStyle: styles_Toast.txt
+      });
+    }
   };
 
   handleConfirmModified = async () => {
