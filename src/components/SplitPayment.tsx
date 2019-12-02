@@ -13,7 +13,8 @@ const SplitPayment = props => {
         <Item>
           <Input
             style={{ paddingLeft: 15, fontSize: 16, flex: 1 }}
-            placeholder={props.splitPayment}
+            placeholder={'금액을 입력해주세요'}
+            value={props.splitPayment}
             placeholderTextColor="#907ee0"
             disabled={true}
           />

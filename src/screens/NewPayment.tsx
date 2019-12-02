@@ -61,7 +61,7 @@ export interface State {
 
 export default class NewPayment extends React.Component<Props> {
   state = {
-    pageTitle: '새 결제 등록',
+    pageTitle: '단일 결제 정보',
     friendList: [],
     chosenNums: [],
     chosenList: [],
@@ -140,6 +140,7 @@ export default class NewPayment extends React.Component<Props> {
           transCompleted: transCompleted
         });
         await this.doFetch();
+        await this.calcN();
       }
     }
 
@@ -287,8 +288,8 @@ export default class NewPayment extends React.Component<Props> {
   };
 
   //form handler functions
-  setDate = async newDate => {
-    await this.setState({ ...this.state, chosenDate: newDate });
+  setDate = newDate => {
+    this.setState({ ...this.state, chosenDate: newDate });
   };
 
   onChangeTotalPay = async e => {
@@ -391,13 +392,13 @@ export default class NewPayment extends React.Component<Props> {
       });
       Toast.show({
         text: '입금상태를 수정합니다.\n완료 후 저장을 꼭 눌러주세요!',
-        duration: 3000,
+        duration: 1000,
         style: styles_Toast.container
       });
     } else if (this.state.modifyButtonText === '등록') {
       Toast.show({
         text: '새 결제를 등록하였습니다.',
-        duration: 3000,
+        duration: 1000,
         style: styles_Toast.container
       });
       this.setState({
@@ -416,7 +417,7 @@ export default class NewPayment extends React.Component<Props> {
       this.onRefresh();
       Toast.show({
         text: '변경사항을 저장하였습니다.',
-        duration: 3000,
+        duration: 1000,
         style: styles_Toast.container
       });
     } else if (this.state.modifyButtonText === '거래 종료') {
@@ -578,7 +579,7 @@ export default class NewPayment extends React.Component<Props> {
                     txt={this.state.title}
                   />
                   <Item fixedLabel>
-                    <Label style={screenStyles.inputItemLabel}>날짜</Label>
+                    <Label style={screenStyles.inputItemLabel}>모임일</Label>
                     {disabled ? (
                       <Input
                         style={screenStyles.inputItemBody}
@@ -591,7 +592,7 @@ export default class NewPayment extends React.Component<Props> {
                     )}
                   </Item>
                   <InputItem
-                    label="금액"
+                    label="총 금액"
                     disabled={disabled}
                     onChange={this.onChangeTotalPay}
                     keyT="numeric"
