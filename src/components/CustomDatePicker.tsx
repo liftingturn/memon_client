@@ -1,6 +1,8 @@
 import React from 'react';
 import { DatePicker } from 'native-base';
 import { View } from 'react-native';
+import moment from 'moment';
+
 const CustomDatePicker = props => {
   return (
     <View style={{ flex: 2.2 }}>
@@ -22,6 +24,9 @@ const CustomDatePicker = props => {
         }}
         onDateChange={props.setDate}
         disabled={props.disabled}
+        formatChosenDate={date => {
+          return moment(date).format('YYYY-MM-DD');
+        }}
       />
     </View>
   );
