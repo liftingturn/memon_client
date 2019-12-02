@@ -216,13 +216,13 @@ export default class SingleViewPart extends React.Component<Props, State> {
                     </Text>
                   </Item>
                   <Item fixedLabel>
-                    <Label style={screenStyles.inputLabel}>결제생성일</Label>
+                    <Label style={screenStyles.inputLabel}>모임일</Label>
                     <Text style={screenStyles.inputTxt}>
                       {this.state.chosenDate.toString().substring(0, 10)}
                     </Text>
                   </Item>
                   <Item fixedLabel>
-                    <Label style={screenStyles.inputLabel}>총 결제 금액</Label>
+                    <Label style={screenStyles.inputLabel}>총 금액</Label>
                     <Text style={screenStyles.inputTxt}>
                       {this.state.totalPay} 원
                     </Text>

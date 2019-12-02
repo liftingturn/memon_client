@@ -8,9 +8,9 @@ import SingleViewPart from '../screens/SingleViewPart';
 
 const DrawerNav = createDrawerNavigator(
   {
-    Home: { screen: DashboardScreen },
-    NewPayment: { screen: NewPayment },
-    PaymentList: { screen: PaymentList },
+    홈: { screen: DashboardScreen },
+    결제생성: { screen: NewPayment },
+    결제목록: { screen: PaymentList },
     참여자개별결제페이지: { screen: SingleViewPart }
     // Logout : <Button></Button>
   },
