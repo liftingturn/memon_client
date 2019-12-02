@@ -9,7 +9,7 @@
     "orientation": "portrait",
     "icon": "./assets/memon-circle.png",
     "splash": {
-      "image": "./assets/iOS-stock-6-for-iPhone-X.png",
+      "image": "./assets/main.jpg",
       "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
