@@ -35,7 +35,7 @@ const ChosenFriendListItem = props => {
       flex: 1
     }
   });
-  console.log('= =======쵸즌리스트아이템 프롭스=======', props);
+  // console.log('= =======쵸즌리스트아이템 프롭스=======', props);
 
   const { modifyButtonText } = props;
   //화면모드
@@ -47,7 +47,7 @@ const ChosenFriendListItem = props => {
       ? 'new'
       : 'view';
 
-  console.log('mode', mode);
+  // console.log('mode', mode);
   const handleCheckPay = () => {
     props.changePayed(props.person.phone);
   };

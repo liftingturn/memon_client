@@ -88,11 +88,6 @@ export default class NewPayment extends React.Component<Props> {
     successSubmit: false
   };
 
-  componentWillUnmount = () => {
-    this.props.navigation.state.params
-      ? (this.props.navigation.state.params.fromListView = false)
-      : null;
-  };
   async componentWillReceiveProps() {
     console.log('=========리스트에서 온거야 비활성화 해야해');
     const {
@@ -206,6 +201,14 @@ export default class NewPayment extends React.Component<Props> {
       await this.setState({ ...this.state, friendList: userFilterdList });
     }
   };
+
+  setReadyToClose = () => {
+    this.setState({
+      ...this.state,
+      readyComplete: true,
+      modifyButtonText: '거래 종료'
+    });
+  };
   doFetch = async () => {
     let emailObj = {
       method: 'POST',
@@ -243,8 +246,8 @@ export default class NewPayment extends React.Component<Props> {
       chosenList: chosenList
     });
     const chosenState = this.state.chosenList;
-    console.log('afterFetch', chosenState);
-    let payedCnt = 0;
+    console.log('afterFetch', this.state);
+    let payedCnt = 1;
     for (let i = 0; i < chosenState.length; i++) {
       if (chosenState[i].isPayed) {
         payedCnt++;
@@ -253,11 +256,7 @@ export default class NewPayment extends React.Component<Props> {
     console.log('transCompleted#########', this.state.transCompleted);
     if (payedCnt === responseJson.pricebook.count) {
       if (!this.state.transCompleted) {
-        this.setState({
-          ...this.state,
-          readyComplete: true,
-          modifyButtonText: '거래 종료'
-        });
+        await this.setReadyToClose();
         console.log('readyComplete#########', this.state.readyComplete);
       }
     }
@@ -296,7 +295,9 @@ export default class NewPayment extends React.Component<Props> {
           {
             text: '확인',
             onPress: () => {
+              this.props.navigation.state.params.fromListView = false;
               this.props.navigation.navigate('결제목록');
+              return;
             }
           },
           {
@@ -308,11 +309,10 @@ export default class NewPayment extends React.Component<Props> {
       } else {
         console.log('조회 후 퇴장');
         this.props.navigation.navigate('결제목록');
+        this.props.navigation.state.params.fromListView = false;
       }
     } else if (from === 'new') {
       console.log("Handle goBack it's new");
-
-      console.log('뒤로가기 클릭함, 현재 goBack: ', this.state.goBack);
       if (this.state.goBack === 0) {
         Toast.show({
           text: '저장이 되지 않았어요!\n한 번 더 누르면 홈으로 갑니다.',
@@ -322,6 +322,7 @@ export default class NewPayment extends React.Component<Props> {
         });
         this.setState({ goBack: ++this.state.goBack });
       } else {
+        this.setState({ goBack: 0 });
         this.props.navigation.navigate('홈');
       }
     }
@@ -356,7 +357,7 @@ export default class NewPayment extends React.Component<Props> {
     console.log('////////////// * calcN * //////////////');
     console.log('state pay', this.state.totalPay);
     if (!this.state.totalPay) {
-      this.setState({ ...this.state, singlePay: '총금액을 입력해주세요.' });
+      this.setState({ ...this.state, singlePay: '' });
     } else {
       console.log('calcN!!!');
 
@@ -434,6 +435,7 @@ export default class NewPayment extends React.Component<Props> {
   toModifyMode = async () => {
     console.log('=====수정모드변경===');
     console.log(`====현재 수정 버튼 : ${this.state.modifyButtonText}=====`);
+    console.log('====네비 파라미터======== : ', this.props.navigation);
 
     if (this.state.modifyButtonText === '수정') {
       this.setState({
@@ -504,12 +506,13 @@ export default class NewPayment extends React.Component<Props> {
         const singlePay =
           parseInt(this.state.singlePay.replace(/[^0-9]/g, '')) *
           this.state.peopleCnt;
+        const totalPay = parseInt(this.state.totalPay.replace(/[^0-9]/g, ''));
         console.log('fixedSinglePay!!!!!!!!', singlePay);
         console.log('peopleCnt!!!!!!!!', this.state.peopleCnt);
 
         let payment: Payment = {
           priceBook: {
-            totalPrice: Number(this.state.totalPay),
+            totalPrice: totalPay,
             billImgSrc: this.state.billImgSrc,
             count: this.state.peopleCnt,
             partyDate,
@@ -734,7 +737,6 @@ export default class NewPayment extends React.Component<Props> {
                     />
                     {this.state.chosenList.length > 0
                       ? this.state.chosenList.map((person, i) => {
-                          console.log('///////////map///////////', person);
                           return (
                             <ChosenFriendListItem
                               modifyButtonText={this.state.modifyButtonText}

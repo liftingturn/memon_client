@@ -9,7 +9,7 @@ const SplitPayment = props => {
       <Label style={{ ...screenStyles.inputItemLabel, fontWeight: '600' }}>
         1 / N
       </Label>
-      <View style={{ flex: 2.2 }}>
+      <View style={{ flex: 4 }}>
         <Item>
           <Input
             style={{ paddingLeft: 15, fontSize: 16, flex: 1 }}
