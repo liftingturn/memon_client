@@ -123,7 +123,7 @@ class LoginScreen extends React.Component<State> {
             adjustsFontSizeToFit
             style={{
               backgroundColor: 'transparent',
-              fontSize: 20,
+              fontSize: 15,
               fontStyle: 'italic',
               fontWeight: '300',
               color: '#fff'
