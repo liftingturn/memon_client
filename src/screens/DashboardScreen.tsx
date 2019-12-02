@@ -11,8 +11,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { NetCard, DrawerHeader, ButtonBasic } from '../components';
 import config from './../../config';
 import firebase from 'firebase';
-import { screenStyles, styles_Toast } from '../screenStyles';
-
+import { screenStyles, styles_Toast, styles_Dashboard } from '../screenStyles';
 import {
   Container,
   Content,
@@ -36,6 +35,7 @@ interface State {
   avatar: string;
   goBack: number;
   showToast: boolean;
+  fontsLoaded: boolean;
 }
 export default class DashboardScreen extends Component<Props, State> {
   state: State = {
@@ -116,21 +116,29 @@ export default class DashboardScreen extends Component<Props, State> {
             />
           }
         >
-          <LinearGradient style={{ flex: 1 }} colors={['#e2b3ff', '#937ee0']}>
+          <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
             <Container style={screenStyles.container}>
               <DrawerHeader title="Memon" toggleDrawer={this.toggleDrawer} />
               <Card
                 style={{
+                  marginTop: 100,
+                  borderRadius: 15,
                   width: this.deviceWidth * 0.8,
                   marginLeft: this.deviceWidth * 0.1
                 }}
               >
-                <CardItem>
-                  <Thumbnail source={{ uri: this.state.avatar }} />
-                  <Body>
-                    <Text style={{ marginLeft: 20 }}>
-                      {this.state.name}님,{'\n'}안녕하세요.{'\n'}오늘도 슬기로운
-                      수금생활 되세요!
+                <CardItem style={{ borderRadius: 15 }}>
+                  <Thumbnail
+                    square
+                    source={{ uri: this.state.avatar }}
+                    style={styles_Dashboard.thumnail}
+                  />
+                  <Body style={{ marginVertical: 15 }}>
+                    <Text style={styles_Dashboard.userName}>
+                      {this.state.name}님,
+                    </Text>
+                    <Text style={styles_Dashboard.greetingBody}>
+                      오늘 하루도 {'\n'}보람찬 수금을 응원합니다!
                     </Text>
                   </Body>
                 </CardItem>
@@ -140,7 +148,7 @@ export default class DashboardScreen extends Component<Props, State> {
                 scrollEnabled={false}
               >
                 <NetCard
-                  header={'현재 미완료 금액 총계'}
+                  header={'■ 정산이 끝나지 않았어요!'}
                   get={this.state.moneyToGet}
                   pay={this.state.moneyToPay}
                 />
@@ -159,10 +167,8 @@ export default class DashboardScreen extends Component<Props, State> {
 
   styles = StyleSheet.create({
     container: {
-      // marginTop: 23,
       flex: 1,
       backgroundColor: '#fff',
-      // alignItems: 'center',
       justifyContent: 'center'
     },
     topCon: {

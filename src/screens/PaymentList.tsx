@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { DrawerHeader } from '../components';
-import { screenStyles } from '../screenStyles';
+import { screenStyles, styles_PaymentList } from '../screenStyles';
 import {
   Container,
   Content,
@@ -98,6 +98,10 @@ export default class PaymentList extends React.Component<Props, State> {
     this.setState({ refreshing: false });
   };
 
+  dateFormat = date => {
+    return date.substring(5, 7) + ' / ' + date.substring(8);
+  };
+
   render() {
     return (
       <ScrollView
@@ -111,48 +115,58 @@ export default class PaymentList extends React.Component<Props, State> {
       >
         <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
           <Container style={screenStyles.container}>
-            <DrawerHeader
-              title="결제목록 리스트"
-              toggleDrawer={this.toggleDrawer}
-            />
+            <DrawerHeader title="거래 목록" toggleDrawer={this.toggleDrawer} />
 
             <Content>
-              <Text>보라색:수금필요 노란색:입금필요</Text>
-              <List>
+              <List
+                style={{
+                  backgroundColor: 'transparent',
+                  marginLeft: 0,
+                  marginRight: 12,
+                  paddingHorizontal: 10,
+                  marginTop: 10
+                }}
+              >
                 {this.state.paymentList.map((payment, i) => {
+                  const price = payment.price
+                    .toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                  const ItemStyle = payment.transCompleted
+                    ? this.styles.completed
+                    : payment.boss
+                    ? this.styles.bossItem
+                    : this.styles.partItem;
+                  const statusTxt = payment.transCompleted
+                    ? payment.boss
+                      ? '받은 돈'
+                      : '준 돈'
+                    : payment.boss
+                    ? '받을 돈'
+                    : '줄 돈';
                   return (
                     //결제 종류별로 색 구분할거임. 그리고 key나 기타로 바로 개별view들어갈 때 해당 키 날릴거.
-                    <ListItem
-                      style={
-                        payment.transCompleted
-                          ? this.styles.completed
-                          : payment.boss
-                          ? this.styles.bossItem
-                          : this.styles.partItem
-                      }
-                      key={i}
-                    >
-                      <Left style={screenStyles.justifyC}>
-                        <Label
-                          style={
-                            (screenStyles.inputLabel, screenStyles.blacktext)
-                          }
-                        >
-                          {payment.title + '  '}
-                        </Label>
-                        <Text style={screenStyles.inputTxt}>
-                          {payment.transCompleted
-                            ? '완료된 거래'
-                            : `총 ${payment.price} 원`}
-                          {`\n ${payment.partyDate}`}
+                    <ListItem style={ItemStyle} key={i}>
+                      <Label
+                        style={{
+                          ...styles_PaymentList.label,
+                          color: '#736e72'
+                        }}
+                      >
+                        <Text style={styles_PaymentList.statusTxt}>
+                          {statusTxt}
                         </Text>
-                      </Left>
+                        <Text>
+                          {'\n'}
+                          {payment.title}
+                        </Text>
+                      </Label>
+                      <Text style={styles_PaymentList.infoTxt}>
+                        {`${price} 원`}
+                        {`\n${payment.partyDate}`}
+                      </Text>
                       <Right>
-                        <Text>{payment.transCompleted}</Text>
                         <Button
                           rounded
-                          primary
-                          //danger
                           style={this.styles.button}
                           onPress={() => {
                             this.pressEvent(
@@ -162,7 +176,10 @@ export default class PaymentList extends React.Component<Props, State> {
                             );
                           }}
                         >
-                          <Icon name="arrow-forward" />
+                          <Icon
+                            name="arrow-forward"
+                            style={{ color: '#907be0' }}
+                          />
                         </Button>
                       </Right>
                     </ListItem>
@@ -179,17 +196,18 @@ export default class PaymentList extends React.Component<Props, State> {
     container: {
       marginTop: 24,
       flex: 1,
-      backgroundColor: '#fff',
+      backgroundColor: 'transparent',
       // alignItems: 'center',
       justifyContent: 'center'
     },
     button: {
-      width: 100,
-      justifyContent: 'center'
+      width: 50,
+      justifyContent: 'center',
+      backgroundColor: '#f6f5fc'
     },
-    bossItem: { backgroundColor: '#9c88ff' },
-    partItem: { backgroundColor: '#fbc531' },
-    completed: { backgroundColor: '#dbdbdb' },
+    bossItem: { backgroundColor: '#e2b3ff', marginBottom: 5, borderRadius: 5 },
+    partItem: { backgroundColor: '#fbc531', marginBottom: 5, borderRadius: 5 },
+    completed: { backgroundColor: '#dbdbdb', marginBottom: 5, borderRadius: 5 },
     scrollView: {
       flex: 1,
       backgroundColor: 'pink'

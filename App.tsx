@@ -6,11 +6,23 @@ import LoadingScreen from './src/screens/LoadingScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import DrawerNav from './src/navigation/DrawerNav';
 import PhoneInputScreen from './src/screens/PhoneInputScreen';
+import * as Font from 'expo-font';
 import * as firebase from 'firebase';
 import firebaseConfig from './config';
 firebase.initializeApp(firebaseConfig);
 
 export default class App extends React.Component {
+  state: {
+    fontsLoaded: false;
+  };
+  async componentDidMount() {
+    await Font.loadAsync({
+      BMHANNAAir: require('./assets/Fonts/BMDOHYEON_ttf.ttf'),
+      Godo: require('./assets/Fonts/GodoM.ttf')
+    });
+    this.setState({ ...this.state, fontsLoaded: true });
+  }
+
   render() {
     return <AppNavigator />;
   }

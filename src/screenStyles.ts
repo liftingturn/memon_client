@@ -1,19 +1,26 @@
 import { StyleSheet } from 'react-native';
 
 const screenStyles = StyleSheet.create({
-  inputLabel: {
+  inputItemLabel: {
     color: 'grey',
     fontWeight: '300',
     fontSize: 15,
+    fontFamily: 'Godo',
     borderRightColor: '#c2c2c4',
     borderRightWidth: 1,
     flex: 1
+  },
+  inputItemBody: {
+    paddingLeft: 15,
+    fontSize: 16,
+    color: '#3b3b3b'
   },
   inputTxt: {
     flex: 2.2,
     paddingLeft: 14,
     fontSize: 16,
-    color: '#3b3b3b'
+    color: '#3b3b3b',
+    fontFamily: 'Godo'
   },
   container: {
     marginTop: 23,
@@ -31,7 +38,8 @@ const screenStyles = StyleSheet.create({
   headerBodyText: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#f6f6f6'
+    color: '#f6f6f6',
+    fontFamily: 'Godo'
   },
   iconBtn: {
     backgroundColor: 'transparent',
@@ -88,4 +96,85 @@ const styles_Toast = {
   }
 };
 
-export { screenStyles, styles_newPayment, styles_Toast };
+const styles_PaymentList = StyleSheet.create({
+  label: {
+    fontSize: 15,
+    borderRightColor: '#c2c2c4',
+    borderRightWidth: 1,
+    flex: 1,
+    textAlign: 'center',
+    fontFamily: 'BMHANNAAir'
+  },
+  statusTxt: {
+    fontSize: 12,
+    color: 'black',
+    marginBottom: 5
+  },
+  infoTxt: {
+    fontSize: 16,
+    color: '#3b3b3b',
+    fontFamily: 'Godo',
+    flex: 1,
+    paddingLeft: 15
+  }
+});
+
+const styles_NetCard = {
+  elementItem: {
+    flex: 1,
+    elevation: 1,
+    margin: 5,
+    marginLeft: 7,
+    padding: 5,
+    borderRadius: 5
+  },
+  elementLabel: {
+    fontFamily: 'Godo',
+    fontSize: 15,
+    color: 'grey',
+    flex: 1.5,
+    borderRightWidth: 2,
+    borderRightColor: '#907ee0',
+    textAlign: 'center'
+  },
+  elementMoney: {
+    fontFamily: 'Godo',
+    flex: 2.5,
+    fontSize: 17,
+    color: '#252625',
+    textAlign: 'center'
+  }
+};
+const styles_Dashboard = StyleSheet.create({
+  thumnail: {
+    borderRadius: 20,
+    marginHorizontal: 10,
+    borderColor: '#eff0eb',
+    borderWidth: 2
+  },
+  userName: {
+    marginLeft: 20,
+    fontSize: 17,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    backgroundColor: '#fbfafc',
+    color: '#252625',
+    fontFamily: 'Godo'
+  },
+  greetingBody: {
+    marginLeft: 20,
+    marginRight: 0,
+    fontFamily: 'BMHANNAAir',
+    fontSize: 14,
+    color: 'grey'
+  }
+});
+
+export {
+  styles_Dashboard,
+  styles_NetCard,
+  styles_PaymentList,
+  screenStyles,
+  styles_newPayment,
+  styles_Toast
+};

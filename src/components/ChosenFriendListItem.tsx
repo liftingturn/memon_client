@@ -9,7 +9,7 @@ const ChosenFriendListItem = props => {
   let status, statusColor, buttonMSG, askBgc, body, confirmDisable;
 
   if (!props.name) {
-    status = props.person.isPayed ? '완료' : '대기'; //props
+    status = props.person.isPayed ? '완납' : '미납'; //props
     statusColor = status === '완료' ? '#bba8e0' : '#c2c2c4';
     buttonMSG = props.askConfirm || props.person.isPayed ? '완료' : '입금확인';
     confirmDisable = props.person.isPayed ? true : false;
@@ -62,12 +62,13 @@ const ChosenFriendListItem = props => {
 
   const { modifyButtonText } = props;
   //화면모드
+  console.log(modifyButtonText);
   let mode =
-    modifyButtonText === '수정' || '거래 종료' || '확인'
-      ? 'view'
+    modifyButtonText === '변경사항저장' //'수정' || '거래 종료' || '확인'
+      ? 'modify'
       : modifyButtonText === '등록' || !modifyButtonText
       ? 'new'
-      : 'modify';
+      : 'view';
 
   console.log('mode', mode);
   const handleCheckPay = () => {

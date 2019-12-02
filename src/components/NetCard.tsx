@@ -25,18 +25,18 @@ export default class NetCard extends Component<Props> {
           <Col
             style={{
               backgroundColor: 'transparent',
-              height: 200,
+              height: 300,
               paddingHorizontal: 30,
-              paddingTop: 50
+              paddingTop: 30
             }}
           >
             <Content>
               <Card
                 style={{
                   margin: 30,
-                  borderRadius: 5,
+                  borderRadius: 7,
                   elevation: 5,
-                  backgroundColor: '#f5effb'
+                  backgroundColor: '#fbfafc'
                 }}
               >
                 <CardItem
@@ -49,7 +49,15 @@ export default class NetCard extends Component<Props> {
                   }}
                 >
                   <Text
-                    style={{ fontSize: 20, color: 'grey', textAlign: 'left' }}
+                    style={{
+                      fontSize: 17,
+                      color: '#8570b5',
+                      textAlign: 'left',
+                      marginBottom: 10,
+                      fontFamily: 'Godo',
+                      marginLeft: 10,
+                      marginTop: 20
+                    }}
                   >
                     {this.props.header ? this.props.header : ''}
                   </Text>
