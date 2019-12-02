@@ -127,7 +127,7 @@ export default class DashboardScreen extends Component<Props, State> {
                   marginLeft: this.deviceWidth * 0.1
                 }}
               >
-                <CardItem style={{ borderRadius: 15 }}>
+                <CardItem style={styles_Dashboard.userCardItem}>
                   <Thumbnail
                     square
                     source={{ uri: this.state.avatar }}
