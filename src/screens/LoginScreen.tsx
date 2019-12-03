@@ -134,7 +134,7 @@ class LoginScreen extends React.Component<State> {
           )}
         </View>
         <Footer
-          style={{ justifyContent: 'center', backgroundColor: 'transParent' }}
+          style={{ justifyContent: 'center', backgroundColor: 'transparent' }}
         >
           <Text style={{ color: '#fff', fontSize: 15, fontWeight: '400' }}>
             @ Don Juan 2019

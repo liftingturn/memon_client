@@ -1,11 +1,38 @@
 import { StyleSheet } from 'react-native';
+import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
+
+const styles_LoadingScreen = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  sub: {
+    backgroundColor: 'transparent',
+    fontWeight: '300',
+    color: '#fff',
+    fontSize: RFPercentage(3)
+  },
+  main: {
+    backgroundColor: 'transparent',
+    fontWeight: '500',
+    color: '#fff',
+    fontSize: RFPercentage(8)
+  },
+  footer: { justifyContent: 'center', backgroundColor: 'transparent' },
+  footerTxt: { color: '#fff', fontSize: 15, fontWeight: '400' }
+});
 
 const screenStyles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+    backgroundColor: 'pink'
+  },
   inputItemLabel: {
     color: 'grey',
     fontWeight: '300',
     fontSize: 15,
-    fontFamily: 'Godo',
+    fontFamily: 'NotoSans_regular',
     borderRightColor: '#c2c2c4',
     borderRightWidth: 1,
     flex: 1,
@@ -21,7 +48,7 @@ const screenStyles = StyleSheet.create({
     paddingLeft: 14,
     fontSize: 16,
     color: '#3b3b3b',
-    fontFamily: 'Godo'
+    fontFamily: 'NotoSans_regular'
   },
   container: {
     marginTop: 23,
@@ -40,7 +67,7 @@ const screenStyles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
     color: '#f6f6f6',
-    fontFamily: 'GodoB'
+    fontFamily: 'NotoSans_regular'
   },
   iconBtn: {
     backgroundColor: 'transparent',
@@ -80,7 +107,7 @@ const styles_newPayment = StyleSheet.create({
   },
   dunningBtnTxt: {
     color: 'black',
-    fontFamily: 'Godo',
+    fontFamily: 'NotoSans_regular',
     fontSize: 15
   },
   form: {
@@ -125,7 +152,7 @@ const styles_PaymentList = StyleSheet.create({
     borderRightWidth: 1,
     flex: 1,
     textAlign: 'center',
-    fontFamily: 'BMHANNAAir'
+    fontFamily: 'NotoSans_regular'
   },
   statusTxt: {
     fontSize: 12,
@@ -135,7 +162,7 @@ const styles_PaymentList = StyleSheet.create({
   infoTxt: {
     fontSize: 16,
     color: '#3b3b3b',
-    fontFamily: 'Godo',
+    fontFamily: 'NotoSans_regular',
     flex: 1,
     paddingLeft: 15
   }
@@ -154,7 +181,7 @@ const styles_Dashboard = StyleSheet.create({
     borderWidth: 2
   },
   userName: {
-    fontFamily: 'GodoB',
+    fontFamily: 'NotoSans_regular',
     marginLeft: 20,
     fontSize: 17,
     marginBottom: 5,
@@ -164,7 +191,7 @@ const styles_Dashboard = StyleSheet.create({
   greetingBody: {
     marginLeft: 20,
     marginRight: 0,
-    fontFamily: 'BMHANNAAir',
+    fontFamily: 'NotoSans_regular',
     fontSize: 14,
     color: 'grey'
   }
@@ -179,7 +206,7 @@ const styles_NetCard = {
     borderRadius: 5
   },
   elementLabel: {
-    fontFamily: 'Godo',
+    fontFamily: 'NotoSans_regular',
     fontSize: 15,
     color: 'grey',
     flex: 1.5,
@@ -188,7 +215,7 @@ const styles_NetCard = {
     textAlign: 'center'
   },
   elementMoney: {
-    fontFamily: 'Godo',
+    fontFamily: 'NotoSans_regular',
     flex: 2.5,
     fontSize: 17,
     color: '#252625',
@@ -242,6 +269,7 @@ const styles_SingleView = StyleSheet.create({
   item: { marginVertical: 10, paddingBottom: 10 }
 });
 export {
+  styles_LoadingScreen,
   styles_SingleView,
   styles_Dashboard,
   styles_NetCard,

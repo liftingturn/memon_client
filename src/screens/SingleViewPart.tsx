@@ -147,8 +147,7 @@ export default class SingleViewPart extends React.Component<Props, State> {
           title: user.displayName,
           pricebookId: this.state.pricebookId,
           msg: ` [${this.state.title}] 모임에 대한 입금 확인을 요청하였습니다.`,
-          target: 'boss',
-          email: this.props.navigation.state.params.email
+          target: 'boss'
         })
       };
       let response = await fetch(
@@ -190,7 +189,7 @@ export default class SingleViewPart extends React.Component<Props, State> {
         .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       return (
         <ScrollView
-          contentContainerStyle={this.styles.scrollView}
+          contentContainerStyle={screenStyles.scrollView}
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
@@ -271,9 +270,13 @@ export default class SingleViewPart extends React.Component<Props, State> {
                 <FooterTab style={{ backgroundColor: '#FFF' }}>
                   <Button onPress={this.pushRequest}>
                     {title === '지불 완료' ? (
-                      <Text style={{ fontFamily: 'Godo' }}>확인</Text>
+                      <Text style={{ fontFamily: 'NotoSans_regular' }}>
+                        확인
+                      </Text>
                     ) : this.state.pushing === false ? (
-                      <Text style={{ fontFamily: 'Godo' }}>결제 확인 요청</Text>
+                      <Text style={{ fontFamily: 'NotoSans_regular' }}>
+                        결제 확인 요청
+                      </Text>
                     ) : (
                       <Spinner color="yellow" />
                     )}
@@ -286,27 +289,4 @@ export default class SingleViewPart extends React.Component<Props, State> {
       );
     }
   }
-  styles = StyleSheet.create({
-    container: {
-      marginTop: 24,
-      flex: 1,
-      backgroundColor: '#fff'
-      // alignItems: 'center',
-      // justifyContent: 'center'
-    },
-    modal: {
-      flex: 1,
-      // alignItems: 'center',
-      backgroundColor: '#00ff00',
-      padding: 50
-    },
-    text: {
-      color: '#3f2949',
-      marginTop: 10
-    },
-    scrollView: {
-      flex: 1,
-      backgroundColor: 'pink'
-    }
-  });
 }

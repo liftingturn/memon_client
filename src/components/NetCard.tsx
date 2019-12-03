@@ -55,7 +55,7 @@ export default class NetCard extends Component<Props> {
                       color: '#8570b5',
                       textAlign: 'left',
                       marginBottom: 10,
-                      fontFamily: 'Godo',
+                      fontFamily: 'NotoSans_regular',
                       marginLeft: 10,
                       marginTop: 20
                     }}
