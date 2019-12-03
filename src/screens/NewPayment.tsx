@@ -6,6 +6,7 @@ import * as Contacts from 'expo-contacts';
 import { screenStyles, styles_newPayment, styles_Toast } from '../screenStyles';
 import firebase from 'firebase';
 import { Person, Payment } from '../types';
+import moment from 'moment';
 import {
   Form,
   Label,
@@ -334,8 +335,9 @@ export default class NewPayment extends React.Component<Props> {
   };
 
   //form handler functions
-  setDate = newDate => {
-    this.setState({ ...this.state, chosenDate: newDate });
+  setDate = async newDate => {
+    alert(newDate);
+    await this.setState({ ...this.state, chosenDate: newDate });
   };
 
   onChangeTotalPay = async e => {
@@ -471,7 +473,7 @@ export default class NewPayment extends React.Component<Props> {
   };
 
   handleSubmit = async () => {
-    const { chosenDate, chosenList, title, totalPay } = this.state;
+    const { chosenDate, chosenList, title, totalPay, peopleCnt } = this.state;
     const ready = chosenDate && title && totalPay ? true : false;
     if (ready) {
       console.log('===서브밋준비====', {
@@ -490,38 +492,27 @@ export default class NewPayment extends React.Component<Props> {
       } else {
         const newPaymentAPI = config.serverAddress + '/payment';
         const user = await firebase.auth().currentUser;
-        //         const chosenDate = new Date(this.state.chosenDate);
-        const partyDate =
-          this.state.chosenDate.getFullYear() +
-          '-' +
-          this.state.chosenDate.getMonth() +
-          '-' +
-          this.state.chosenDate.getDate();
-        //         const partyDate =
-        //       chosenDate.getFullYear() +
-        //       '-' +
-        //       chosenDate.getMonth() +
-        //       '-' +
-        //       chosenDate.getDate();
         const singlePay =
           parseInt(this.state.singlePay.replace(/[^0-9]/g, '')) *
           this.state.peopleCnt;
         const totalPay = parseInt(this.state.totalPay.replace(/[^0-9]/g, ''));
         console.log('fixedSinglePay!!!!!!!!', singlePay);
-        console.log('peopleCnt!!!!!!!!', this.state.peopleCnt);
+        console.log('peopleCnt!!!!!!!!', peopleCnt);
 
         let payment: Payment = {
           priceBook: {
             totalPrice: totalPay,
             billImgSrc: this.state.billImgSrc,
-            count: this.state.peopleCnt,
-            partyDate,
-            title: this.state.title,
+            count: peopleCnt,
+            partyDate: moment(chosenDate)
+              .format()
+              .slice(0, 10),
+            title: title,
             transCompleted: false,
             fixedTotalPrice: singlePay
           },
           email: user.email,
-          participant: this.state.chosenList
+          participant: chosenList
         };
         console.log('sumitted!', payment);
 
