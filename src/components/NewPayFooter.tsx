@@ -9,7 +9,6 @@ const NewPayFooter = props => {
         <ButtonModify
           label={props.label}
           onPress={props.onPress}
-          goBack={props.goBack}
           handleConfirm={props.handleConfirm}
         />
       </FooterTab>

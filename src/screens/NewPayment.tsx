@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, BackHandler, RefreshControl, ScrollView } from 'react-native';
+import { View, BackHandler, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
@@ -201,6 +201,14 @@ export default class NewPayment extends React.Component<Props> {
       await this.setState({ ...this.state, friendList: userFilterdList });
     }
   };
+
+  setReadyToClose = () => {
+    this.setState({
+      ...this.state,
+      readyComplete: true,
+      modifyButtonText: '거래 종료'
+    });
+  };
   doFetch = async () => {
     let emailObj = {
       method: 'POST',
@@ -238,8 +246,8 @@ export default class NewPayment extends React.Component<Props> {
       chosenList: chosenList
     });
     const chosenState = this.state.chosenList;
-    console.log('afterFetch', chosenState);
-    let payedCnt = 0;
+    console.log('afterFetch', this.state);
+    let payedCnt = 1;
     for (let i = 0; i < chosenState.length; i++) {
       if (chosenState[i].isPayed) {
         payedCnt++;
@@ -248,11 +256,7 @@ export default class NewPayment extends React.Component<Props> {
     console.log('transCompleted#########', this.state.transCompleted);
     if (payedCnt === responseJson.pricebook.count) {
       if (!this.state.transCompleted) {
-        this.setState({
-          ...this.state,
-          readyComplete: true,
-          modifyButtonText: '거래 종료'
-        });
+        await this.setReadyToClose();
         console.log('readyComplete#########', this.state.readyComplete);
       }
     }
@@ -269,7 +273,11 @@ export default class NewPayment extends React.Component<Props> {
   //backHandler
   goBack = () => {
     console.log(this.props.navigation);
-    if (this.props.navigation.state.params) {
+    const isView = Boolean(
+      this.props.navigation.state.params &&
+        this.props.navigation.state.params.fromListView
+    );
+    if (isView) {
       console.log("goBack it's view");
       this.handleGoback('view');
     } else {
@@ -280,9 +288,31 @@ export default class NewPayment extends React.Component<Props> {
 
   handleGoback = from => {
     if (from === 'view') {
-      this.props.navigation.navigate('PaymentList');
+      console.log("Handle goBack it's view");
+      console.log(this.state.modifyButtonText);
+      if (this.state.modifyButtonText === '변경사항저장') {
+        Alert.alert('Alert', '수정을 취소합니다.', [
+          {
+            text: '확인',
+            onPress: () => {
+              this.props.navigation.state.params.fromListView = false;
+              this.props.navigation.navigate('결제목록');
+              return;
+            }
+          },
+          {
+            text: '취소',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel'
+          }
+        ]);
+      } else {
+        console.log('조회 후 퇴장');
+        this.props.navigation.navigate('결제목록');
+        this.props.navigation.state.params.fromListView = false;
+      }
     } else if (from === 'new') {
-      console.log('뒤로가기 클릭함, 현재 goBack: ', this.state.goBack);
+      console.log("Handle goBack it's new");
       if (this.state.goBack === 0) {
         Toast.show({
           text: '저장이 되지 않았어요!\n한 번 더 누르면 홈으로 갑니다.',
@@ -292,6 +322,7 @@ export default class NewPayment extends React.Component<Props> {
         });
         this.setState({ goBack: ++this.state.goBack });
       } else {
+        this.setState({ goBack: 0 });
         this.props.navigation.navigate('홈');
       }
     }
@@ -326,40 +357,26 @@ export default class NewPayment extends React.Component<Props> {
     console.log('////////////// * calcN * //////////////');
     console.log('state pay', this.state.totalPay);
     if (!this.state.totalPay) {
-      this.setState({ ...this.state, singlePay: '총금액을 입력해주세요.' });
+      this.setState({ ...this.state, singlePay: '' });
     } else {
       console.log('calcN!!!');
 
       const smallest = 100;
-      const MoneyForOne = parseInt(this.state.totalPay) / this.state.peopleCnt;
+      const totalPay = this.state.totalPay.toString().replace(/[^0-9]/g, '');
+      const MoneyForOne = parseInt(totalPay) / this.state.peopleCnt;
       let change: any = Math.floor(MoneyForOne / smallest) * smallest;
       this.remainder = String(Math.round(MoneyForOne - change));
       console.log('*******change: ', change);
       console.log('*******remainder: ', this.remainder);
 
       //print format
-      const strChange = String(change);
-      let formatStr = '';
-      if (strChange.length > 3) {
-        let maxComma =
-          strChange.length % 3 === 0
-            ? Math.floor(strChange.length / 3) - 1
-            : Math.floor(strChange.length / 3);
-
-        let last = strChange.length + 1;
-
-        for (let i = maxComma; i > 0; i--) {
-          formatStr = strChange.substring(last - 4, last) + ',' + formatStr;
-          last = last - 4;
-        }
-        formatStr =
-          '₩' +
-          strChange.substring(0, last) +
-          ',' +
-          formatStr.substring(0, formatStr.length - 1);
-        console.log('formatStr', formatStr);
-      }
-      await this.setState({ ...this.state, singlePay: formatStr });
+      let formatStr =
+        '₩ ' + change.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      await this.setState({
+        ...this.state,
+        singlePay: formatStr,
+        totalPay: totalPay.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      });
       console.log('singlePay', this.state.singlePay);
     }
   };
@@ -418,6 +435,7 @@ export default class NewPayment extends React.Component<Props> {
   toModifyMode = async () => {
     console.log('=====수정모드변경===');
     console.log(`====현재 수정 버튼 : ${this.state.modifyButtonText}=====`);
+    console.log('====네비 파라미터======== : ', this.props.navigation);
 
     if (this.state.modifyButtonText === '수정') {
       this.setState({
@@ -427,7 +445,7 @@ export default class NewPayment extends React.Component<Props> {
       });
       Toast.show({
         text: '입금상태를 수정합니다.\n완료 후 저장을 꼭 눌러주세요!',
-        duration: 1000,
+        duration: 2000,
         style: styles_Toast.container
       });
     } else if (this.state.modifyButtonText === '등록') {
@@ -441,7 +459,7 @@ export default class NewPayment extends React.Component<Props> {
       this.onRefresh();
       Toast.show({
         text: '변경사항을 저장하였습니다.',
-        duration: 1000,
+        duration: 2000,
         style: styles_Toast.container
       });
     } else if (this.state.modifyButtonText === '거래 종료') {
@@ -472,28 +490,29 @@ export default class NewPayment extends React.Component<Props> {
       } else {
         const newPaymentAPI = config.serverAddress + '/payment';
         const user = await firebase.auth().currentUser;
-//         const chosenDate = new Date(this.state.chosenDate);
+        //         const chosenDate = new Date(this.state.chosenDate);
         const partyDate =
           this.state.chosenDate.getFullYear() +
           '-' +
           this.state.chosenDate.getMonth() +
           '-' +
           this.state.chosenDate.getDate();
-//         const partyDate =
-//       chosenDate.getFullYear() +
-//       '-' +
-//       chosenDate.getMonth() +
-//       '-' +
-//       chosenDate.getDate();
+        //         const partyDate =
+        //       chosenDate.getFullYear() +
+        //       '-' +
+        //       chosenDate.getMonth() +
+        //       '-' +
+        //       chosenDate.getDate();
         const singlePay =
           parseInt(this.state.singlePay.replace(/[^0-9]/g, '')) *
           this.state.peopleCnt;
+        const totalPay = parseInt(this.state.totalPay.replace(/[^0-9]/g, ''));
         console.log('fixedSinglePay!!!!!!!!', singlePay);
         console.log('peopleCnt!!!!!!!!', this.state.peopleCnt);
 
         let payment: Payment = {
           priceBook: {
-            totalPrice: Number(this.state.totalPay),
+            totalPrice: totalPay,
             billImgSrc: this.state.billImgSrc,
             count: this.state.peopleCnt,
             partyDate,
@@ -521,7 +540,7 @@ export default class NewPayment extends React.Component<Props> {
           console.log('등록성공');
           await Toast.show({
             text: '새 거래를 등록했습니다.',
-            duration: 1000,
+            duration: 2000,
             style: styles_Toast.container
           });
           await this.setState({
@@ -549,7 +568,6 @@ export default class NewPayment extends React.Component<Props> {
         textStyle: styles_Toast.txt
       });
     }
-
   };
 
   handleConfirmModified = async () => {
@@ -719,7 +737,6 @@ export default class NewPayment extends React.Component<Props> {
                     />
                     {this.state.chosenList.length > 0
                       ? this.state.chosenList.map((person, i) => {
-                          console.log('///////////map///////////', person);
                           return (
                             <ChosenFriendListItem
                               modifyButtonText={this.state.modifyButtonText}
@@ -751,6 +768,7 @@ export default class NewPayment extends React.Component<Props> {
               onPress={this.toModifyMode}
               goBack={this.handleGoback}
               handleConfirm={this.handleConfirmModified}
+              navigation={this.props.navigation}
             />
           </Container>
         </LinearGradient>

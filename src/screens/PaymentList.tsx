@@ -65,13 +65,18 @@ export default class PaymentList extends React.Component<Props, State> {
       });
     }
   };
+
+  goBack = () => {
+    this.props.navigation.navigate('홈');
+    return;
+  };
   componentDidMount() {
-    BackHandler.addEventListener('hardwareBackPress', () => {
-      this.props.navigation.navigate('홈');
-    });
+    BackHandler.addEventListener('hardwareBackPress', this.goBack);
     this.getOwnPayments();
   }
-
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.goBack);
+  }
   async getOwnPayments() {
     const user = await firebase.auth().currentUser;
     console.log('==============user:', user.email);
@@ -127,7 +132,7 @@ export default class PaymentList extends React.Component<Props, State> {
                 }}
               >
                 {this.state.paymentList.map((payment, i) => {
-                  console.log(payment);
+                  // console.log(payment);
                   const price = payment.price
                     .toString()
                     .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -145,7 +150,7 @@ export default class PaymentList extends React.Component<Props, State> {
                     : payment.boss
                     ? '♦️ 받을 돈'
                     : payment.isPayed
-                    ? '◼️ 준 돈'
+                    ? '✔️ 지불완료'
                     : '♦️ 줄 돈';
                   return (
                     //결제 종류별로 색 구분할거임. 그리고 key나 기타로 바로 개별view들어갈 때 해당 키 날릴거.
