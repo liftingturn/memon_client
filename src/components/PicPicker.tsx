@@ -11,7 +11,7 @@ export interface State {
 }
 export interface Props {
   disabled: boolean;
-  handlePicker?: Promise<void>;
+  handlePicker?: any;
   uri?: any;
 }
 

@@ -143,6 +143,7 @@ export default class SingleViewPart extends React.Component<Props, State> {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
+          email: user.email,
           title: user.displayName,
           pricebookId: this.state.pricebookId,
           msg: ` [${this.state.title}] 모임에 대한 입금 확인을 요청하였습니다.`,
