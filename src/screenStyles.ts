@@ -8,7 +8,8 @@ const screenStyles = StyleSheet.create({
     fontFamily: 'Godo',
     borderRightColor: '#c2c2c4',
     borderRightWidth: 1,
-    flex: 1
+    flex: 1,
+    textAlign: 'center'
   },
   inputItemBody: {
     paddingLeft: 15,
@@ -63,6 +64,25 @@ const styles_newPayment = StyleSheet.create({
     flex: 1,
     backgroundColor: 'transparent'
   },
+  dunningBtnItem: {
+    paddingRight: 40,
+    paddingBottom: 10,
+    borderBottomWidth: 0,
+    borderBottomColor: 'transparent',
+    backgroundColor: 'transparent'
+  },
+  dunningBtn: {
+    paddingHorizontal: 10,
+    paddingBottom: 10,
+    backgroundColor: 'transparent',
+    borderColor: '#eff0eb',
+    borderWidth: 3
+  },
+  dunningBtnTxt: {
+    color: 'black',
+    fontFamily: 'Godo',
+    fontSize: 15
+  },
   form: {
     width: 350,
     backgroundColor: '#f5effb',
@@ -89,7 +109,7 @@ const styles_Toast = {
   container: {
     height: 50,
     margin: 3,
-    marginBottom: 3,
+    marginBottom: 50,
     borderRadius: 10,
     paddingHorizontal: 10
   },

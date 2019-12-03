@@ -51,6 +51,7 @@ export default class PaymentList extends React.Component<Props, State> {
     console.log(this, 'click!');
     if (payment.boss) {
       console.log('go boss!');
+      console.log(payment);
       this.props.navigation.navigate('결제생성', {
         fromListView: true,
         email: this.state.email,
@@ -73,6 +74,9 @@ export default class PaymentList extends React.Component<Props, State> {
     return;
   };
   componentDidMount() {
+    if (this.props.navigation.state.params) {
+      this.props.navigation.state.params.fromListView = false;
+    }
     BackHandler.addEventListener('hardwareBackPress', this.goBack);
     this.getOwnPayments();
   }
@@ -111,6 +115,7 @@ export default class PaymentList extends React.Component<Props, State> {
 
   render() {
     return (
+
       <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
         <Container style={screenStyles.container}>
           <DrawerHeader title="거래 목록" toggleDrawer={this.toggleDrawer} />

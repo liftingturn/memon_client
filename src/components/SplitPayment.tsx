@@ -4,6 +4,7 @@ import { Item, Label, Input, Right, Button } from 'native-base';
 import { screenStyles } from '../screenStyles';
 
 const SplitPayment = props => {
+  console.log('스플릿==============', props.remainder);
   return (
     <Item fixedLabel>
       <Label style={{ ...screenStyles.inputItemLabel, fontWeight: '600' }}>
@@ -18,7 +19,7 @@ const SplitPayment = props => {
             placeholderTextColor="#907ee0"
             disabled={true}
           />
-          {props.remainder ? (
+          {props.remainder && props.remainder !== '0' ? (
             <Right style={{ flex: 1 }}>
               <Button
                 style={{

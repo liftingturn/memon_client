@@ -147,14 +147,15 @@ export default class SingleViewPart extends React.Component<Props, State> {
           title: user.displayName,
           pricebookId: this.state.pricebookId,
           msg: ` [${this.state.title}] 모임에 대한 입금 확인을 요청하였습니다.`,
-          target: 'boss'
+          target: 'boss',
+          email: this.props.navigation.state.params.email
         })
       };
       let response = await fetch(
         config.serverAddress + '/users/pushtoken',
         emailObj
       );
-      console.log('response.status', response.status);
+      console.log('response.status', response);
       if (response.status === 200) {
         alert('메세지 전송 성공!');
         this.setState({ ...this.state, pushing: false });
