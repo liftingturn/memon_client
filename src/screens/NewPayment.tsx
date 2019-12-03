@@ -116,7 +116,6 @@ export default class NewPayment extends React.Component<Props> {
 
     //스크린 모드 식별
     const { navigation } = this.props;
-    // console.log('this.props.navigation', navigation.state.params);
 
     if (!navigation.state.params) {
       console.log('새 글 등록, state.disabled:', this.state.disabled);
@@ -267,7 +266,7 @@ export default class NewPayment extends React.Component<Props> {
   onRefresh = async () => {
     console.log('refresh!');
     this.setState({ refreshing: true });
-    await this.doFetch();
+    await this.doFetch(); //목적은? 그냥 구성이면 변경저장에서 할필요가없네
     // memo: 수정후 새로고침인 경우 이름 빈 문자열로 초기화시키지 않도록 분기해야함
     this.setState({ refreshing: false });
   };
@@ -447,7 +446,7 @@ export default class NewPayment extends React.Component<Props> {
       });
       Toast.show({
         text: '입금상태를 수정합니다.\n완료 후 저장을 꼭 눌러주세요!',
-        duration: 2000,
+        duration: 1500,
         style: styles_Toast.container
       });
     } else if (this.state.modifyButtonText === '등록') {
@@ -458,10 +457,10 @@ export default class NewPayment extends React.Component<Props> {
         uniqueDisable: true,
         modifyButtonText: '수정'
       });
-      this.onRefresh();
+      // this.onRefresh();
       Toast.show({
         text: '변경사항을 저장하였습니다.',
-        duration: 2000,
+        duration: 1500,
         style: styles_Toast.container
       });
     } else if (this.state.modifyButtonText === '거래 종료') {
@@ -485,7 +484,7 @@ export default class NewPayment extends React.Component<Props> {
       if (chosenList.length === 0) {
         await Toast.show({
           text: '수금할 참여자를 선택해주세요!',
-          duration: 2000,
+          duration: 1500,
           style: styles_Toast.container,
           textStyle: styles_Toast.txt
         });
@@ -531,7 +530,7 @@ export default class NewPayment extends React.Component<Props> {
           console.log('등록성공');
           await Toast.show({
             text: '새 거래를 등록했습니다.',
-            duration: 2000,
+            duration: 1500,
             style: styles_Toast.container
           });
           await this.setState({
@@ -554,7 +553,7 @@ export default class NewPayment extends React.Component<Props> {
     } else {
       Toast.show({
         text: '등록할 거래 정보를 입력해주세요.',
-        duration: 2000,
+        duration: 1500,
         style: styles_Toast.container,
         textStyle: styles_Toast.txt
       });
@@ -562,7 +561,7 @@ export default class NewPayment extends React.Component<Props> {
   };
 
   handleConfirmModified = async () => {
-    console.log('수정!!');
+    alert('수정!!');
     const askNotiAPI = config.serverAddress + '/users/pushtoken';
     const askTransRcordAPI = config.serverAddress + '/payment/ispayed';
 
