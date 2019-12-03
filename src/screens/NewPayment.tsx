@@ -335,7 +335,6 @@ export default class NewPayment extends React.Component<Props> {
 
   //form handler functions
   setDate = async newDate => {
-    alert(newDate);
     await this.setState({ ...this.state, chosenDate: newDate });
   };
 
