@@ -60,9 +60,9 @@ const ChosenFriendListItem = props => {
       </Body>
       <Right style={styles.section}>
         {props.name ? null : mode === 'new' ? ( //나 //새결제
-          <Text style={styles.status}>{status}</Text>
+          <Text style={styles.status}>{buttonMSG}</Text>
         ) : mode === 'view' ? ( //조회
-          <Text style={styles.status}>{status}</Text>
+          <Text style={styles.status}>{buttonMSG}</Text>
         ) : (
           // 수정모드
           <Button

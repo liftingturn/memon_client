@@ -6,6 +6,7 @@ import * as Contacts from 'expo-contacts';
 import { screenStyles, styles_newPayment, styles_Toast } from '../screenStyles';
 import firebase from 'firebase';
 import { Person, Payment } from '../types';
+import moment from 'moment';
 import {
   Form,
   Label,
@@ -117,7 +118,6 @@ export default class NewPayment extends React.Component<Props> {
 
     //스크린 모드 식별
     const { navigation } = this.props;
-    // console.log('this.props.navigation', navigation.state.params);
 
     if (!navigation.state.params) {
       console.log('새 글 등록, state.disabled:', this.state.disabled);
@@ -269,7 +269,7 @@ export default class NewPayment extends React.Component<Props> {
   onRefresh = async () => {
     console.log('refresh!');
     this.setState({ refreshing: true });
-    await this.doFetch();
+    await this.doFetch(); //목적은? 그냥 구성이면 변경저장에서 할필요가없네
     // memo: 수정후 새로고침인 경우 이름 빈 문자열로 초기화시키지 않도록 분기해야함
     this.setState({ refreshing: false });
   };
@@ -337,8 +337,8 @@ export default class NewPayment extends React.Component<Props> {
   };
 
   //form handler functions
-  setDate = newDate => {
-    this.setState({ ...this.state, chosenDate: newDate });
+  setDate = async newDate => {
+    await this.setState({ ...this.state, chosenDate: newDate });
   };
 
   onChangeTotalPay = async e => {
@@ -448,7 +448,7 @@ export default class NewPayment extends React.Component<Props> {
       });
       Toast.show({
         text: '입금상태를 수정합니다.\n완료 후 저장을 꼭 눌러주세요!',
-        duration: 2000,
+        duration: 1500,
         style: styles_Toast.container
       });
     } else if (this.state.modifyButtonText === '등록') {
@@ -459,10 +459,10 @@ export default class NewPayment extends React.Component<Props> {
         uniqueDisable: true,
         modifyButtonText: '수정'
       });
-      this.onRefresh();
+      // this.onRefresh();
       Toast.show({
         text: '변경사항을 저장하였습니다.',
-        duration: 2000,
+        duration: 1500,
         style: styles_Toast.container
       });
     } else if (this.state.modifyButtonText === '거래 종료') {
@@ -474,7 +474,7 @@ export default class NewPayment extends React.Component<Props> {
   };
 
   handleSubmit = async () => {
-    const { chosenDate, chosenList, title, totalPay } = this.state;
+    const { chosenDate, chosenList, title, totalPay, peopleCnt } = this.state;
     const ready = chosenDate && title && totalPay ? true : false;
     if (ready) {
       console.log('===서브밋준비====', {
@@ -486,45 +486,34 @@ export default class NewPayment extends React.Component<Props> {
       if (chosenList.length === 0) {
         await Toast.show({
           text: '수금할 참여자를 선택해주세요!',
-          duration: 2000,
+          duration: 1500,
           style: styles_Toast.container,
           textStyle: styles_Toast.txt
         });
       } else {
         const newPaymentAPI = config.serverAddress + '/payment';
         const user = await firebase.auth().currentUser;
-        //         const chosenDate = new Date(this.state.chosenDate);
-        const partyDate =
-          this.state.chosenDate.getFullYear() +
-          '-' +
-          this.state.chosenDate.getMonth() +
-          '-' +
-          this.state.chosenDate.getDate();
-        //         const partyDate =
-        //       chosenDate.getFullYear() +
-        //       '-' +
-        //       chosenDate.getMonth() +
-        //       '-' +
-        //       chosenDate.getDate();
         const singlePay =
           parseInt(this.state.singlePay.replace(/[^0-9]/g, '')) *
           this.state.peopleCnt;
         const totalPay = parseInt(this.state.totalPay.replace(/[^0-9]/g, ''));
         console.log('fixedSinglePay!!!!!!!!', singlePay);
-        console.log('peopleCnt!!!!!!!!', this.state.peopleCnt);
+        console.log('peopleCnt!!!!!!!!', peopleCnt);
 
         let payment: Payment = {
           priceBook: {
             totalPrice: totalPay,
             billImgSrc: this.state.billImgSrc,
-            count: this.state.peopleCnt,
-            partyDate,
-            title: this.state.title,
+            count: peopleCnt,
+            partyDate: moment(chosenDate)
+              .format()
+              .slice(0, 10),
+            title: title,
             transCompleted: false,
             fixedTotalPrice: singlePay
           },
           email: user.email,
-          participant: this.state.chosenList
+          participant: chosenList
         };
         console.log('sumitted!', payment);
 
@@ -543,7 +532,7 @@ export default class NewPayment extends React.Component<Props> {
           console.log('등록성공');
           await Toast.show({
             text: '새 거래를 등록했습니다.',
-            duration: 2000,
+            duration: 1500,
             style: styles_Toast.container
           });
           await this.setState({
@@ -566,7 +555,7 @@ export default class NewPayment extends React.Component<Props> {
     } else {
       Toast.show({
         text: '등록할 거래 정보를 입력해주세요.',
-        duration: 2000,
+        duration: 1500,
         style: styles_Toast.container,
         textStyle: styles_Toast.txt
       });
@@ -574,7 +563,7 @@ export default class NewPayment extends React.Component<Props> {
   };
 
   handleConfirmModified = async () => {
-    console.log('수정!!');
+    alert('수정!!');
     const askNotiAPI = config.serverAddress + '/users/pushtoken';
     const askTransRcordAPI = config.serverAddress + '/payment/ispayed';
 
