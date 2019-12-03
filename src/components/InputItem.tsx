@@ -20,6 +20,7 @@ const InputItem: React.FC<Props> = ({
   txt
 }) => {
   const KeyType = keyT ? keyT : 'default';
+
   const price = txt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   return (
     <Item fixedLabel>
@@ -31,7 +32,7 @@ const InputItem: React.FC<Props> = ({
         keyboardType={KeyType}
         placeholder={placeholder}
         placeholderTextColor="#c2c2c4"
-        value={price}
+        value={label === '총 금액' ? price : txt}
       />
     </Item>
   );
