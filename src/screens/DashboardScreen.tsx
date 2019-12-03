@@ -60,7 +60,7 @@ export default class DashboardScreen extends Component<Props, State> {
 
     try {
       const user = await firebase.auth().currentUser;
-
+      console.log('대시보드 조회할 이메일:', user.email);
       const fetchData = await fetch(fetchAdd, {
         method: 'POST',
         headers: {
@@ -80,6 +80,7 @@ export default class DashboardScreen extends Component<Props, State> {
         name: user.displayName
       });
     } catch (error) {
+      console.log('fetch실패');
       console.error(error);
     }
   }

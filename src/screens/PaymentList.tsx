@@ -17,10 +17,12 @@ import {
   Icon,
   List,
   ListItem,
-  Label
+  Label,
+  Spinner
 } from 'native-base';
 import config from '../../config';
 import firebase from 'firebase';
+import { isAbsolute } from 'path';
 export interface Props {
   navigation: any;
 }
@@ -109,95 +111,99 @@ export default class PaymentList extends React.Component<Props, State> {
 
   render() {
     return (
-      <ScrollView
-        contentContainerStyle={this.styles.scrollView}
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.refreshing}
-            onRefresh={this.onRefresh}
-          />
-        }
-      >
-        <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
-          <Container style={screenStyles.container}>
-            <DrawerHeader title="거래 목록" toggleDrawer={this.toggleDrawer} />
-            <Content>
-              <List
-                style={{
-                  backgroundColor: 'transparent',
-                  marginLeft: 0,
-                  marginRight: 12,
-                  paddingHorizontal: 10,
-                  marginTop: 10
-                }}
-              >
-                {this.state.paymentList.map((payment, i) => {
-                  // console.log(payment);
-                  const price = payment.price
-                    .toString()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                  const ItemStyle = payment.transCompleted
-                    ? this.styles.completed
-                    : payment.boss
-                    ? this.styles.bossItem
-                    : payment.isPayed
-                    ? this.styles.completed
-                    : this.styles.partItem;
-                  const statusTxt = payment.transCompleted
-                    ? payment.boss
-                      ? '✔️ 수금완료'
-                      : '✔️ 지불완료'
-                    : payment.boss
-                    ? '♦️ 받을 돈'
-                    : payment.isPayed
-                    ? '✔️ 지불완료'
-                    : '♦️ 줄 돈';
-                  return (
-                    //결제 종류별로 색 구분할거임. 그리고 key나 기타로 바로 개별view들어갈 때 해당 키 날릴거.
-                    <ListItem style={ItemStyle} key={i}>
-                      <Label
-                        style={{
-                          ...styles_PaymentList.label,
-                          color: '#736e72'
+      <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
+        <Container style={screenStyles.container}>
+          <DrawerHeader title="거래 목록" toggleDrawer={this.toggleDrawer} />
+          {this.state.refreshing ? (
+            <Spinner
+              color="black"
+              style={{ position: 'absolute', right: 43, top: 0 }}
+            />
+          ) : (
+            <Icon
+              style={{ position: 'absolute', right: 50, top: 28 }}
+              type="FontAwesome"
+              name="refresh"
+              onPress={this.onRefresh}
+            />
+          )}
+
+          <Content>
+            <List
+              style={{
+                backgroundColor: 'transparent',
+                marginLeft: 0,
+                marginRight: 12,
+                paddingHorizontal: 10,
+                marginTop: 10
+              }}
+            >
+              {this.state.paymentList.map((payment, i) => {
+                // console.log(payment);
+                const price = payment.price
+                  .toString()
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                const ItemStyle = payment.transCompleted
+                  ? this.styles.completed
+                  : payment.boss
+                  ? this.styles.bossItem
+                  : payment.isPayed
+                  ? this.styles.completed
+                  : this.styles.partItem;
+                const statusTxt = payment.transCompleted
+                  ? payment.boss
+                    ? '✔️ 수금완료'
+                    : '✔️ 지불완료'
+                  : payment.boss
+                  ? '♦️ 받을 돈'
+                  : payment.isPayed
+                  ? '✔️ 지불완료'
+                  : '♦️ 줄 돈';
+                return (
+                  //결제 종류별로 색 구분할거임. 그리고 key나 기타로 바로 개별view들어갈 때 해당 키 날릴거.
+                  <ListItem style={ItemStyle} key={i}>
+                    <Label
+                      style={{
+                        ...styles_PaymentList.label,
+                        color: '#736e72'
+                      }}
+                    >
+                      <Text style={styles_PaymentList.statusTxt}>
+                        {statusTxt}
+                      </Text>
+                      <Text>
+                        {'\n'}
+                        {payment.title}
+                      </Text>
+                    </Label>
+                    <Text style={styles_PaymentList.infoTxt}>
+                      {payment.transCompleted && payment.boss
+                        ? '수금 클리어\n'
+                        : `${price} 원\n`}
+                      {payment.partyDate}
+                    </Text>
+                    <Right>
+                      <Button
+                        rounded
+                        style={this.styles.button}
+                        onPress={() => {
+                          console.log(payment);
+                          this.pressEvent(payment);
                         }}
                       >
-                        <Text style={styles_PaymentList.statusTxt}>
-                          {statusTxt}
-                        </Text>
-                        <Text>
-                          {'\n'}
-                          {payment.title}
-                        </Text>
-                      </Label>
-                      <Text style={styles_PaymentList.infoTxt}>
-                        {payment.transCompleted && payment.boss
-                          ? '수금 클리어\n'
-                          : `${price} 원\n`}
-                        {payment.partyDate}
-                      </Text>
-                      <Right>
-                        <Button
-                          rounded
-                          style={this.styles.button}
-                          onPress={() => {
-                            console.log(payment);
-                            this.pressEvent(payment);
-                          }}
-                        >
-                          <Icon
-                            name="arrow-forward"
-                            style={{ color: '#907be0' }}
-                          />
-                        </Button>
-                      </Right>
-                    </ListItem>
-                  );
-                })}
-              </List>
-            </Content>
-          </Container>
-        </LinearGradient>
-      </ScrollView>
+                        <Icon
+                          name="arrow-forward"
+                          style={{ color: '#907be0' }}
+                        />
+                      </Button>
+                    </Right>
+                  </ListItem>
+                );
+              })}
+            </List>
+          </Content>
+        </Container>
+      </LinearGradient>
     );
   }
   styles = StyleSheet.create({
