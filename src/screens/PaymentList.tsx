@@ -49,6 +49,7 @@ export default class PaymentList extends React.Component<Props, State> {
     console.log(this, 'click!');
     if (payment.boss) {
       console.log('go boss!');
+      console.log(payment);
       this.props.navigation.navigate('결제생성', {
         fromListView: true,
         email: this.state.email,

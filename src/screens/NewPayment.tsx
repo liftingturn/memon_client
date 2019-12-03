@@ -59,6 +59,7 @@ export interface State {
   showToast: boolean;
   goBack: number;
   successSubmit: boolean;
+  demandCnt: number;
 }
 
 export default class NewPayment extends React.Component<Props> {
@@ -85,7 +86,8 @@ export default class NewPayment extends React.Component<Props> {
     refreshing: false,
     showToast: false,
     goBack: 0,
-    successSubmit: false
+    successSubmit: false,
+    demandCnt: 0
   };
 
   async componentWillReceiveProps() {
@@ -243,7 +245,8 @@ export default class NewPayment extends React.Component<Props> {
       peopleCnt: responseJson.pricebook.count,
       chosenDate: responseJson.pricebook.partyDate,
       billImgSrc: responseJson.pricebook.billImgSrc,
-      chosenList: chosenList
+      chosenList: chosenList,
+      demandCnt: responseJson.pricebook.demandCnt
     });
     const chosenState = this.state.chosenList;
     console.log('afterFetch', this.state);
@@ -654,12 +657,72 @@ export default class NewPayment extends React.Component<Props> {
     }
   };
 
+  handleDunning = async () => {
+    console.log('독촉할것임', this.state);
+    if (this.state.demandCnt < 5) {
+      const user = await firebase.auth().currentUser;
+      const msg =
+        this.state.demandCnt === 0
+          ? `[${user.displayName}] 똑똑, 수금하러 왔습니다.\n"${this.state.title}", 즐거웠어요.`
+          : this.state.demandCnt === 1
+          ? `[${user.displayName}] 똑똑, 수금하러 왔습니다.\n"${this.state.title}" 최고였어.`
+          : this.state.demandCnt === 2
+          ? `[${user.displayName}] 똑똑, 수금하러 왔습니다.\n"${this.state.title}" 기억해주세요.`
+          : this.state.demandCnt === 3
+          ? `[${user.displayName}] 똑똑, 수금하러 왔습니다.\n"${this.state.title}" 잊은 거 아니죠.`
+          : `[${user.displayName}] 똑똑, 수금하러 왔습니다.\n"${this.state.title}" ... 입금 플리즈.`;
+      console.log(msg);
+      let targetStr = '';
+      for (let i = 0; i < this.state.chosenList.length; i++) {
+        if (!this.state.chosenList[i].isPayed) {
+          targetStr += this.state.chosenList[i].name;
+        }
+        if (i < this.state.chosenList.length - 1) {
+          targetStr += ', ';
+        }
+      }
+      const body = {
+        pricebookId: this.props.navigation.state.params.pricebookId,
+        title: this.state.title,
+        msg: 'msg',
+        target: 'demand'
+      };
+      try {
+        const dunning = await fetch(
+          'http://57939258.ngrok.io' + '/users/pushtoken',
+          {
+            method: 'post',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+          }
+        );
+        console.log(dunning);
+        if (dunning.status === 200) {
+          console.log('독촉성공');
+          alert(
+            `[${this.state.demandCnt +
+              1}/5] ${targetStr}에게 입금을 요청했습니다.`
+          );
+        }
+      } catch (error) {
+        console.log('=====error======', error);
+        alert(`입급 요청을 보내지 못했어요.`);
+      }
+    } else {
+      alert(`[5/5] 독촉 회수를 모두 사용했어요.`);
+    }
+  };
+
   // tslint:disable-next-line: max-func-body-length
   render() {
     console.log(
       'disabled 렌더시에 title',
       this.state.disabled,
       this.state.title,
+      this.props.fromListView,
       this.props.navigation
     );
     let { disabled, uniqueDisable, pageTitle } = this.state;
@@ -675,12 +738,18 @@ export default class NewPayment extends React.Component<Props> {
               }}
             >
               <View style={{ alignItems: 'center', marginBottom: 15 }}>
-                {this.props.fromListView ? (
-                  <Item style={styles_newPayment.threatenBtnItem}>
+                {this.props.navigation.state.params &&
+                this.props.navigation.state.params.fromListView ? (
+                  <Item style={styles_newPayment.dunningBtnItem}>
                     <Right>
-                      <Button style={styles_newPayment.threatenBtn}>
-                        <Text style={styles_newPayment.threatenBtnTxt}>
-                          🔔 미납자 독촉하기
+                      <Button
+                        onPress={this.handleDunning}
+                        style={styles_newPayment.dunningBtn}
+                        disabled={this.state.readyComplete ? true : false}
+                      >
+                        <Text style={styles_newPayment.dunningBtnTxt}>
+                          <Icon name="paper-plane" style={{ color: 'black' }} />
+                          독촉하기
                         </Text>
                       </Button>
                     </Right>

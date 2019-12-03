@@ -64,18 +64,22 @@ const styles_newPayment = StyleSheet.create({
     flex: 1,
     backgroundColor: 'transparent'
   },
-  threatenBtnItem: {
+  dunningBtnItem: {
     paddingRight: 40,
     paddingBottom: 10,
     borderBottomWidth: 0,
-    borderBottomColor: 'transparent'
-  },
-  threatenBtn: {
-    paddingHorizontal: 10,
+    borderBottomColor: 'transparent',
     backgroundColor: 'transparent'
   },
-  threatenBtnTxt: {
-    color: '#fff',
+  dunningBtn: {
+    paddingHorizontal: 10,
+    paddingBottom: 10,
+    backgroundColor: 'transparent',
+    borderColor: '#eff0eb',
+    borderWidth: 3
+  },
+  dunningBtnTxt: {
+    color: 'black',
     fontFamily: 'Godo',
     fontSize: 15
   },
