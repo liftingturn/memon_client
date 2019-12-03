@@ -112,7 +112,6 @@ export default class NewPayment extends React.Component<Props> {
   }
   componentDidMount = async () => {
     BackHandler.addEventListener('hardwareBackPress', this.goBack);
-    console.log('fromListView', this.props.fromListView);
 
     //스크린 모드 식별
     const { navigation } = this.props;
@@ -289,13 +288,12 @@ export default class NewPayment extends React.Component<Props> {
   handleGoback = from => {
     if (from === 'view') {
       console.log("Handle goBack it's view");
-      console.log(this.state.modifyButtonText);
       if (this.state.modifyButtonText === '변경사항저장') {
         Alert.alert('Alert', '수정을 취소합니다.', [
           {
             text: '확인',
             onPress: () => {
-              this.props.navigation.state.params.fromListView = false;
+              // this.props.navigation.state.params.fromListView = false;
               this.props.navigation.navigate('결제목록');
               return;
             }
@@ -308,8 +306,9 @@ export default class NewPayment extends React.Component<Props> {
         ]);
       } else {
         console.log('조회 후 퇴장');
+
         this.props.navigation.navigate('결제목록');
-        this.props.navigation.state.params.fromListView = false;
+        // this.props.navigation.state.params.fromListView = false;
       }
     } else if (from === 'new') {
       console.log("Handle goBack it's new");
@@ -560,7 +559,6 @@ export default class NewPayment extends React.Component<Props> {
   };
 
   handleConfirmModified = async () => {
-    alert('수정!!');
     const askNotiAPI = config.serverAddress + '/users/pushtoken';
     const askTransRcordAPI = config.serverAddress + '/payment/ispayed';
 
