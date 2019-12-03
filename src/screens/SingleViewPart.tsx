@@ -147,8 +147,7 @@ export default class SingleViewPart extends React.Component<Props, State> {
           title: user.displayName,
           pricebookId: this.state.pricebookId,
           msg: ` [${this.state.title}] 모임에 대한 입금 확인을 요청하였습니다.`,
-          target: 'boss',
-          email: this.props.navigation.state.params.email
+          target: 'boss'
         })
       };
       let response = await fetch(
