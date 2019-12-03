@@ -313,7 +313,6 @@ export default class NewPayment extends React.Component<Props> {
         this.props.navigation.navigate('결제목록');
 
         return;
-
       }
     } else if (from === 'new') {
       console.log("Handle goBack it's new");
@@ -677,17 +676,14 @@ export default class NewPayment extends React.Component<Props> {
         target: 'demand'
       };
       try {
-        const dunning = await fetch(
-          'http://57939258.ngrok.io' + '/users/pushtoken',
-          {
-            method: 'post',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-          }
-        );
+        const dunning = await fetch(config.serverAddress + '/users/pushtoken', {
+          method: 'post',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        });
         console.log(dunning);
         if (dunning.status === 200) {
           console.log('독촉성공');
