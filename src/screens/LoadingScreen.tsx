@@ -65,7 +65,7 @@ class LoadingScreen extends React.Component<Props> {
 
       //user가 있으면 이제 전화번호 등록으로 넘어감.
       //user가 있는데, DB에 번호도 있는 경우는 phoneInput skip하고 바로 Dashboard로 간다?
-      console.log('result 서버에 이메일있냐 없냐 이말이야: ', result);
+      console.log('rds 서버에 이메일있냐 없냐 이말이야: ', result);
       this.props.navigation.navigate(
         !user ? 'LoginScreen' : result ? 'DrawerNav' : 'PhoneInputScreen'
       );

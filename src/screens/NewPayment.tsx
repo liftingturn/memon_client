@@ -288,7 +288,7 @@ export default class NewPayment extends React.Component<Props> {
     }
   };
 
-  handleGoback = from => {
+  handleGoback = async from => {
     if (from === 'view') {
       console.log("Handle goBack it's view");
       if (this.state.modifyButtonText === '변경사항저장') {
@@ -297,8 +297,11 @@ export default class NewPayment extends React.Component<Props> {
             text: '확인',
             onPress: () => {
               // this.props.navigation.state.params.fromListView = false;
-              this.props.navigation.navigate('결제목록');
-              return;
+              setTimeout(() => {
+                this.props.navigation.navigate('결제목록');
+              }, 2000);
+
+              // return;
             }
           },
           {
@@ -317,9 +320,10 @@ export default class NewPayment extends React.Component<Props> {
     } else if (from === 'new') {
       console.log("Handle goBack it's new");
       if (this.state.goBack === 0) {
+        // await this.setState({ ...this.state, onToast: true });
         Toast.show({
           text: '저장이 되지 않았어요!\n한 번 더 누르면 홈으로 갑니다.',
-          duration: 2000,
+          duration: 1500,
           textStyle: styles_Toast.txt,
           style: styles_Toast.container
         });
@@ -646,32 +650,34 @@ export default class NewPayment extends React.Component<Props> {
   };
 
   handleDunning = async () => {
+    let { title, demandCnt, chosenList } = this.state;
     console.log('독촉할것임', this.state);
-    if (this.state.demandCnt < 5) {
+    if (demandCnt < 5) {
       const user = await firebase.auth().currentUser;
+
       const msg =
-        this.state.demandCnt === 0
-          ? `[${user.displayName}] 똑똑, 수금하러 왔습니다.\n"${this.state.title}", 즐거웠어요.`
-          : this.state.demandCnt === 1
-          ? `[${user.displayName}] 똑똑, 수금하러 왔습니다.\n"${this.state.title}" 최고였어.`
-          : this.state.demandCnt === 2
-          ? `[${user.displayName}] 똑똑, 수금하러 왔습니다.\n"${this.state.title}" 기억해주세요.`
-          : this.state.demandCnt === 3
-          ? `[${user.displayName}] 똑똑, 수금하러 왔습니다.\n"${this.state.title}" 잊은 거 아니죠.`
-          : `[${user.displayName}] 똑똑, 수금하러 왔습니다.\n"${this.state.title}" ... 입금 플리즈.`;
+        demandCnt === 0
+          ? `[${user.displayName}] 똑똑, 수금하러 왔습니다.\n"${title}", 즐거웠어요.`
+          : demandCnt === 1
+          ? `[${user.displayName}] 똑똑, 수금하러 왔습니다.\n"${title}" 최고였어.`
+          : demandCnt === 2
+          ? `[${user.displayName}] 똑똑, 수금하러 왔습니다.\n"${title}" 기억해주세요.`
+          : demandCnt === 3
+          ? `[${user.displayName}] 똑똑, 수금하러 왔습니다.\n"${title}" 잊은 거 아니죠.`
+          : `[${user.displayName}] 똑똑, 수금하러 왔습니다.\n"${title}" ... 입금 플리즈.`;
       console.log(msg);
       let targetStr = '';
-      for (let i = 0; i < this.state.chosenList.length; i++) {
-        if (!this.state.chosenList[i].isPayed) {
-          targetStr += this.state.chosenList[i].name;
+      for (let i = 0; i < chosenList.length; i++) {
+        if (!chosenList[i].isPayed) {
+          targetStr += chosenList[i].name;
         }
-        if (i < this.state.chosenList.length - 1) {
+        if (i < chosenList.length - 1) {
           targetStr += ', ';
         }
       }
       const body = {
         pricebookId: this.props.navigation.state.params.pricebookId,
-        title: this.state.title,
+        title: title,
         msg: 'msg',
         target: 'demand'
       };
@@ -687,10 +693,7 @@ export default class NewPayment extends React.Component<Props> {
         console.log(dunning);
         if (dunning.status === 200) {
           console.log('독촉성공');
-          alert(
-            `[${this.state.demandCnt +
-              1}/5] ${targetStr}에게 입금을 요청했습니다.`
-          );
+          alert(`[${demandCnt + 1}/5] ${targetStr}에게 입금을 요청했습니다.`);
         }
       } catch (error) {
         console.log('=====error======', error);
