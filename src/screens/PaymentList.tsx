@@ -71,6 +71,9 @@ export default class PaymentList extends React.Component<Props, State> {
     return;
   };
   componentDidMount() {
+    if (this.props.navigation.state.params) {
+      this.props.navigation.state.params.fromListView = false;
+    }
     BackHandler.addEventListener('hardwareBackPress', this.goBack);
     this.getOwnPayments();
   }
@@ -152,6 +155,7 @@ export default class PaymentList extends React.Component<Props, State> {
                     : payment.isPayed
                     ? '✔️ 지불완료'
                     : '♦️ 줄 돈';
+
                   return (
                     //결제 종류별로 색 구분할거임. 그리고 key나 기타로 바로 개별view들어갈 때 해당 키 날릴거.
                     <ListItem style={ItemStyle} key={i}>

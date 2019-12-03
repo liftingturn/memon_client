@@ -8,7 +8,8 @@ const screenStyles = StyleSheet.create({
     fontFamily: 'Godo',
     borderRightColor: '#c2c2c4',
     borderRightWidth: 1,
-    flex: 1
+    flex: 1,
+    textAlign: 'center'
   },
   inputItemBody: {
     paddingLeft: 15,
@@ -63,6 +64,21 @@ const styles_newPayment = StyleSheet.create({
     flex: 1,
     backgroundColor: 'transparent'
   },
+  threatenBtnItem: {
+    paddingRight: 40,
+    paddingBottom: 10,
+    borderBottomWidth: 0,
+    borderBottomColor: 'transparent'
+  },
+  threatenBtn: {
+    paddingHorizontal: 10,
+    backgroundColor: 'transparent'
+  },
+  threatenBtnTxt: {
+    color: '#fff',
+    fontFamily: 'Godo',
+    fontSize: 15
+  },
   form: {
     width: 350,
     backgroundColor: '#f5effb',
@@ -89,7 +105,7 @@ const styles_Toast = {
   container: {
     height: 50,
     margin: 3,
-    marginBottom: 3,
+    marginBottom: 50,
     borderRadius: 10,
     paddingHorizontal: 10
   },

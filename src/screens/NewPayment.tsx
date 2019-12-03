@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, BackHandler, Alert } from 'react-native';
+import { View, BackHandler, Alert, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
@@ -302,14 +302,14 @@ export default class NewPayment extends React.Component<Props> {
           },
           {
             text: '취소',
-            onPress: () => console.log('Cancel Pressed'),
+            onPress: () => null,
             style: 'cancel'
           }
         ]);
       } else {
         console.log('조회 후 퇴장');
         this.props.navigation.navigate('결제목록');
-        this.props.navigation.state.params.fromListView = false;
+        return;
       }
     } else if (from === 'new') {
       console.log("Handle goBack it's new");
@@ -659,7 +659,8 @@ export default class NewPayment extends React.Component<Props> {
     console.log(
       'disabled 렌더시에 title',
       this.state.disabled,
-      this.state.title
+      this.state.title,
+      this.props.navigation
     );
     let { disabled, uniqueDisable, pageTitle } = this.state;
     return (
@@ -670,13 +671,24 @@ export default class NewPayment extends React.Component<Props> {
             <Content
               contentContainerStyle={{
                 justifyContent: 'flex-start',
-                paddingTop: 60
+                paddingTop: 50
               }}
             >
               <View style={{ alignItems: 'center', marginBottom: 15 }}>
+                {this.props.fromListView ? (
+                  <Item style={styles_newPayment.threatenBtnItem}>
+                    <Right>
+                      <Button style={styles_newPayment.threatenBtn}>
+                        <Text style={styles_newPayment.threatenBtnTxt}>
+                          🔔 미납자 독촉하기
+                        </Text>
+                      </Button>
+                    </Right>
+                  </Item>
+                ) : null}
                 <Form style={styles_newPayment.form}>
                   <InputItem
-                    label="제목"
+                    label="제  목"
                     disabled={disabled}
                     onChange={this.onChangeTitle}
                     placeholder="어떤 모임이었나요?"
