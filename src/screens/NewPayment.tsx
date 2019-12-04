@@ -678,7 +678,7 @@ export default class NewPayment extends React.Component<Props> {
       const body = {
         pricebookId: this.props.navigation.state.params.pricebookId,
         title: title,
-        msg: 'msg',
+        msg: msg,
         target: 'demand'
       };
       try {
