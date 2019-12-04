@@ -2,16 +2,12 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
-  Modal,
   ScrollView,
   RefreshControl,
   BackHandler
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Col, Row, Grid } from 'react-native-easy-grid';
-import * as Permissions from 'expo-permissions';
-import * as Contacts from 'expo-contacts';
+
 import {
   screenStyles,
   styles_newPayment,
@@ -33,7 +29,7 @@ import {
   Image
 } from 'native-base';
 
-import { PicPicker, DrawerHeader } from '../components';
+import { DrawerHeader } from '../components';
 
 export interface State {
   pushing: boolean;
@@ -95,9 +91,7 @@ export default class SingleViewPart extends React.Component<Props, State> {
       return String(parseInt(this.state.totalPay) / this.state.peopleCnt);
     }
   };
-  handlePicPicker = async uri => {
-    this.setState({ ...this.state, billImgSrc: uri });
-  };
+
   // handleBackPress = () => {};
   async componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', () => {
@@ -123,7 +117,7 @@ export default class SingleViewPart extends React.Component<Props, State> {
     this.setState({
       ...this.state,
       title: responseJson.pricebook.title,
-      totalPay: responseJson.pricebook.totalPrice,
+      totalPay: responseJson.pricebook.fixedTotalPrice,
       peopleCnt: responseJson.pricebook.count,
       chosenDate: responseJson.pricebook.partyDate,
       pricebookId: responseJson.pricebook.id
@@ -261,10 +255,6 @@ export default class SingleViewPart extends React.Component<Props, State> {
                     </View>
                   </Form>
                 </View>
-                <PicPicker
-                  disabled={fromList}
-                  handlePicker={this.handlePicPicker}
-                />
               </Content>
               <Footer>
                 <FooterTab style={{ backgroundColor: '#FFF' }}>
