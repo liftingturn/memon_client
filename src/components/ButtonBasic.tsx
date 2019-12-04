@@ -11,7 +11,7 @@ const ButtonBasic = props => {
       alignSelf: 'center',
       width: 'auto',
       padding: 20,
-      marginBottom: 30,
+      marginBottom: 50,
       borderRadius: 50,
       elevation: 1,
       borderColor: '#eff0eb',

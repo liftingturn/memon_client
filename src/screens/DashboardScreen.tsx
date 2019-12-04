@@ -121,10 +121,10 @@ export default class DashboardScreen extends Component<Props, State> {
               <DrawerHeader title="MEMON" toggleDrawer={this.toggleDrawer} />
               <Card
                 style={{
-                  marginTop: 100,
+                  marginTop: 50,
                   borderRadius: 15,
-                  width: this.deviceWidth * 0.8,
-                  marginLeft: this.deviceWidth * 0.1
+                  width: this.deviceWidth * 0.75,
+                  marginLeft: this.deviceWidth * 0.125
                 }}
               >
                 <CardItem style={styles_Dashboard.userCardItem}>
@@ -133,12 +133,26 @@ export default class DashboardScreen extends Component<Props, State> {
                     source={{ uri: this.state.avatar }}
                     style={styles_Dashboard.thumnail}
                   />
-                  <Body style={{ marginVertical: 15 }}>
+                  <Body>
                     <Text style={styles_Dashboard.userName}>
-                      {this.state.name}님,
+                      {this.state.name}님
+                    </Text>
+                  </Body>
+                </CardItem>
+                <CardItem
+                  style={{
+                    paddingTop: 0,
+                    paddingBottom: 10,
+                    borderRadius: 15,
+                    marginLeft: 10
+                  }}
+                >
+                  <Body>
+                    <Text style={styles_Dashboard.greetingBody}>
+                      오늘 하루도
                     </Text>
                     <Text style={styles_Dashboard.greetingBody}>
-                      오늘 하루도 {'\n'}보람찬 수금을 응원합니다!
+                      보람찬 수금을 응원합니다!
                     </Text>
                   </Body>
                 </CardItem>

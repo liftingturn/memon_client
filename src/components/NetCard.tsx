@@ -27,7 +27,7 @@ export default class NetCard extends Component<Props> {
               backgroundColor: 'transparent',
               height: 300,
               paddingHorizontal: 40,
-              paddingTop: 30
+              paddingTop: 40
             }}
           >
             <Content>
@@ -55,9 +55,9 @@ export default class NetCard extends Component<Props> {
                       color: '#8570b5',
                       textAlign: 'left',
                       marginBottom: 10,
-                      fontFamily: 'NotoSans_regular',
-                      marginLeft: 10,
-                      marginTop: 20
+                      fontFamily: 'NotoSans_medium',
+                      marginLeft: 15
+                      // marginTop: 20
                     }}
                   >
                     {this.props.header ? this.props.header : ''}

@@ -113,9 +113,9 @@ export default class PaymentList extends React.Component<Props, State> {
     return date.substring(5, 7) + ' / ' + date.substring(8);
   };
 
+  // tslint:disable-next-line: max-func-body-length
   render() {
     return (
-
       <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
         <Container style={screenStyles.container}>
           <DrawerHeader title="거래 목록" toggleDrawer={this.toggleDrawer} />
@@ -139,7 +139,7 @@ export default class PaymentList extends React.Component<Props, State> {
                 backgroundColor: 'transparent',
                 marginLeft: 0,
                 marginRight: 12,
-                paddingHorizontal: 10,
+                paddingHorizontal: 5,
                 marginTop: 10
               }}
             >
@@ -157,12 +157,12 @@ export default class PaymentList extends React.Component<Props, State> {
                   : this.styles.partItem;
                 const statusTxt = payment.transCompleted
                   ? payment.boss
-                    ? '✔️ 수금완료'
-                    : '✔️ 지불완료'
+                    ? '✔️ 수금 완료'
+                    : '✔️ 지불 완료'
                   : payment.boss
                   ? '♦️ 받을 돈'
                   : payment.isPayed
-                  ? '✔️ 지불완료'
+                  ? '✔️ 지불 완료'
                   : '♦️ 줄 돈';
                 return (
                   //결제 종류별로 색 구분할거임. 그리고 key나 기타로 바로 개별view들어갈 때 해당 키 날릴거.
@@ -176,17 +176,22 @@ export default class PaymentList extends React.Component<Props, State> {
                       <Text style={styles_PaymentList.statusTxt}>
                         {statusTxt}
                       </Text>
-                      <Text>
+                      <Text style={styles_PaymentList.label}>
                         {'\n'}
                         {payment.title}
                       </Text>
                     </Label>
                     <Text style={styles_PaymentList.infoTxt}>
-                      {payment.transCompleted && payment.boss
-                        ? '수금 클리어\n'
-                        : `${price} 원\n`}
-                      {payment.partyDate}
+                      <Text style={styles_PaymentList.moneyTxt}>
+                        {payment.transCompleted && payment.boss
+                          ? '수금 클리어\n'
+                          : `${price} 원\n`}
+                      </Text>
+                      <Text style={styles_PaymentList.dateTxt}>
+                        {payment.partyDate}
+                      </Text>
                     </Text>
+
                     <Right>
                       <Button
                         rounded
@@ -224,9 +229,13 @@ export default class PaymentList extends React.Component<Props, State> {
       justifyContent: 'center',
       backgroundColor: '#f6f5fc'
     },
-    bossItem: { backgroundColor: '#e2b3ff', marginBottom: 5, borderRadius: 5 },
-    partItem: { backgroundColor: '#fbc531', marginBottom: 5, borderRadius: 5 },
-    completed: { backgroundColor: '#dbdbdb', marginBottom: 5, borderRadius: 5 },
+    bossItem: { backgroundColor: '#e2b3ff', marginBottom: 10, borderRadius: 5 },
+    partItem: { backgroundColor: '#fbc531', marginBottom: 10, borderRadius: 5 },
+    completed: {
+      backgroundColor: '#dbdbdb',
+      marginBottom: 10,
+      borderRadius: 5
+    },
     scrollView: {
       flex: 1,
       backgroundColor: 'pink'
