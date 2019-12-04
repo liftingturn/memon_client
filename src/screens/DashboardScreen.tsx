@@ -166,12 +166,12 @@ export default class DashboardScreen extends Component<Props, State> {
                   get={this.state.moneyToGet}
                   pay={this.state.moneyToPay}
                 />
+                <ButtonBasic
+                  type="txt"
+                  label="+"
+                  onPress={this.moveToNewPayment}
+                />
               </Content>
-              <ButtonBasic
-                type="txt"
-                label="+"
-                onPress={this.moveToNewPayment}
-              />
             </Container>
           </LinearGradient>
         </ScrollView>
