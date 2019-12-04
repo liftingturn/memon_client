@@ -28,9 +28,7 @@ class LoadingScreen extends React.Component<Props> {
     await Font.loadAsync({
       Roboto_medium: require('../../assets/Fonts/Roboto_medium.ttf'),
       NotoSans_normal: require('../../assets/Fonts/KaiGenGothicK-Normal.ttf'),
-      NotoSans_medium: require('../../assets/Fonts/KaiGenGothicK-Medium.ttf'),
-      NotoSans_bold: require('../../assets/Fonts/KaiGenGothicK-Bold.ttf'),
-      NotoSans_heavy: require('../../assets/Fonts/KaiGenGothicK-Heavy.ttf')
+      NotoSans_medium: require('../../assets/Fonts/KaiGenGothicK-Medium.ttf')
     });
     this.checkIfLoggedIn();
   }

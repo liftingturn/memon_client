@@ -183,7 +183,7 @@ export default class SingleViewPart extends React.Component<Props, State> {
       let { billImgSrc } = this.state;
       const title = this.props.navigation.state.params.isPayed
         ? '지불 완료'
-        : '입금 확인을 요청하세요!';
+        : '줄 돈';
       const priceforOne = (parseInt(this.state.totalPay) / this.state.peopleCnt)
         .toString()
         .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -275,7 +275,7 @@ export default class SingleViewPart extends React.Component<Props, State> {
                       </Text>
                     ) : this.state.pushing === false ? (
                       <Text style={{ fontFamily: 'NotoSans_normal' }}>
-                        결제 확인 요청
+                        입금 확인 요청하기
                       </Text>
                     ) : (
                       <Spinner color="yellow" />

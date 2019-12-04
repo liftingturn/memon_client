@@ -151,17 +151,17 @@ const styles_PaymentList = StyleSheet.create({
     // borderRightColor: '#c2c2c4',
     // borderRightWidth: 1,
     flex: 1,
-    textAlign: 'justify',
+    textAlign: 'center',
     fontFamily: 'NotoSans_medium',
-    lineHeight: 45
+    lineHeight: 50
   },
   statusTxt: {
     flex: 1,
     fontSize: 18,
     color: 'black',
     // marginBottom: 5,
-    fontFamily: 'NotoSans_medium',
-    lineHeight: 45
+    fontFamily: 'NotoSans_medium'
+    // lineHeight: 50
   },
   infoTxt: {
     flex: 1,
@@ -174,7 +174,7 @@ const styles_PaymentList = StyleSheet.create({
   },
   moneyTxt: {
     flex: 1,
-    fontFamily: 'NotoSans_bold',
+    fontFamily: 'NotoSans_medium',
     fontSize: 18
   },
   dateTxt: {
@@ -200,7 +200,7 @@ const styles_Dashboard = StyleSheet.create({
     borderWidth: 2
   },
   userName: {
-    fontFamily: 'NotoSans_heavy',
+    fontFamily: 'NotoSans_medium',
     marginLeft: 35,
     // marginBottom: 5,
     fontSize: 17,
@@ -224,7 +224,8 @@ const styles_NetCard = {
     // elevation: 1,
     // margin: 10,
     marginLeft: 7,
-    borderBottomColor: 'transparent'
+    borderBottomColor: 'transparent',
+    borderBottomWidth: 0
     // padding: 5
   },
   elementLabel: {
