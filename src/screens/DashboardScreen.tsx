@@ -50,7 +50,7 @@ export default class DashboardScreen extends Component<Props, State> {
   };
   deviceWidth = Dimensions.get('window').width;
   moveToNewPayment = () => {
-    this.props.navigation.navigate('결제생성');
+    this.props.navigation.navigate('새거래');
   };
   toggleDrawer = () => {
     this.props.navigation.toggleDrawer();
