@@ -95,7 +95,7 @@ export default class SingleViewPart extends React.Component<Props, State> {
   // handleBackPress = () => {};
   async componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', () => {
-      this.props.navigation.navigate('참여거래정보');
+      this.props.navigation.navigate('거래목록');
     });
 
     let emailObj = {
@@ -126,7 +126,7 @@ export default class SingleViewPart extends React.Component<Props, State> {
   pushRequest = async () => {
     console.log('i want to push');
     if (this.props.navigation.state.params.isPayed) {
-      this.props.navigation.navigate('참여거래정보');
+      this.props.navigation.navigate('거래목록');
     } else {
       this.setState({ ...this.state, pushing: true });
       const user = await firebase.auth().currentUser;
