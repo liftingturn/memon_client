@@ -138,7 +138,7 @@ export default class NewPayment extends React.Component<Props> {
           email: email,
           pricebookId: pricebookId,
           modifyButtonText: modifyButtonText,
-          pageTitle: '단일 결제 정보',
+          pageTitle: '받을 돈',
           transCompleted: transCompleted
         });
         await this.doFetch();
@@ -199,7 +199,6 @@ export default class NewPayment extends React.Component<Props> {
       await this.setState({ ...this.state, friendList: userFilterdList });
     }
   };
-
   setReadyToClose = () => {
     this.setState({
       ...this.state,
@@ -207,6 +206,15 @@ export default class NewPayment extends React.Component<Props> {
       modifyButtonText: '거래 종료'
     });
   };
+  checkComplete = async (payedCnt, responseJson) => {
+    if (payedCnt === responseJson.pricebook.count) {
+      if (!this.state.transCompleted) {
+        await this.setReadyToClose();
+        console.log('readyComplete#########', this.state.readyComplete);
+      }
+    }
+  };
+
   doFetch = async () => {
     let emailObj = {
       method: 'POST',
@@ -253,21 +261,17 @@ export default class NewPayment extends React.Component<Props> {
       }
     }
     console.log('transCompleted#########', this.state.transCompleted);
-    if (payedCnt === responseJson.pricebook.count) {
-      if (!this.state.transCompleted) {
-        await this.setReadyToClose();
-        console.log('readyComplete#########', this.state.readyComplete);
-      }
-    }
+
+    await this.checkComplete(payedCnt, responseJson);
+
     return;
   };
   //새로고침
   onRefresh = async () => {
     console.log('refresh!');
-    this.setState({ refreshing: true });
-    await this.doFetch(); //목적은? 그냥 구성이면 변경저장에서 할필요가없네
-    // memo: 수정후 새로고침인 경우 이름 빈 문자열로 초기화시키지 않도록 분기해야함
-    this.setState({ refreshing: false });
+    this.setState({ ...this.state, refreshing: true });
+    await this.doFetch();
+    this.setState({ ...this.state, refreshing: false });
   };
   //backHandler
   goBack = () => {
@@ -456,7 +460,7 @@ export default class NewPayment extends React.Component<Props> {
         uniqueDisable: true,
         modifyButtonText: '수정'
       });
-      // this.onRefresh();
+      await this.onRefresh();
       Toast.show({
         text: '변경사항을 저장하였습니다.',
         duration: 1500,
