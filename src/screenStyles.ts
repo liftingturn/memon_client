@@ -92,23 +92,23 @@ const styles_newPayment = StyleSheet.create({
     backgroundColor: 'transparent'
   },
   dunningBtnItem: {
-    paddingRight: 20,
-    paddingBottom: 10,
+    marginTop: 40,
     borderBottomWidth: 0,
-    borderBottomColor: 'transparent',
+    borderBottomColor: 'blue',
     backgroundColor: 'transparent'
   },
   dunningBtn: {
     paddingHorizontal: 10,
     paddingBottom: 10,
-    backgroundColor: 'transparent',
+    backgroundColor: 'white',
     borderColor: '#eff0eb',
     borderWidth: 3
   },
   dunningBtnTxt: {
-    color: 'black',
-    fontFamily: 'NotoSans_normal',
-    fontSize: 13
+    color: 'gray',
+    fontFamily: 'NotoSans_medium',
+    fontSize: 16,
+    fontWeight: 'bold'
   },
   form: {
     width: 350,
@@ -116,10 +116,12 @@ const styles_newPayment = StyleSheet.create({
     borderRadius: 15,
     paddingLeft: 10,
     paddingRight: 20,
+    marginTop: 40,
     marginBottom: 30,
     elevation: 5,
     borderColor: '#eff0eb',
-    borderWidth: 3
+    borderWidth: 3,
+    borderBottomColor: 'transparent'
   },
   modal: {
     flex: 1,
@@ -148,40 +150,35 @@ const styles_Toast = {
 const styles_PaymentList = StyleSheet.create({
   label: {
     fontSize: 17,
-    // borderRightColor: '#c2c2c4',
-    // borderRightWidth: 1,
-    flex: 1,
     textAlign: 'center',
     fontFamily: 'NotoSans_medium',
-    lineHeight: 50
+    textAlignVertical: 'auto',
+    lineHeight: 40
   },
   statusTxt: {
-    flex: 1,
-    fontSize: 18,
+    fontSize: 17,
     color: 'black',
-    // marginBottom: 5,
-    fontFamily: 'NotoSans_medium'
-    // lineHeight: 50
+    textAlign: 'center',
+    fontFamily: 'NotoSans_medium',
+    textAlignVertical: 'auto',
+    lineHeight: 40
   },
-  infoTxt: {
-    flex: 1,
-    textAlign: 'right',
-    // textAlign: 'justify',
-    // justifyContent: 'flex-end',
-    // lineHeight: 50,
-    color: '#3b3b3b',
-    paddingRight: 25
-  },
+
   moneyTxt: {
     flex: 1,
+    textAlign: 'right',
     fontFamily: 'NotoSans_medium',
-    fontSize: 18
+    fontSize: 17,
+    textAlignVertical: 'center',
+    lineHeight: 40
   },
   dateTxt: {
+    textAlign: 'right',
     flex: 1,
     fontFamily: 'NotoSans_normal',
-    fontSize: 15,
-    lineHeight: 45
+    fontSize: 17,
+    textAlignVertical: 'center',
+    lineHeight: 40
   }
 });
 
@@ -201,7 +198,8 @@ const styles_Dashboard = StyleSheet.create({
   },
   userName: {
     fontFamily: 'NotoSans_medium',
-    marginLeft: 35,
+    textAlign: 'right',
+    // marginLeft: 35,
     // marginBottom: 5,
     fontSize: 17,
     // backgroundColor: '#fbfafc',
@@ -241,8 +239,8 @@ const styles_NetCard = {
     color: 'grey',
     flex: 1.5,
     textAlign: 'center',
-    borderBottomWidth: 2,
-    borderBottomColor: 'grey'
+    borderBottomWidth: 1,
+    borderBottomColor: '#dbbfd8'
   },
   elementMoney: {
     fontFamily: 'NotoSans_medium',
@@ -296,7 +294,10 @@ const styles_SingleView = StyleSheet.create({
     justifyContent: 'flex-start',
     paddingTop: 35
   },
-  item: { marginVertical: 3, paddingBottom: 3 }
+  item: {
+    marginVertical: 3,
+    paddingBottom: 3
+  }
 });
 export {
   styles_LoadingScreen,

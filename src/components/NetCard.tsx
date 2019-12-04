@@ -20,7 +20,7 @@ interface Props {
 export default class NetCard extends Component<Props> {
   render() {
     return (
-      <Container style={{ backgroundColor: 'transparent' }}>
+      <Container style={{ backgroundColor: 'transparent', height: 250 }}>
         <Grid>
           <Col
             style={{
@@ -46,17 +46,17 @@ export default class NetCard extends Component<Props> {
                     borderRadius: 5,
                     backgroundColor: 'transparent',
                     flexDirection: 'column',
-                    alignItems: 'flex-start'
+                    alignItems: 'center'
                   }}
                 >
                   <Text
                     style={{
                       fontSize: 17,
                       color: '#8570b5',
-                      textAlign: 'left',
+                      textAlign: 'center',
                       marginBottom: 10,
-                      fontFamily: 'NotoSans_medium',
-                      marginLeft: 15
+                      fontFamily: 'NotoSans_medium'
+                      // marginLeft: 15
                       // marginTop: 20
                     }}
                   >

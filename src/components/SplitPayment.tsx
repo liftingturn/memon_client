@@ -6,12 +6,12 @@ import { screenStyles } from '../screenStyles';
 const SplitPayment = props => {
   console.log('스플릿==============', props.remainder);
   return (
-    <Item fixedLabel>
+    <Item fixedLabel style={{ borderBottomColor: 'transparent' }}>
       <Label style={{ ...screenStyles.inputItemLabel, fontWeight: '600' }}>
         1 / N
       </Label>
-      <View style={{ flex: 4 }}>
-        <Item>
+      <View style={{ borderBottomColor: 'transparent', flex: 4 }}>
+        <Item style={{ borderBottomColor: 'transparent' }}>
           <Input
             style={{ paddingLeft: 15, fontSize: 16, flex: 1 }}
             placeholder={'총 금액을 입력해주세요'}

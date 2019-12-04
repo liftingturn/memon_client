@@ -231,7 +231,13 @@ export default class SingleViewPart extends React.Component<Props, State> {
                         총 {this.state.peopleCnt} 명
                       </Text>
                     </Item>
-                    <Item fixedLabel style={styles_SingleView.item}>
+                    <Item
+                      fixedLabel
+                      style={{
+                        ...styles_SingleView.item,
+                        borderBottomColor: 'transparent'
+                      }}
+                    >
                       <Label style={screenStyles.inputItemLabel}>
                         1인당 금액
                       </Label>
@@ -239,20 +245,6 @@ export default class SingleViewPart extends React.Component<Props, State> {
                         {priceforOne} 원
                       </Text>
                     </Item>
-                    <View
-                      style={{
-                        flex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      {billImgSrc && (
-                        <Image
-                          source={{ uri: billImgSrc }}
-                          style={{ width: 200, height: 200 }}
-                        />
-                      )}
-                    </View>
                   </Form>
                 </View>
               </Content>
