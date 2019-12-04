@@ -1,7 +1,7 @@
 
 # Created by https://www.gitignore.io/api/git,react,linux,macos,windows,android,reactnative,androidstudio
 # Edit at https://www.gitignore.io/?templates=git,react,linux,macos,windows,android,reactnative,androidstudio
-
+config.ts
 ### Android ###
 # Built application files
 *.apk
