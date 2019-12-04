@@ -20,7 +20,8 @@ import {
   Thumbnail,
   Body,
   Toast,
-  Root
+  Root,
+  Button
 } from 'native-base';
 
 interface Props {
@@ -162,7 +163,7 @@ export default class DashboardScreen extends Component<Props, State> {
                 scrollEnabled={false}
               >
                 <NetCard
-                  header={'■ 정산이 끝나지 않았어요!'}
+                  header={'정산이 끝나지 않았어요!'}
                   get={this.state.moneyToGet}
                   pay={this.state.moneyToPay}
                 />
