@@ -22,7 +22,6 @@ import {
 } from 'native-base';
 
 import {
-  PicPicker,
   CustomDatePicker,
   InputItem,
   FriendListModal,
@@ -32,8 +31,6 @@ import {
   SplitPayment
 } from '../components';
 import config from '../../config';
-import PhoneInputScreen from './PhoneInputScreen';
-import { timingSafeEqual } from 'crypto';
 
 export interface Props {
   navigation: any;
@@ -353,10 +350,6 @@ export default class NewPayment extends React.Component<Props> {
 
   onChangeTitle = e => {
     this.setState({ ...this.state, title: e.nativeEvent.text });
-  };
-
-  handlePicPicker = async uri => {
-    this.setState({ ...this.state, billImgSrc: uri });
   };
 
   remainder = '';
@@ -825,11 +818,6 @@ export default class NewPayment extends React.Component<Props> {
                   />
                 </Form>
               </View>
-              <PicPicker
-                disabled={disabled}
-                handlePicker={this.handlePicPicker}
-                uri={this.state.billImgSrc}
-              />
             </Content>
 
             <NewPayFooter
