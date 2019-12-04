@@ -151,7 +151,7 @@ const styles_PaymentList = StyleSheet.create({
     // borderRightColor: '#c2c2c4',
     // borderRightWidth: 1,
     flex: 1,
-    textAlign: 'flex',
+    textAlign: 'justify',
     fontFamily: 'NotoSans_medium',
     lineHeight: 45
   },
