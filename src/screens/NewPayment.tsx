@@ -464,9 +464,9 @@ export default class NewPayment extends React.Component<Props> {
       });
     } else if (this.state.modifyButtonText === '거래 종료') {
       this.hadleClose();
-      this.props.navigation.navigate('결제목록');
+      this.props.navigation.navigate('참여거래정보');
     } else if (this.state.modifyButtonText === '확인') {
-      this.props.navigation.navigate('결제목록');
+      this.props.navigation.navigate('참여거래정보');
     }
   };
 
@@ -539,7 +539,7 @@ export default class NewPayment extends React.Component<Props> {
             modifyButtonText: '수정'
           });
           !this.state.showToast
-            ? this.props.navigation.navigate('결제목록')
+            ? this.props.navigation.navigate('참여거래정보')
             : null;
         } else {
           Toast.show({

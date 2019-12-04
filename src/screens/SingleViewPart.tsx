@@ -95,7 +95,7 @@ export default class SingleViewPart extends React.Component<Props, State> {
   // handleBackPress = () => {};
   async componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', () => {
-      this.props.navigation.navigate('결제목록');
+      this.props.navigation.navigate('참여거래정보');
     });
 
     let emailObj = {
@@ -126,7 +126,7 @@ export default class SingleViewPart extends React.Component<Props, State> {
   pushRequest = async () => {
     console.log('i want to push');
     if (this.props.navigation.state.params.isPayed) {
-      this.props.navigation.navigate('결제목록');
+      this.props.navigation.navigate('참여거래정보');
     } else {
       this.setState({ ...this.state, pushing: true });
       const user = await firebase.auth().currentUser;
@@ -168,7 +168,7 @@ export default class SingleViewPart extends React.Component<Props, State> {
   // tslint:disable-next-line: max-func-body-length
   render() {
     if (this.props.navigation.state.params === undefined) {
-      alert('해당 페이지는 결제 리스트를 통한 접근만 사용합니다.');
+      alert('해당 페이지는 참여거래정보를 통한 접근만 사용합니다.');
       this.props.navigation.navigate('홈');
       return <ScrollView></ScrollView>;
     } else {
