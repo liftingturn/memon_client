@@ -54,7 +54,7 @@ export default class PaymentList extends React.Component<Props, State> {
     if (payment.boss) {
       console.log('go boss!');
       console.log(payment);
-      this.props.navigation.navigate('결제생성', {
+      this.props.navigation.navigate('새거래', {
         fromListView: true,
         email: this.state.email,
         pricebookId: payment.pricebookId,
@@ -62,7 +62,7 @@ export default class PaymentList extends React.Component<Props, State> {
       });
     } else {
       console.log('go pay');
-      this.props.navigation.navigate('참여자개별결제페이지', {
+      this.props.navigation.navigate('참여거래정보', {
         boss: false,
         email: this.state.email,
         pricebookId: payment.pricebookId,
