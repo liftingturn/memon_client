@@ -22,7 +22,6 @@ import {
 } from 'native-base';
 
 import {
-  PicPicker,
   CustomDatePicker,
   InputItem,
   FriendListModal,
@@ -32,8 +31,6 @@ import {
   SplitPayment
 } from '../components';
 import config from '../../config';
-import PhoneInputScreen from './PhoneInputScreen';
-import { timingSafeEqual } from 'crypto';
 
 export interface Props {
   navigation: any;
@@ -353,10 +350,6 @@ export default class NewPayment extends React.Component<Props> {
 
   onChangeTitle = e => {
     this.setState({ ...this.state, title: e.nativeEvent.text });
-  };
-
-  handlePicPicker = async uri => {
-    this.setState({ ...this.state, billImgSrc: uri });
   };
 
   remainder = '';
@@ -725,24 +718,13 @@ export default class NewPayment extends React.Component<Props> {
                 paddingTop: 15
               }}
             >
-              <View style={{ alignItems: 'center', marginBottom: 15 }}>
-                {this.props.navigation.state.params &&
-                this.props.navigation.state.params.fromListView ? (
-                  <Item style={styles_newPayment.dunningBtnItem}>
-                    <Right>
-                      <Button
-                        onPress={this.handleDunning}
-                        style={styles_newPayment.dunningBtn}
-                        disabled={this.state.readyComplete ? true : false}
-                      >
-                        <Text style={styles_newPayment.dunningBtnTxt}>
-                          <Icon name="paper-plane" style={{ color: 'black' }} />
-                          독촉하기
-                        </Text>
-                      </Button>
-                    </Right>
-                  </Item>
-                ) : null}
+              <View
+                style={{
+                  borderBottomColor: 'transparent',
+                  alignItems: 'center',
+                  marginBottom: 15
+                }}
+              >
                 <Form style={styles_newPayment.form}>
                   <InputItem
                     label="제  목"
@@ -824,12 +806,22 @@ export default class NewPayment extends React.Component<Props> {
                     remainder={this.remainder}
                   />
                 </Form>
+                {this.props.navigation.state.params &&
+                this.props.navigation.state.params.fromListView ? (
+                  <Item style={styles_newPayment.dunningBtnItem}>
+                    <Button
+                      large
+                      onPress={this.handleDunning}
+                      style={styles_newPayment.dunningBtn}
+                      disabled={this.state.readyComplete}
+                    >
+                      <Text style={styles_newPayment.dunningBtnTxt}>
+                        돈 주세요~
+                      </Text>
+                    </Button>
+                  </Item>
+                ) : null}
               </View>
-              <PicPicker
-                disabled={disabled}
-                handlePicker={this.handlePicPicker}
-                uri={this.state.billImgSrc}
-              />
             </Content>
 
             <NewPayFooter
