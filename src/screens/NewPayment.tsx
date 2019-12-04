@@ -718,7 +718,13 @@ export default class NewPayment extends React.Component<Props> {
                 paddingTop: 15
               }}
             >
-              <View style={{ alignItems: 'center', marginBottom: 15 }}>
+              <View
+                style={{
+                  borderBottomColor: 'transparent',
+                  alignItems: 'center',
+                  marginBottom: 15
+                }}
+              >
                 <Form style={styles_newPayment.form}>
                   <InputItem
                     label="제  목"

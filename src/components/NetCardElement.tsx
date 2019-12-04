@@ -6,7 +6,7 @@ const NetCardElement = props => {
   const price = props.money.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   const itemStyle =
     props.get === 'get'
-      ? styles_NetCard.elementItemGet
+      ? styles_NetCard.elementLabelGet
       : styles_NetCard.elementItem;
   return (
     <Item style={itemStyle}>

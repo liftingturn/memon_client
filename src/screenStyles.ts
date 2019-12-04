@@ -120,7 +120,8 @@ const styles_newPayment = StyleSheet.create({
     marginBottom: 30,
     elevation: 5,
     borderColor: '#eff0eb',
-    borderWidth: 3
+    borderWidth: 3,
+    borderBottomColor: 'transparent'
   },
   modal: {
     flex: 1,
@@ -238,8 +239,8 @@ const styles_NetCard = {
     color: 'grey',
     flex: 1.5,
     textAlign: 'center',
-    borderBottomWidth: 2,
-    borderBottomColor: 'grey'
+    borderBottomWidth: 1,
+    borderBottomColor: '#dbbfd8'
   },
   elementMoney: {
     fontFamily: 'NotoSans_medium',
@@ -293,7 +294,10 @@ const styles_SingleView = StyleSheet.create({
     justifyContent: 'flex-start',
     paddingTop: 35
   },
-  item: { marginVertical: 3, paddingBottom: 3 }
+  item: {
+    marginVertical: 3,
+    paddingBottom: 3
+  }
 });
 export {
   styles_LoadingScreen,
