@@ -62,7 +62,11 @@ export default class NetCard extends Component<Props> {
                   >
                     {this.props.header ? this.props.header : ''}
                   </Text>
-                  <NetCardElement label="받을 돈" money={this.props.get} />
+                  <NetCardElement
+                    label="받을 돈"
+                    money={this.props.get}
+                    get="get"
+                  />
                   <NetCardElement label="줄 돈" money={this.props.pay} />
                 </CardItem>
               </Card>
