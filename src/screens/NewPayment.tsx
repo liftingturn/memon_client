@@ -719,23 +719,6 @@ export default class NewPayment extends React.Component<Props> {
               }}
             >
               <View style={{ alignItems: 'center', marginBottom: 15 }}>
-                {this.props.navigation.state.params &&
-                this.props.navigation.state.params.fromListView ? (
-                  <Item style={styles_newPayment.dunningBtnItem}>
-                    <Right>
-                      <Button
-                        onPress={this.handleDunning}
-                        style={styles_newPayment.dunningBtn}
-                        disabled={this.state.readyComplete ? true : false}
-                      >
-                        <Text style={styles_newPayment.dunningBtnTxt}>
-                          <Icon name="paper-plane" style={{ color: 'black' }} />
-                          독촉하기
-                        </Text>
-                      </Button>
-                    </Right>
-                  </Item>
-                ) : null}
                 <Form style={styles_newPayment.form}>
                   <InputItem
                     label="제  목"
@@ -817,6 +800,21 @@ export default class NewPayment extends React.Component<Props> {
                     remainder={this.remainder}
                   />
                 </Form>
+                {this.props.navigation.state.params &&
+                this.props.navigation.state.params.fromListView ? (
+                  <Item style={styles_newPayment.dunningBtnItem}>
+                    <Button
+                      large
+                      onPress={this.handleDunning}
+                      style={styles_newPayment.dunningBtn}
+                      disabled={this.state.readyComplete}
+                    >
+                      <Text style={styles_newPayment.dunningBtnTxt}>
+                        돈 주세요~
+                      </Text>
+                    </Button>
+                  </Item>
+                ) : null}
               </View>
             </Content>
 

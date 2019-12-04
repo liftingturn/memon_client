@@ -92,23 +92,23 @@ const styles_newPayment = StyleSheet.create({
     backgroundColor: 'transparent'
   },
   dunningBtnItem: {
-    paddingRight: 20,
-    paddingBottom: 10,
+    marginTop: 40,
     borderBottomWidth: 0,
-    borderBottomColor: 'transparent',
+    borderBottomColor: 'blue',
     backgroundColor: 'transparent'
   },
   dunningBtn: {
     paddingHorizontal: 10,
     paddingBottom: 10,
-    backgroundColor: 'transparent',
+    backgroundColor: 'white',
     borderColor: '#eff0eb',
     borderWidth: 3
   },
   dunningBtnTxt: {
-    color: 'black',
-    fontFamily: 'NotoSans_normal',
-    fontSize: 13
+    color: 'gray',
+    fontFamily: 'NotoSans_medium',
+    fontSize: 16,
+    fontWeight: 'bold'
   },
   form: {
     width: 350,
@@ -116,6 +116,7 @@ const styles_newPayment = StyleSheet.create({
     borderRadius: 15,
     paddingLeft: 10,
     paddingRight: 20,
+    marginTop: 40,
     marginBottom: 30,
     elevation: 5,
     borderColor: '#eff0eb',
@@ -201,7 +202,8 @@ const styles_Dashboard = StyleSheet.create({
   },
   userName: {
     fontFamily: 'NotoSans_medium',
-    marginLeft: 35,
+    textAlign: 'right',
+    // marginLeft: 35,
     // marginBottom: 5,
     fontSize: 17,
     // backgroundColor: '#fbfafc',
