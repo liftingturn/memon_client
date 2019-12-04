@@ -169,7 +169,8 @@ export default class SingleViewPart extends React.Component<Props, State> {
   render() {
     if (this.props.navigation.state.params === undefined) {
       alert('해당 페이지는 결제 리스트를 통한 접근만 사용합니다.');
-      return true;
+      this.props.navigation.navigate('홈');
+      return <ScrollView></ScrollView>;
     } else {
       console.log('싱글뷰페이지 프롭스 봅시다', this.props);
       let fromList = !this.props.boss;

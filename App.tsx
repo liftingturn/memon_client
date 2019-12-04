@@ -117,6 +117,7 @@ const Drawer = createDrawerNavigator(
     참여거래정보: SingleViewPart
   },
   {
+    unmountInactiveRoutes: true,
     contentComponent: CustomDrawer,
     drawerWidth: width,
     contentOptions: {

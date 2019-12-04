@@ -295,7 +295,7 @@ export default class NewPayment extends React.Component<Props> {
             onPress: () => {
               // this.props.navigation.state.params.fromListView = false;
               setTimeout(() => {
-                this.props.navigation.navigate('결제목록');
+                this.props.navigation.navigate('거래목록');
               }, 2000);
 
               // return;
@@ -310,7 +310,7 @@ export default class NewPayment extends React.Component<Props> {
       } else {
         console.log('조회 후 퇴장');
 
-        this.props.navigation.navigate('결제목록');
+        this.props.navigation.navigate('거래목록');
 
         return;
       }
