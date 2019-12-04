@@ -207,7 +207,7 @@ export default class SingleViewPart extends React.Component<Props, State> {
                   <Form style={styles_newPayment.form}>
                     <Item
                       fixedLabel
-                      style={{ ...styles_SingleView.item, paddingTop: 10 }}
+                      style={{ ...styles_SingleView.item, paddingTop: 5 }}
                     >
                       <Label style={screenStyles.inputItemLabel}>제목</Label>
                       <Text style={screenStyles.inputTxt}>
@@ -270,11 +270,11 @@ export default class SingleViewPart extends React.Component<Props, State> {
                 <FooterTab style={{ backgroundColor: '#FFF' }}>
                   <Button onPress={this.pushRequest}>
                     {title === '지불 완료' ? (
-                      <Text style={{ fontFamily: 'NotoSans_regular' }}>
+                      <Text style={{ fontFamily: 'NotoSans_normal' }}>
                         확인
                       </Text>
                     ) : this.state.pushing === false ? (
-                      <Text style={{ fontFamily: 'NotoSans_regular' }}>
+                      <Text style={{ fontFamily: 'NotoSans_normal' }}>
                         결제 확인 요청
                       </Text>
                     ) : (

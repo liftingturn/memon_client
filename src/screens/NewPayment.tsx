@@ -722,7 +722,7 @@ export default class NewPayment extends React.Component<Props> {
             <Content
               contentContainerStyle={{
                 justifyContent: 'flex-start',
-                paddingTop: 50
+                paddingTop: 15
               }}
             >
               <View style={{ alignItems: 'center', marginBottom: 15 }}>

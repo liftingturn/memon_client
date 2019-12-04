@@ -13,9 +13,9 @@ const DrawerHeader = props => {
       </Left>
       <Title
         style={{
-          paddingTop: 22,
+          paddingTop: 0,
           alignItems: 'center',
-          fontFamily: 'NotoSans_regular',
+          fontFamily: 'NotoSans_bold',
           fontSize: 25
         }}
       >

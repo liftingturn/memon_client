@@ -32,7 +32,7 @@ const screenStyles = StyleSheet.create({
     color: 'grey',
     fontWeight: '300',
     fontSize: 15,
-    fontFamily: 'NotoSans_regular',
+    fontFamily: 'NotoSans_medium',
     borderRightColor: '#c2c2c4',
     borderRightWidth: 1,
     flex: 1,
@@ -48,7 +48,7 @@ const screenStyles = StyleSheet.create({
     paddingLeft: 14,
     fontSize: 16,
     color: '#3b3b3b',
-    fontFamily: 'NotoSans_regular'
+    fontFamily: 'NotoSans_normal'
   },
   container: {
     marginTop: 23,
@@ -67,7 +67,7 @@ const screenStyles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
     color: '#f6f6f6',
-    fontFamily: 'NotoSans_regular'
+    fontFamily: 'NotoSans_normal'
   },
   iconBtn: {
     backgroundColor: 'transparent',
@@ -92,7 +92,7 @@ const styles_newPayment = StyleSheet.create({
     backgroundColor: 'transparent'
   },
   dunningBtnItem: {
-    paddingRight: 40,
+    paddingRight: 20,
     paddingBottom: 10,
     borderBottomWidth: 0,
     borderBottomColor: 'transparent',
@@ -107,8 +107,8 @@ const styles_newPayment = StyleSheet.create({
   },
   dunningBtnTxt: {
     color: 'black',
-    fontFamily: 'NotoSans_regular',
-    fontSize: 15
+    fontFamily: 'NotoSans_normal',
+    fontSize: 13
   },
   form: {
     width: 350,
@@ -147,75 +147,94 @@ const styles_Toast = {
 
 const styles_PaymentList = StyleSheet.create({
   label: {
-    fontSize: 15,
-    borderRightColor: '#c2c2c4',
-    borderRightWidth: 1,
+    fontSize: 17,
+    // borderRightColor: '#c2c2c4',
+    // borderRightWidth: 1,
     flex: 1,
-    textAlign: 'center',
-    fontFamily: 'NotoSans_regular'
+    textAlign: 'flex',
+    fontFamily: 'NotoSans_medium',
+    lineHeight: 45
   },
   statusTxt: {
-    fontSize: 12,
+    flex: 1,
+    fontSize: 18,
     color: 'black',
-    marginBottom: 5
+    // marginBottom: 5,
+    fontFamily: 'NotoSans_medium',
+    lineHeight: 45
   },
   infoTxt: {
-    fontSize: 16,
-    color: '#3b3b3b',
-    fontFamily: 'NotoSans_regular',
     flex: 1,
-    paddingLeft: 15
+    textAlign: 'right',
+    // textAlign: 'justify',
+    // justifyContent: 'flex-end',
+    // lineHeight: 50,
+    color: '#3b3b3b',
+    paddingRight: 25
+  },
+  moneyTxt: {
+    flex: 1,
+    fontFamily: 'NotoSans_bold',
+    fontSize: 18
+  },
+  dateTxt: {
+    flex: 1,
+    fontFamily: 'NotoSans_normal',
+    fontSize: 15,
+    lineHeight: 45
   }
 });
 
 const styles_Dashboard = StyleSheet.create({
   userCardItem: {
-    borderRadius: 15,
-    borderColor: '#eff0eb',
-    borderWidth: 2
+    // borderRadius: 15,
+    // borderColor: '#eff0eb',
+    // borderWidth: 2,
+    marginTop: 10,
+    marginBottom: 0
   },
   thumnail: {
     borderRadius: 20,
-    marginHorizontal: 10,
+    marginHorizontal: 25,
     borderColor: '#eff0eb',
     borderWidth: 2
   },
   userName: {
-    fontFamily: 'NotoSans_regular',
-    marginLeft: 20,
+    fontFamily: 'NotoSans_heavy',
+    marginLeft: 35,
+    // marginBottom: 5,
     fontSize: 17,
-    marginBottom: 5,
-    backgroundColor: '#fbfafc',
+    // backgroundColor: '#fbfafc',
     color: '#252625'
   },
   greetingBody: {
     marginLeft: 20,
     marginRight: 0,
-    fontFamily: 'NotoSans_regular',
-    fontSize: 14,
-    color: 'grey'
+    //paddingBottom: 10,
+    fontFamily: 'NotoSans_medium',
+    fontSize: 15,
+    color: 'grey',
+    textAlign: 'justify',
+    lineHeight: 20
   }
 });
 const styles_NetCard = {
   elementItem: {
     flex: 1,
-    elevation: 1,
-    margin: 5,
-    marginLeft: 7,
-    padding: 5,
-    borderRadius: 5
+    // elevation: 1,
+    // margin: 10,
+    marginLeft: 7
+    // padding: 5
   },
   elementLabel: {
-    fontFamily: 'NotoSans_regular',
+    fontFamily: 'NotoSans_normal',
     fontSize: 15,
     color: 'grey',
     flex: 1.5,
-    borderRightWidth: 2,
-    borderRightColor: '#907ee0',
     textAlign: 'center'
   },
   elementMoney: {
-    fontFamily: 'NotoSans_regular',
+    fontFamily: 'NotoSans_medium',
     flex: 2.5,
     fontSize: 17,
     color: '#252625',
@@ -266,7 +285,7 @@ const styles_SingleView = StyleSheet.create({
     justifyContent: 'flex-start',
     paddingTop: 35
   },
-  item: { marginVertical: 10, paddingBottom: 10 }
+  item: { marginVertical: 3, paddingBottom: 3 }
 });
 export {
   styles_LoadingScreen,
