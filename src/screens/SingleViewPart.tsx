@@ -150,10 +150,10 @@ export default class SingleViewPart extends React.Component<Props, State> {
       );
       console.log('response.status', response);
       if (response.status === 200) {
-        alert('메세지 전송 성공!');
+        alert('입금 확인 요청을 보냈어요');
         this.setState({ ...this.state, pushing: false });
       } else if (response.status === 400) {
-        alert('메세지 전송 실패');
+        alert('입금 확인 요청을 보내지 못했어요');
         this.setState({ ...this.state, pushing: false });
       }
       // let responseJson = await response.json();
