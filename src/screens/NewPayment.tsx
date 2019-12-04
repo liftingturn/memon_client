@@ -539,7 +539,7 @@ export default class NewPayment extends React.Component<Props> {
             modifyButtonText: '수정'
           });
           !this.state.showToast
-            ? this.props.navigation.navigate('참여거래정보')
+            ? this.props.navigation.navigate('거래목록')
             : null;
         } else {
           Toast.show({
