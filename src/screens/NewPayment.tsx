@@ -464,9 +464,9 @@ export default class NewPayment extends React.Component<Props> {
       });
     } else if (this.state.modifyButtonText === '거래 종료') {
       this.hadleClose();
-      this.props.navigation.navigate('참여거래정보');
+      this.props.navigation.navigate('거래목록');
     } else if (this.state.modifyButtonText === '확인') {
-      this.props.navigation.navigate('참여거래정보');
+      this.props.navigation.navigate('거래목록');
     }
   };
 
