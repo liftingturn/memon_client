@@ -223,7 +223,8 @@ const styles_NetCard = {
     flex: 1,
     // elevation: 1,
     // margin: 10,
-    marginLeft: 7
+    marginLeft: 7,
+    borderBottomColor: 'transparent'
     // padding: 5
   },
   elementLabel: {
@@ -232,6 +233,15 @@ const styles_NetCard = {
     color: 'grey',
     flex: 1.5,
     textAlign: 'center'
+  },
+  elementLabelGet: {
+    fontFamily: 'NotoSans_normal',
+    fontSize: 15,
+    color: 'grey',
+    flex: 1.5,
+    textAlign: 'center',
+    borderBottomWidth: 2,
+    borderBottomColor: 'grey'
   },
   elementMoney: {
     fontFamily: 'NotoSans_medium',
