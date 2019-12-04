@@ -149,40 +149,35 @@ const styles_Toast = {
 const styles_PaymentList = StyleSheet.create({
   label: {
     fontSize: 17,
-    // borderRightColor: '#c2c2c4',
-    // borderRightWidth: 1,
-    flex: 1,
     textAlign: 'center',
     fontFamily: 'NotoSans_medium',
-    lineHeight: 50
+    textAlignVertical: 'auto',
+    lineHeight: 40
   },
   statusTxt: {
-    flex: 1,
-    fontSize: 18,
+    fontSize: 17,
     color: 'black',
-    // marginBottom: 5,
-    fontFamily: 'NotoSans_medium'
-    // lineHeight: 50
+    textAlign: 'center',
+    fontFamily: 'NotoSans_medium',
+    textAlignVertical: 'auto',
+    lineHeight: 40
   },
-  infoTxt: {
-    flex: 1,
-    textAlign: 'right',
-    // textAlign: 'justify',
-    // justifyContent: 'flex-end',
-    // lineHeight: 50,
-    color: '#3b3b3b',
-    paddingRight: 25
-  },
+
   moneyTxt: {
     flex: 1,
+    textAlign: 'right',
     fontFamily: 'NotoSans_medium',
-    fontSize: 18
+    fontSize: 17,
+    textAlignVertical: 'center',
+    lineHeight: 40
   },
   dateTxt: {
+    textAlign: 'right',
     flex: 1,
     fontFamily: 'NotoSans_normal',
-    fontSize: 15,
-    lineHeight: 45
+    fontSize: 17,
+    textAlignVertical: 'center',
+    lineHeight: 40
   }
 });
 

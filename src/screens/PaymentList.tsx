@@ -23,6 +23,8 @@ import {
 import config from '../../config';
 import firebase from 'firebase';
 import { isAbsolute } from 'path';
+import { Col, Row, Grid } from 'react-native-easy-grid';
+
 export interface Props {
   navigation: any;
 }
@@ -165,32 +167,40 @@ export default class PaymentList extends React.Component<Props, State> {
                   ? '✔️ 지불 완료'
                   : '♦️ 줄 돈';
                 return (
-                  //결제 종류별로 색 구분할거임. 그리고 key나 기타로 바로 개별view들어갈 때 해당 키 날릴거.
                   <ListItem style={ItemStyle} key={i}>
-                    <Label
-                      style={{
-                        ...styles_PaymentList.label,
-                        color: '#736e72'
-                      }}
-                    >
-                      <Text style={styles_PaymentList.statusTxt}>
-                        {statusTxt}
-                      </Text>
-                      <Text style={styles_PaymentList.label}>
-                        {'\n'}
-                        {payment.title}
-                      </Text>
-                    </Label>
-                    <Text style={styles_PaymentList.infoTxt}>
-                      <Text style={styles_PaymentList.moneyTxt}>
-                        {payment.transCompleted && payment.boss
-                          ? '수금 클리어\n'
-                          : `${price} 원\n`}
-                      </Text>
-                      <Text style={styles_PaymentList.dateTxt}>
-                        {payment.partyDate}
-                      </Text>
-                    </Text>
+                    <Grid style={{ height: 70 }}>
+                      <Row>
+                        <Col>
+                          <Text style={styles_PaymentList.statusTxt}>
+                            {statusTxt}
+                          </Text>
+                        </Col>
+                        <Col>
+                          <Text style={styles_PaymentList.moneyTxt}>
+                            {payment.transCompleted && payment.boss
+                              ? '수금 클리어\n'
+                              : `${price} 원\n`}
+                          </Text>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col>
+                          <Text
+                            style={{
+                              ...styles_PaymentList.label,
+                              color: '#736e72'
+                            }}
+                          >
+                            {payment.title}
+                          </Text>
+                        </Col>
+                        <Col>
+                          <Text style={styles_PaymentList.dateTxt}>
+                            {payment.partyDate}
+                          </Text>
+                        </Col>
+                      </Row>
+                    </Grid>
 
                     <Right>
                       <Button
