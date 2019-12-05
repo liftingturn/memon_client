@@ -123,7 +123,7 @@ class LoginScreen extends React.Component<State> {
             {this.state.whileAsync === false ? (
               <Button
                 onPress={this.signInWithGoogleAsync}
-                style={{ backgroundColor: '#4285F4' }}
+                style={{ ...styles.button, backgroundColor: '#4285F4' }}
               >
                 <Icon type="AntDesign" name="google"></Icon>
                 <Text style={{ color: 'white', marginRight: 20 }}>
