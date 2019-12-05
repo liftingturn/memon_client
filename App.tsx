@@ -21,7 +21,7 @@ import DashboardScreen from './src/screens/DashboardScreen';
 import NewPayment from './src/screens/NewPayment';
 import PaymentList from './src/screens/PaymentList';
 import SingleViewPart from './src/screens/SingleViewPart';
-
+console.disableYellowBox = true;
 firebase.initializeApp(firebaseConfig);
 const { width } = Dimensions.get('window');
 

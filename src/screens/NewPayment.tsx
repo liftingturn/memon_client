@@ -31,7 +31,7 @@ import {
   SplitPayment
 } from '../components';
 import config from '../../config';
-
+console.disableYellowBox = true;
 export interface Props {
   navigation: any;
   fromListView: boolean;
