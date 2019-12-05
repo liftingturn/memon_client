@@ -1,5 +1,6 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
+const { width } = Dimensions.get('window');
 
 const styles_LoadingScreen = StyleSheet.create({
   container: {
@@ -92,7 +93,8 @@ const styles_newPayment = StyleSheet.create({
     backgroundColor: 'transparent'
   },
   dunningBtnItem: {
-    marginTop: 40,
+    marginTop: 0,
+    marginRight: width * 0.1,
     borderBottomWidth: 0,
     borderBottomColor: 'blue',
     backgroundColor: 'transparent'
@@ -100,18 +102,19 @@ const styles_newPayment = StyleSheet.create({
   dunningBtn: {
     paddingHorizontal: 10,
     paddingBottom: 10,
+    borderRadius: 20,
     backgroundColor: 'white',
     borderColor: '#eff0eb',
     borderWidth: 3
   },
   dunningBtnTxt: {
-    color: 'gray',
+    color: '#b582e8',
     fontFamily: 'NotoSans_medium',
     fontSize: 16,
     fontWeight: 'bold'
   },
   form: {
-    width: 350,
+    width: width * 0.8,
     backgroundColor: '#f5effb',
     borderRadius: 15,
     paddingLeft: 10,
@@ -136,9 +139,9 @@ const styles_newPayment = StyleSheet.create({
 
 const styles_Toast = {
   container: {
-    height: 50,
-    margin: 3,
-    marginBottom: 50,
+    height: width * 0.1,
+    margin: width * 0.1,
+    marginBottom: width * 0.2,
     borderRadius: 10,
     paddingHorizontal: 10
   },
