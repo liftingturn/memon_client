@@ -119,7 +119,7 @@ const Drawer = createDrawerNavigator(
   {
     unmountInactiveRoutes: true,
     contentComponent: CustomDrawer,
-    drawerWidth: width,
+    drawerWidth: width * 0.7,
     contentOptions: {
       activeTintColor: '#b582e8'
     }
