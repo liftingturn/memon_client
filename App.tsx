@@ -48,7 +48,7 @@ export default class App extends React.Component {
 
 const CustomDrawer = props => {
   //Setting up the Main Top Large Image of the Custom Sidebar
-  console.log('커스텀드로워 프롭스', props.navigation);
+  // console.log('커스텀드로워 프롭스', props.navigation);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

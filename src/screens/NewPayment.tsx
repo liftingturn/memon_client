@@ -231,9 +231,13 @@ export default class NewPayment extends React.Component<Props> {
     let response = await fetch(config.serverAddress + '/pricebook', emailObj);
     let responseJson = await response.json();
     ///// 참여자 목록 추출 ///////
-    const chosenList = responseJson.paymentObj.map(record => {
+    const chosenList = responseJson.paymentObj.map((record, idx) => {
+      console.log('===========record', record);
       return {
-        name: '',
+        name:
+          this.state.chosenList.length !== 0
+            ? this.state.chosenList[idx].name
+            : '',
         phone: record.phone,
         id: record.participantId,
         transId: record.id,
@@ -241,7 +245,9 @@ export default class NewPayment extends React.Component<Props> {
         isPayed: record.isPayed
       };
     });
+
     ///// 결제 완료 여부 ///
+    // console.log('곧 사라질 희생자 ====', this.state.chosenList);
     await this.setState({
       ...this.state,
       title: responseJson.pricebook.title,
@@ -253,7 +259,7 @@ export default class NewPayment extends React.Component<Props> {
       demandCnt: responseJson.pricebook.demandCnt
     });
     const chosenState = this.state.chosenList;
-    console.log('afterFetch', this.state);
+    console.log('afterFetch', this.state.chosenList);
     let payedCnt = 1;
     for (let i = 0; i < chosenState.length; i++) {
       if (chosenState[i].isPayed) {
@@ -269,9 +275,9 @@ export default class NewPayment extends React.Component<Props> {
   //새로고침
   onRefresh = async () => {
     console.log('refresh!');
-    this.setState({ ...this.state, refreshing: true });
+    // this.setState({ ...this.state, refreshing: true });
     await this.doFetch();
-    this.setState({ ...this.state, refreshing: false });
+    // this.setState({ ...this.state, refreshing: false });
   };
   //backHandler
   goBack = () => {
@@ -634,7 +640,7 @@ export default class NewPayment extends React.Component<Props> {
       },
       body: JSON.stringify(body)
     });
-    console.log('=======response=======', res);
+    // console.log('=======response=======', res);
     if (res.status === 200) {
       Toast.show({
         text: `${this.state.title} 거래가 완료되었습니다.`
