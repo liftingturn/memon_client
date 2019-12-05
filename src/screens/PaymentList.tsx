@@ -24,7 +24,7 @@ import config from '../../config';
 import firebase from 'firebase';
 import { isAbsolute } from 'path';
 import { Col, Row, Grid } from 'react-native-easy-grid';
-
+console.disableYellowBox = true;
 export interface Props {
   navigation: any;
 }
