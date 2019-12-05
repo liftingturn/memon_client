@@ -87,7 +87,7 @@ class LoadingScreen extends React.Component<Props> {
           >
             Memon
           </Text>
-          <ActivityIndicator size="large" />
+          <ActivityIndicator style={{ marginTop: 100 }} size="large" />
         </View>
         <Footer style={styles_LoadingScreen.footer}>
           <Text style={styles_LoadingScreen.footerTxt}>@ Don Juan 2019</Text>
