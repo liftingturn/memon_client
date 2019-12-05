@@ -1,17 +1,12 @@
 import * as React from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  ActivityIndicator,
-  Button
-} from 'react-native';
-import { Footer } from 'native-base';
+import { Text, View, StyleSheet, ActivityIndicator } from 'react-native';
+import { Footer, Icon, Button, Image } from 'native-base';
 import * as Google from 'expo-google-app-auth';
 import firebase from 'firebase';
 import config from './../../config';
 import { LinearGradient } from 'expo-linear-gradient';
 import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
+
 interface State {
   whileAsync: boolean;
 }
@@ -124,14 +119,21 @@ class LoginScreen extends React.Component<State> {
           <Text numberOfLines={1} adjustsFontSizeToFit style={styles.main}>
             Memon
           </Text>
-          {this.state.whileAsync === false ? (
-            <Button
-              title="Sign In With Google"
-              onPress={this.signInWithGoogleAsync}
-            />
-          ) : (
-            <ActivityIndicator size="large" />
-          )}
+          <View style={styles.button}>
+            {this.state.whileAsync === false ? (
+              <Button
+                onPress={this.signInWithGoogleAsync}
+                style={{ backgroundColor: '#4285F4' }}
+              >
+                <Icon type="AntDesign" name="google"></Icon>
+                <Text style={{ color: 'white', marginRight: 20 }}>
+                  구글 아이디로 가입
+                </Text>
+              </Button>
+            ) : (
+              <ActivityIndicator size="large" />
+            )}
+          </View>
         </View>
         <Footer
           style={{ justifyContent: 'center', backgroundColor: 'transparent' }}
@@ -164,5 +166,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#fff',
     fontSize: RFPercentage(8)
+  },
+  button: {
+    marginTop: 100
   }
 });
