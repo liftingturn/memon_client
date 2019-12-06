@@ -31,20 +31,6 @@ export default class App extends React.Component {
   }
 }
 
-// const AuthStack = createStackNavigator({
-//   홈: {
-//     screen: DashboardScreen
-//   },
-//   새거래: {
-//     screen: NewPayment
-//   },
-//   거래목록: {
-//     screen: PaymentList
-//   },
-//   참여거래정보: {
-//     screen: SingleViewPart
-//   }
-// });
 
 const CustomDrawer = props => {
   //Setting up the Main Top Large Image of the Custom Sidebar
