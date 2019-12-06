@@ -83,6 +83,7 @@ class LoginScreen extends React.Component<State> {
       const result = await Google.logInAsync({
         //google id 관련 object날라옴/
         androidClientId: config.androidClientId,
+        androidStandaloneAppClientId: config.androidStandaloneAppClientId,
         scopes: ['profile', 'email'],
         clientId: ''
       });

@@ -238,6 +238,10 @@ export default class NewPayment extends React.Component<Props> {
           this.state.chosenList.length !== 0
             ? this.state.chosenList[idx].name
             : '',
+        demandCnt:
+          this.state.chosenList.length !== 0
+            ? this.state.chosenList[idx].demandCnt
+            : '',
         phone: record.phone,
         id: record.participantId,
         transId: record.id,
@@ -697,6 +701,7 @@ export default class NewPayment extends React.Component<Props> {
         if (dunning.status === 200) {
           console.log('독촉성공');
           alert(`[${demandCnt + 1}/5] ${targetStr}에게 입금을 요청했습니다.`);
+          this.onRefresh();
         }
       } catch (error) {
         console.log('=====error======', error);
