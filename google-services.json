@@ -15,22 +15,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "209216463831-rhh13eodvhbdi2krciqiavuk55tu7v8v.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.memon.app",
-            "certificate_hash": "4c79253bc36159f9f2e54682759a239eae578108"
-          }
-        },
-        {
-          "client_id": "209216463831-d747jra5c2rrhje6mub56s6563ilkgk5.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.memon.app",
-            "certificate_hash": "8b955f8dc3760e92927f1a12cd8be0918c90db62"
-          }
-        },
-        {
           "client_id": "209216463831-1qmfqfjm3jn14is4usehord6pgpst91k.apps.googleusercontent.com",
           "client_type": 3
         }
