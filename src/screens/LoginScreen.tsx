@@ -7,11 +7,14 @@ import config from './../../config';
 import { LinearGradient } from 'expo-linear-gradient';
 import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
 
+interface Props {
+  navigation: any;
+}
 interface State {
   whileAsync: boolean;
 }
 
-class LoginScreen extends React.Component<State> {
+class LoginScreen extends React.Component<Props, State> {
   state: State = {
     whileAsync: false
   };
@@ -32,12 +35,12 @@ class LoginScreen extends React.Component<State> {
     }
     return false;
   };
-  onSignIn = googleUser => {
-    console.log('Google Auth Response', googleUser);
+  onSignIn = async googleUser => {
+    console.log('googe user get in firebase', googleUser);
     // We need to register an Observer on Firebase Auth to make sure auth is initialized.
     var unsubscribe = firebase.auth().onAuthStateChanged(
       // auth change시 실행할 function 주입.
-      function(firebaseUser) {
+      async firebaseUser => {
         unsubscribe();
         // Check if we are already signed-in Firebase with the correct user.
         if (!this.isUserEqual(googleUser, firebaseUser)) {
@@ -49,16 +52,20 @@ class LoginScreen extends React.Component<State> {
             googleUser.accessToken
           ); // 파이어베이스에 등록할 구글 유저정보 기반 credential 정보 생성.
           // Sign in with credential from the Google user.
-          firebase
+          await firebase
             .auth()
             .signInWithCredential(credential) // 방금
-            .then(() => {
-              console.log('user signed in'); //firebase에 방금 처음 로그인한 구글 유저정보 등록완료!!
+            .then(result => {
+              console.log('user signed in===================', result); //firebase에 방금 처음 로그인한 구글 유저정보 등록완료!!
+              if (result.additionalUserInfo.isNewUser) {
+                this.props.navigation.navigate('LoadingScreen');
+              }
+
               ////////////////
               // PhoneInputScreen 으로 분기
               // user 정보가 우리 서버에 있는지 확인 (핸드폰 번호가 있는지 확인)
               //  - 있다면,
-              this.props.navigation.navigate('PhoneInputScreen');
+              // this.props.navigation.navigate('PhoneInputScreen');
             })
             .catch(error => {
               // Handle Errors here.
@@ -69,11 +76,12 @@ class LoginScreen extends React.Component<State> {
               // The firebase.auth.AuthCredential type that was used.
               var credential = error.credential;
               // ...
+              console.error('firebase 인증실패', error);
             });
         } else {
           console.log('User already signed-in Firebase.');
         }
-      }.bind(this)
+      }
     );
   };
   signInWithGoogleAsync = async () => {
@@ -83,16 +91,16 @@ class LoginScreen extends React.Component<State> {
       const result = await Google.logInAsync({
         //google id 관련 object날라옴/
         androidClientId: config.androidClientId,
-        androidStandaloneAppClientId: config.androidStandaloneAppClientId,
+        // androidStandaloneAppClientId: config.androidStandaloneAppClientId,
         scopes: ['profile', 'email'],
-        clientId: ''
+        clientId: config.androidClientId
       });
 
       if (result.type === 'success') {
         console.log('result:', result);
-        this.onSignIn(result); //call the onSignIn method
+        await this.onSignIn(result); //call the onSignIn method
         console.log('login screen onsignin end');
-
+        // this.props.navigation.navigate('Drawer');
         return result.accessToken; //who receive the result??
       } else {
         this.setState({ whileAsync: false });

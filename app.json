@@ -4,7 +4,7 @@
     "slug": "memon-client",
     "privacy": "public",
     "sdkVersion": "35.0.0",
-    "platforms": ["android", "web"],
+    "platforms": ["web", "android"],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/memon-circle.png",
@@ -21,9 +21,9 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.memon.app",
+      "package": "com.memon.app1",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 5
+      "versionCode": 7
     }
   }
 }
