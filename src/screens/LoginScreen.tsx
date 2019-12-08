@@ -93,7 +93,7 @@ class LoginScreen extends React.Component<Props, State> {
         androidClientId: config.androidClientId,
         // androidStandaloneAppClientId: config.androidStandaloneAppClientId,
         scopes: ['profile', 'email'],
-        clientId: ''
+        clientId: config.androidClientId
       });
 
       if (result.type === 'success') {
