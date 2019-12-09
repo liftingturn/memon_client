@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Footer } from 'native-base';
 import * as Font from 'expo-font';
@@ -14,6 +14,8 @@ interface Props {
 
 class LoadingScreen extends React.Component<Props> {
   async componentDidMount() {
+    Alert.alert('loading screen componentDidMount');
+
     console.log('loading componentDidMount');
     /* 
     **** 폰트로딩 안내가 잇겠습니다. ^^****

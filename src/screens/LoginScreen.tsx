@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, ActivityIndicator } from 'react-native';
+import { Text, View, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { Footer, Icon, Button, Image } from 'native-base';
-import * as Google from 'expo-google-app-auth';
+// import * as Google from 'expo-google-app-auth';
+import * as GoogleSignIn from 'expo-google-sign-in';
 import firebase from 'firebase';
 import config from './../../config';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -12,13 +13,53 @@ interface Props {
 }
 interface State {
   whileAsync: boolean;
+  user: any;
 }
 
 class LoginScreen extends React.Component<Props, State> {
   state: State = {
-    whileAsync: false
+    whileAsync: false,
+    user: null
   };
 
+  initAsync = async () => {
+    await GoogleSignIn.initAsync({
+      clientId: config.androidClientId
+    });
+    this._syncUserWithStateAsync();
+  };
+  _syncUserWithStateAsync = async () => {
+    const user = await GoogleSignIn.signInSilentlyAsync();
+    this.setState({ ...this.state, user: user });
+  };
+
+  signOutAsync = async () => {
+    await GoogleSignIn.signOutAsync();
+    this.setState({ ...this.state, user: null });
+  };
+  signInAsync = async () => {
+    try {
+      await GoogleSignIn.askForPlayServicesAsync();
+      const { type, user } = await GoogleSignIn.signInAsync();
+      if (type === 'success') {
+        console.log('==========login성공, user:', user);
+        this._syncUserWithStateAsync();
+      }
+    } catch ({ message }) {
+      Alert.alert('login: Error:' + message);
+    }
+  };
+  // signInAsync = async () => {
+  //   try {
+  //     await GoogleSignIn.askForPlayServicesAsync();
+  //     const { type, user } = await GoogleSignIn.signInAsync();
+  //     if (type === 'success') {
+  //       // ...
+  //     }
+  //   } catch ({ message }) {
+  //     alert('login: Error:' + message);
+  //   }
+  // };
   isUserEqual = (googleUser, firebaseUser) => {
     if (firebaseUser) {
       var providerData = firebaseUser.providerData;
@@ -26,7 +67,8 @@ class LoginScreen extends React.Component<Props, State> {
         if (
           providerData[i].providerId ===
             firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
-          providerData[i].uid === googleUser.getBasicProfile().getId()
+          providerData[i].uid === googleUser.user.uid
+          //providerData[i].uid === googleUser.getBasicProfile().getId()
         ) {
           // We don't need to reauth the Firebase connection.
           return true;
@@ -36,7 +78,8 @@ class LoginScreen extends React.Component<Props, State> {
     return false;
   };
   onSignIn = async googleUser => {
-    console.log('googe user get in firebase', googleUser);
+    Alert.alert('do firebase auth');
+    console.log('googe user get in firebase', googleUser.user);
     // We need to register an Observer on Firebase Auth to make sure auth is initialized.
     var unsubscribe = firebase.auth().onAuthStateChanged(
       // auth change시 실행할 function 주입.
@@ -48,8 +91,8 @@ class LoginScreen extends React.Component<Props, State> {
           // Build Firebase credential with the Google ID token.
           var credential = firebase.auth.GoogleAuthProvider.credential(
             //googleUser.getAuthResponse().id_token
-            googleUser.idToken,
-            googleUser.accessToken
+            googleUser.user.auth.idToken,
+            googleUser.user.auth.accessToken
           ); // 파이어베이스에 등록할 구글 유저정보 기반 credential 정보 생성.
           // Sign in with credential from the Google user.
           await firebase
@@ -79,6 +122,9 @@ class LoginScreen extends React.Component<Props, State> {
               console.error('firebase 인증실패', error);
             });
         } else {
+          //파이어베이스에 로그인 기록 있는 경우
+          Alert.alert('you already in firebase');
+          this.props.navigation.navigate('LoadingScreen');
           console.log('User already signed-in Firebase.');
         }
       }
@@ -86,34 +132,39 @@ class LoginScreen extends React.Component<Props, State> {
   };
   signInWithGoogleAsync = async () => {
     console.log('google login clicked');
-    this.setState({ whileAsync: true });
+    this.setState({ ...this.state, whileAsync: true });
     try {
-      const result = await Google.logInAsync({
-        //google id 관련 object날라옴/
-        androidClientId: config.androidClientId,
-        // androidStandaloneAppClientId: config.androidStandaloneAppClientId,
-        scopes: ['profile', 'email'],
-        clientId: config.androidClientId
-      });
+      await GoogleSignIn.askForPlayServicesAsync();
+      const result = await GoogleSignIn.signInAsync();
+      // const result = await Google.logInAsync({
+      //   //google id 관련 object날라옴/
+      //   androidClientId: config.androidClientId,
+      //   // androidStandaloneAppClientId: config.androidStandaloneAppClientId,
+      //   scopes: ['profile', 'email'],
+      //   clientId: config.androidClientId
+      // });
 
       if (result.type === 'success') {
-        console.log('result:', result);
+        Alert.alert('google login sucess');
         await this.onSignIn(result); //call the onSignIn method
         console.log('login screen onsignin end');
         // this.props.navigation.navigate('Drawer');
-        return result.accessToken; //who receive the result??
+        return result.user.auth.accessToken; //who receive the result??
       } else {
-        this.setState({ whileAsync: false });
+        Alert.alert('google login failed');
+        this.setState({ ...this.state, whileAsync: false });
         console.log('google.loginAsync 실패, result:', result);
         return { cancelled: true };
       }
     } catch (e) {
-      this.setState({ whileAsync: false });
+      this.setState({ ...this.state, whileAsync: false });
       console.log('in catch err', e);
       return { error: true };
     }
   };
-
+  componentDidMount() {
+    this.initAsync();
+  }
   check = () => {};
 
   render() {
@@ -131,7 +182,8 @@ class LoginScreen extends React.Component<Props, State> {
           <View style={styles.button}>
             {this.state.whileAsync === false ? (
               <Button
-                onPress={this.signInWithGoogleAsync}
+                // onPress={this.signInWithGoogleAsync}
+                onPress={this.signInAsync}
                 style={{ ...styles.button, backgroundColor: '#4285F4' }}
               >
                 <Icon type="AntDesign" name="google"></Icon>
