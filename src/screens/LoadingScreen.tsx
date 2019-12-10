@@ -1,18 +1,35 @@
 import * as React from 'react';
-import { Component } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Footer } from 'native-base';
+import * as Font from 'expo-font';
 import firebase from 'firebase';
-import LoginScreen from './LoginScreen';
-import PhoneInputScreen from './PhoneInputScreen';
 import config from '../../config';
+import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
+import { styles_LoadingScreen } from '../screenStyles';
 
 interface Props {
   navigation: any;
 }
 
 class LoadingScreen extends React.Component<Props> {
-  componentDidMount() {
+  async componentDidMount() {
     console.log('loading componentDidMount');
+    /* 
+    **** 폰트로딩 안내가 잇겠습니다. ^^****
+    0. 현재 모든 폰트는 NotoSans_regular 일괄 적용되어 있습니다. (fontFamily로 검색하면 적용된 부분 다 나옴)
+    1. 현재 보고 계신 로딩스크린 파일에서는 아래 함수에서 읽어오는 커스텀 폰트를 사용하지 말아주세요!
+       커스텀 폰트를 읽는 동안 띄우는 화면입니다.
+    2. Roboto_medium 은 native-base 일부 컴포넌트에 기본 적용되는 폰트로, 지우면 어디서 에러가 날지 모르니 따로 쓰지 않는다 싶어도 디폴트로 로딩합니다. ^.ㅜ
+    3. 적용할 폰트를 선택하신 후에는 
+      1) 루트 디렉토리의 assets 폴더에서 미사용 폰트 파일 삭제
+      2) 아래 Font.loadAsync 에서 미사용 폰트 로딩을 삭제해주세염.
+    */
+    await Font.loadAsync({
+      Roboto_medium: require('../../assets/Fonts/Roboto_medium.ttf'),
+      NotoSans_normal: require('../../assets/Fonts/KaiGenGothicK-Normal.ttf'),
+      NotoSans_medium: require('../../assets/Fonts/KaiGenGothicK-Medium.ttf')
+    });
     this.checkIfLoggedIn();
   }
 
@@ -43,27 +60,41 @@ class LoadingScreen extends React.Component<Props> {
 
       //user가 있으면 이제 전화번호 등록으로 넘어감.
       //user가 있는데, DB에 번호도 있는 경우는 phoneInput skip하고 바로 Dashboard로 간다?
-      console.log('result 서버에 이메일있냐 없냐 이말이야: ', result);
+      console.log('rds 서버에 이메일있냐 없냐 이말이야: ', result);
       this.props.navigation.navigate(
-        !user ? 'LoginScreen' : result ? 'DrawerNav' : 'PhoneInputScreen'
+        !user ? 'LoginScreen' : result ? 'Drawer' : 'PhoneInputScreen'
       );
     });
   };
+
   render() {
     return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" />
-      </View>
+      <LinearGradient style={{ flex: 1 }} colors={['#b582e8', '#937ee0']}>
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <Text
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            style={styles_LoadingScreen.sub}
+          >
+            슬기로운 수금 생활
+          </Text>
+          <Text
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            style={styles_LoadingScreen.main}
+          >
+            Memon
+          </Text>
+          <ActivityIndicator style={{ marginTop: 100 }} size="large" />
+        </View>
+        <Footer style={styles_LoadingScreen.footer}>
+          <Text style={styles_LoadingScreen.footerTxt}>@ Don Juan 2019</Text>
+        </Footer>
+      </LinearGradient>
     );
   }
 }
 
 export default LoadingScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
-});

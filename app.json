@@ -4,12 +4,12 @@
     "slug": "memon-client",
     "privacy": "public",
     "sdkVersion": "35.0.0",
-    "platforms": ["android", "web"],
+    "platforms": ["web", "android"],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/memon-circle.png",
     "splash": {
-      "image": "./assets/iOS-stock-6-for-iPhone-X.png",
+      "image": "./assets/main.png",
       "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
@@ -22,7 +22,8 @@
     },
     "android": {
       "package": "com.memon.app",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "versionCode": 7
     }
   }
 }
