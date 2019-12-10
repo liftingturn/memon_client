@@ -24,9 +24,10 @@ class LoginScreen extends React.Component<Props, State> {
 
   initAsync = async () => {
     await GoogleSignIn.initAsync({
-      clientId: config.androidClientId
+      clientId: config.androidClientId,
+      webClientId: config.webClientId
     });
-    this._syncUserWithStateAsync();
+    await this._syncUserWithStateAsync();
   };
   _syncUserWithStateAsync = async () => {
     const user = await GoogleSignIn.signInSilentlyAsync();
@@ -78,7 +79,9 @@ class LoginScreen extends React.Component<Props, State> {
             .then(result => {
               console.log('user signed in===================', result); //firebase에 방금 처음 로그인한 구글 유저정보 등록완료!!
               if (result.additionalUserInfo.isNewUser) {
-                this.props.navigation.navigate('LoadingScreen');
+                // this.props.navigation.navigate('LoadingScreen');
+                this.props.navigation.navigate('PhoneInputScreen');
+              } else {
               }
 
               ////////////////
@@ -96,12 +99,12 @@ class LoginScreen extends React.Component<Props, State> {
               // The firebase.auth.AuthCredential type that was used.
               var credential = error.credential;
               // ...
-              console.error('firebase 인증실패', error);
+              alert('firebase 인증실패' + error);
             });
         } else {
           //파이어베이스에 로그인 기록 있는 경우
-
-          this.props.navigation.navigate('LoadingScreen');
+          alert('로그인 성공');
+          this.props.navigation.navigate('Drawer');
           console.log('User already signed-in Firebase.');
         }
       }
