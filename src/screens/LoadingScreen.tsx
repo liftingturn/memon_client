@@ -14,8 +14,6 @@ interface Props {
 
 class LoadingScreen extends React.Component<Props> {
   async componentDidMount() {
-    Alert.alert('loading screen componentDidMount');
-
     console.log('loading componentDidMount');
     /* 
     **** 폰트로딩 안내가 잇겠습니다. ^^****
