@@ -21,7 +21,7 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.memon.app1",
+      "package": "com.memon.app",
       "googleServicesFile": "./google-services.json",
       "versionCode": 7
     }

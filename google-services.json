@@ -8,17 +8,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:778731067839:android:0851fe64e208458744a90a",
+        "mobilesdk_app_id": "1:778731067839:android:a751317862eb750b44a90a",
         "android_client_info": {
-          "package_name": "com.memon.app1"
+          "package_name": "com.memon.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "778731067839-vrpd8j7sbrhc0ho59m42d6j1lm9bfnul.apps.googleusercontent.com",
+          "client_id": "778731067839-sa9jlfghirs0d52oq4s542frbm960k1b.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.memon.app1",
+            "package_name": "com.memon.app",
             "certificate_hash": "4c79253bc36159f9f2e54682759a239eae578108"
           }
         },
