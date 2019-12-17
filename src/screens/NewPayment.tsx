@@ -279,9 +279,7 @@ export default class NewPayment extends React.Component<Props> {
   //새로고침
   onRefresh = async () => {
     console.log('refresh!');
-    // this.setState({ ...this.state, refreshing: true });
     await this.doFetch();
-    // this.setState({ ...this.state, refreshing: false });
   };
   //backHandler
   goBack = () => {
@@ -435,14 +433,14 @@ export default class NewPayment extends React.Component<Props> {
     console.log('selectParty - peopleCnt: ', this.state.peopleCnt);
   };
 
-  changePayedTrans = phone => {
+  changePayedTrans = async phone => {
     let chosen = [...this.state.chosenList];
     chosen.forEach(person => {
       if (person.phone === phone) {
         person.askConfirm = person.askConfirm ? false : true;
       }
     });
-    this.setState({ ...this.state, chosenList: chosen });
+    await this.setState({ ...this.state, chosenList: chosen });
   };
 
   //handle modify & submit
@@ -470,6 +468,7 @@ export default class NewPayment extends React.Component<Props> {
         uniqueDisable: true,
         modifyButtonText: '수정'
       });
+      await this.handleConfirmModified();
       await this.onRefresh();
       Toast.show({
         text: '변경사항을 저장하였습니다.',
@@ -574,7 +573,7 @@ export default class NewPayment extends React.Component<Props> {
   };
 
   handleConfirmModified = async () => {
-    const askNotiAPI = config.serverAddress + '/users/pushtoken';
+ 
     const askTransRcordAPI = config.serverAddress + '/payment/ispayed';
 
     //거래레코드 ispayed 상태 변경 요청
@@ -586,7 +585,7 @@ export default class NewPayment extends React.Component<Props> {
     });
     console.log('payedTrans', payedTrans);
     const body = { paymentId: payedTrans };
-    const transRcords = await fetch(askTransRcordAPI, {
+    const afterPatchPayed = await fetch(askTransRcordAPI, {
       method: 'patch',
       headers: {
         Accept: 'application/json',
@@ -597,7 +596,7 @@ export default class NewPayment extends React.Component<Props> {
 
     //푸시노티 API
     const user = await firebase.auth().currentUser;
-    console.log(this.state.chosenList);
+    console.log('노티보낼 후보',this.state.chosenList);
     const party = [];
     this.state.chosenList.forEach(person => {
       if (person.askConfirm === true) {
@@ -620,7 +619,7 @@ export default class NewPayment extends React.Component<Props> {
       body: pushBody
     });
     let res = await pushRes.json();
-    console.log(res);
+    console.log('입금완료 푸시 결과',res);
     this.toModifyMode();
     //새로고침
 
@@ -702,6 +701,8 @@ export default class NewPayment extends React.Component<Props> {
           console.log('독촉성공');
           alert(`[${demandCnt + 1}/5] ${targetStr}에게 입금을 요청했습니다.`);
           this.onRefresh();
+        }else{
+          console.log('독촉 실패 res',dunning)
         }
       } catch (error) {
         console.log('=====error======', error);

@@ -94,7 +94,7 @@ const styles_newPayment = StyleSheet.create({
   },
   dunningBtnItem: {
     marginTop: 0,
-    marginRight: width * 0.1,
+    // marginRight: width * 0.1,
     borderBottomWidth: 0,
     borderBottomColor: 'blue',
     backgroundColor: 'transparent'
