@@ -25,7 +25,7 @@ class LoginScreen extends React.Component<Props, State> {
   initAsync = async () => {
     await GoogleSignIn.initAsync({
       clientId: config.androidClientId,
-      webClientId: config.webClientId
+      // webClientId: config.webClientId
     });
     await this._syncUserWithStateAsync();
   };
@@ -116,14 +116,6 @@ class LoginScreen extends React.Component<Props, State> {
     try {
       await GoogleSignIn.askForPlayServicesAsync();
       const result = await GoogleSignIn.signInAsync();
-      // const result = await Google.logInAsync({
-      //   //google id 관련 object날라옴/
-      //   androidClientId: config.androidClientId,
-      //   // androidStandaloneAppClientId: config.androidStandaloneAppClientId,
-      //   scopes: ['profile', 'email'],
-      //   clientId: config.androidClientId
-      // });
-
       if (result.type === 'success') {
         await this.onSignIn(result); //call the onSignIn method
         console.log('login screen onsignin end');
