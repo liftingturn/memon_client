@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "778731067839-bikil1qusbdvlj331h7e14s2p4tjek1a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.memon.app",
+            "certificate_hash": "8b955f8dc3760e92927f1a12cd8be0918c90db62"
+          }
+        },
+        {
           "client_id": "778731067839-sa9jlfghirs0d52oq4s542frbm960k1b.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

@@ -48,8 +48,8 @@ const ChosenFriendListItem = props => {
       : 'view';
 
   // console.log('mode', mode);
-  const handleCheckPay = () => {
-    props.changePayed(props.person.phone);
+  const handleCheckPay = async () => {
+    await props.changePayed(props.person.phone);
   };
 
   return (

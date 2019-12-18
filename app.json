@@ -23,7 +23,7 @@
     "android": {
       "package": "com.memon.app",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 7
+      "versionCode": 10
     }
   }
 }
